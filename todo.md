@@ -14,5 +14,8 @@
 - [x] إضافة fallback للـ API المباشر مع Playwright كخيار ثانوي
 - [x] اكتشاف الـ API الحقيقي (dpapp/finespayment/searchFines) واستخدامه مباشرة
 - [x] اختبار الاستعلام الحقيقي بلوحة 78699 دبي B - لا توجد مخالفات
-- [ ] رفع المشروع على GitHub
-- [ ] إنشاء حساب Render ونشر المشروع
+- [x] رفع المشروع على GitHub (https://github.com/aser9988q-web/dubai-fines-bot)
+- [ ] إضافة ملف railway.json وإعدادات النشر
+- [ ] تسجيل الدخول على Railway وربط GitHub
+- [ ] إنشاء قاعدة بيانات MySQL على Railway
+- [ ] ضبط متغيرات البيئة ونشر المشروع على Railway
