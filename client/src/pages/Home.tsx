@@ -33,11 +33,16 @@ interface FineResult {
   fineNumber?: string;
   fineDate?: string;
   description?: string;
+  descriptionAr?: string;
   amount?: string;
   blackPoints?: number;
   isPaid?: "paid" | "unpaid" | "partial";
   location?: string;
+  locationAr?: string;
   source?: string;
+  sourceAr?: string;
+  trafficDepartment?: string;
+  violationCode?: string;
 }
 
 interface QueryResult {
@@ -480,79 +485,65 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* تفاصيل المخالفة: المصدر، الموقع، الرقم، التاريخ */}
-                      <div className="px-5 pb-3 space-y-3">
-                        {/* المصدر */}
-                        {fine.source && (
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-gray-800 text-sm">{fine.source}</span>
-                            <div className="flex items-center gap-1 text-gray-400 text-sm">
-                              <Building2 className="w-4 h-4" />
-                              <span>المصدر</span>
-                            </div>
-                          </div>
-                        )}
+                      {/* تفاصيل المخالفة: الموقع، المصدر، تفاصيل المخالفة، التاريخ والوقت، رقم المخالفة */}
+                      <div className="px-5 pb-3 space-y-0">
 
                         {/* الموقع */}
                         {fine.location && (
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-gray-800 text-sm text-left" dir="ltr">{fine.location}</span>
-                            <div className="flex items-center gap-1 text-gray-400 text-sm shrink-0 mr-2">
+                          <div className="flex items-center justify-between py-2.5" style={{ borderBottom: "1px solid #f0f0f0" }}>
+                            <span className="font-semibold text-gray-800 text-sm">{fine.location}</span>
+                            <div className="flex items-center gap-1 text-gray-400 text-sm shrink-0 mr-3">
                               <MapPin className="w-4 h-4" />
                               <span>الموقع</span>
                             </div>
                           </div>
                         )}
 
-                        {/* رقم المخالفة */}
-                        {fine.fineNumber && (
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-gray-800 text-sm font-mono" dir="ltr">{fine.fineNumber}</span>
-                            <div className="flex items-center gap-1 text-gray-400 text-sm">
-                              <Hash className="w-4 h-4" />
-                              <span>رقم المخالفة</span>
+                        {/* المصدر */}
+                        {(fine.source || fine.trafficDepartment) && (
+                          <div className="flex items-center justify-between py-2.5" style={{ borderBottom: "1px solid #f0f0f0" }}>
+                            <span className="font-semibold text-gray-800 text-sm">{fine.source || fine.trafficDepartment}</span>
+                            <div className="flex items-center gap-1 text-gray-400 text-sm shrink-0 mr-3">
+                              <Building2 className="w-4 h-4" />
+                              <span>المصدر</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* تفاصيل المخالفة */}
+                        {fine.description && (
+                          <div className="flex items-start justify-between py-2.5" style={{ borderBottom: "1px solid #f0f0f0" }}>
+                            <span className="font-semibold text-gray-800 text-sm leading-relaxed flex-1 text-left mr-3">{fine.description}</span>
+                            <div className="flex items-center gap-1 text-gray-400 text-sm shrink-0">
+                              <Ticket className="w-4 h-4" />
+                              <span className="whitespace-nowrap">تفاصيل المخالفة</span>
                             </div>
                           </div>
                         )}
 
                         {/* التاريخ والوقت */}
                         {fine.fineDate && (
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between py-2.5" style={{ borderBottom: "1px solid #f0f0f0" }}>
                             <span className="font-semibold text-gray-800 text-sm" dir="ltr">{fine.fineDate}</span>
-                            <div className="flex items-center gap-1 text-gray-400 text-sm">
+                            <div className="flex items-center gap-1 text-gray-400 text-sm shrink-0 mr-3">
                               <Calendar className="w-4 h-4" />
                               <span>التاريخ والوقت</span>
                             </div>
                           </div>
                         )}
-                      </div>
 
-                      {/* قسم تفاصيل المخالفة */}
-                      {fine.description && (
-                        <div
-                          className="mx-4 mb-4 rounded-xl p-4"
-                          style={{ backgroundColor: "#f8faf8", border: "1px solid #e2ece5" }}
-                        >
-                          <div className="flex items-center gap-2 mb-3">
-                            <div
-                              className="w-7 h-7 rounded-lg flex items-center justify-center"
-                              style={{ backgroundColor: "#e8f5ee" }}
-                            >
-                              <Ticket className="w-4 h-4" style={{ color: "#1a5c3a" }} />
+                        {/* رقم المخالفة */}
+                        {fine.fineNumber && (
+                          <div className="flex items-center justify-between py-2.5">
+                            <span className="font-semibold text-gray-800 text-sm font-mono" dir="ltr">{fine.fineNumber}</span>
+                            <div className="flex items-center gap-1 text-gray-400 text-sm shrink-0 mr-3">
+                              <Hash className="w-4 h-4" />
+                              <span>رقم المخالفة</span>
                             </div>
-                            <span className="font-bold text-sm" style={{ color: "#1a5c3a" }}>تفاصيل المخالفة</span>
                           </div>
-                          <div className="flex items-start gap-2">
-                            <div
-                              className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                              style={{ backgroundColor: "#6b7280" }}
-                            >
-                              <span className="text-white text-xs font-bold">i</span>
-                            </div>
-                            <p className="text-sm text-gray-700 leading-relaxed">{fine.description}</p>
-                          </div>
-                        </div>
-                      )}
+                        )}
+
+                      </div>
 
                       {/* النقاط السوداء */}
                       {(fine.blackPoints ?? 0) > 0 && (

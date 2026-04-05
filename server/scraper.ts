@@ -9,9 +9,13 @@ export interface FineResult {
   blackPoints?: number;
   isPaid?: "paid" | "unpaid" | "partial";
   location?: string;
+  locationAr?: string;
   ticketNo?: string;
   trafficDepartment?: string;
+  trafficDepartmentAr?: string;
   violationCode?: string;
+  source?: string;
+  sourceAr?: string;
 }
 
 export interface ScraperResult {
@@ -137,19 +141,36 @@ export async function scrapeDubaiFines(
     const tickets: any[] = results.tickets || [];
     const ownerInfo = results.ownerInfo;
 
-    const fines: FineResult[] = tickets.map((ticket: any) => ({
-      fineNumber: ticket.ticketNo?.toString(),
-      fineDate: ticket.ticketDate || ticket.date,
-      description: ticket.violationDescriptionEn || ticket.descriptionEn || ticket.description,
-      descriptionAr: ticket.violationDescriptionAr || ticket.descriptionAr,
-      amount: ticket.ticketTotalFine?.toString() || ticket.totalFine?.toString() || ticket.amount?.toString(),
-      blackPoints: ticket.offenseBlackPoints || ticket.blackPoints || 0,
-      isPaid: ticket.isPaid ? "paid" : "unpaid",
-      location: ticket.locationEn || ticket.location,
-      ticketNo: ticket.ticketNo?.toString(),
-      trafficDepartment: ticket.trafficDepartmentEn || ticket.trafficDepartment,
-      violationCode: ticket.violationCode?.toString(),
-    }));
+    const fines: FineResult[] = tickets.map((ticket: any) => {
+      // دمج التاريخ والوقت
+      const dateTime = ticket.ticketDate && ticket.ticketTime
+        ? `${ticket.ticketDate} ${ticket.ticketTime}`
+        : ticket.ticketDate || ticket.date || "";
+
+      // تفاصيل المخالفة: ticketViolation يحتوي على النص العربي والإنجليزي معاً
+      const violation = ticket.ticketViolation || ticket.violationDescriptionAr || ticket.violationDescriptionEn || ticket.description || "";
+
+      // المصدر: beneficiary هو الجهة المصدرة
+      const sourceText = ticket.beneficiary || ticket.trafficDepartmentEn || ticket.trafficDepartment || "";
+
+      return {
+        fineNumber: ticket.ticketNo?.toString(),
+        fineDate: dateTime,
+        description: violation,
+        descriptionAr: ticket.violationDescriptionAr || ticket.ticketViolation,
+        amount: ticket.ticketTotalFine?.toString() || ticket.ticketFine?.toString() || ticket.totalFine?.toString() || ticket.amount?.toString(),
+        blackPoints: ticket.offenseBlackPionts || ticket.offenseBlackPoints || ticket.blackPoints || 0,
+        isPaid: ticket.isPaid ? "paid" : "unpaid",
+        location: ticket.location || ticket.locationEn || "",
+        locationAr: ticket.location || "",
+        ticketNo: ticket.ticketNo?.toString(),
+        trafficDepartment: sourceText,
+        trafficDepartmentAr: ticket.beneficiary || "",
+        violationCode: ticket.violationCode?.toString(),
+        source: sourceText,
+        sourceAr: ticket.beneficiary || "",
+      };
+    });
 
     const totalAmount = fines.reduce((sum, f) => {
       return sum + parseFloat(f.amount?.replace(/[^0-9.]/g, "") || "0");
