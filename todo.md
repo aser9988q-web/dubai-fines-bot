@@ -12,3 +12,5 @@
 - [x] حفظ Checkpoint وتسليم المشروع
 - [x] إصلاح مشكلة Playwright في بيئة الإنتاج (إضافة postinstall script لتثبيت المتصفح)
 - [x] إضافة fallback للـ API المباشر مع Playwright كخيار ثانوي
+- [x] اكتشاف الـ API الحقيقي (dpapp/finespayment/searchFines) واستخدامه مباشرة
+- [x] اختبار الاستعلام الحقيقي بلوحة 78699 دبي B - لا توجد مخالفات

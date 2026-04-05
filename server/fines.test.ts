@@ -6,12 +6,12 @@ import type { TrpcContext } from "./_core/context";
 vi.mock("./scraper", () => ({
   scrapeDubaiFines: vi.fn(),
   PLATE_SOURCES: [
-    { value: "Dubai", label: "دبي" },
-    { value: "Abu Dhabi", label: "أبوظبي" },
+    { value: "DXB", label: "دبي", labelEn: "Dubai" },
+    { value: "AUH", label: "أبوظبي", labelEn: "Abu Dhabi" },
   ],
   PLATE_CODES: [
-    { value: "A", label: "A" },
-    { value: "B", label: "B" },
+    { value: "2", label: "A", categoryId: 2 },
+    { value: "3", label: "B", categoryId: 2 },
   ],
 }));
 
@@ -63,7 +63,7 @@ describe("fines.query - validation", () => {
     const ctx = createPublicContext();
     const caller = appRouter.createCaller(ctx);
     await expect(
-      caller.fines.query({ plateSource: "", plateNumber: "12345", plateCode: "A" })
+      caller.fines.query({ plateSource: "", plateNumber: "12345", plateCode: "2" })
     ).rejects.toThrow();
   });
 
@@ -71,7 +71,7 @@ describe("fines.query - validation", () => {
     const ctx = createPublicContext();
     const caller = appRouter.createCaller(ctx);
     await expect(
-      caller.fines.query({ plateSource: "Dubai", plateNumber: "", plateCode: "A" })
+      caller.fines.query({ plateSource: "DXB", plateNumber: "", plateCode: "2" })
     ).rejects.toThrow();
   });
 });
@@ -88,9 +88,9 @@ describe("fines.query - success", () => {
     const ctx = createPublicContext();
     const caller = appRouter.createCaller(ctx);
     const result = await caller.fines.query({
-      plateSource: "Dubai",
+      plateSource: "DXB",
       plateNumber: "12345",
-      plateCode: "A",
+      plateCode: "2",
     });
 
     expect(result.success).toBe(true);
@@ -108,9 +108,9 @@ describe("fines.query - success", () => {
     const ctx = createPublicContext();
     const caller = appRouter.createCaller(ctx);
     const result = await caller.fines.query({
-      plateSource: "Dubai",
+      plateSource: "DXB",
       plateNumber: "99999",
-      plateCode: "B",
+      plateCode: "3",
     });
 
     expect(result.success).toBe(false);
