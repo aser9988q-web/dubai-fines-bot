@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { runMigrations } from "./migrate";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
@@ -28,6 +29,9 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  // Run database migrations on startup
+  await runMigrations();
+
   const app = express();
   const server = createServer(app);
   // Configure body parser with larger size limit for file uploads
