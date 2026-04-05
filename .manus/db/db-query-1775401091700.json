@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE `fines` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`queryId` int NOT NULL,\n\t`fineNumber` varchar(100),\n\t`fineDate` varchar(50),\n\t`description` text,\n\t`amount` decimal(10,2),\n\t`blackPoints` int DEFAULT 0,\n\t`isPaid` enum('paid','unpaid','partial') DEFAULT 'unpaid',\n\t`location` text,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `fines_id` PRIMARY KEY(`id`)\n)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user gRp2RyMeiPNcae6.edda79313ffd --database RPNmG5rkcSfq3Rp3WTDuVe --execute CREATE TABLE `fines` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`queryId` int NOT NULL,\n\t`fineNumber` varchar(100),\n\t`fineDate` varchar(50),\n\t`description` text,\n\t`amount` decimal(10,2),\n\t`blackPoints` int DEFAULT 0,\n\t`isPaid` enum('paid','unpaid','partial') DEFAULT 'unpaid',\n\t`location` text,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `fines_id` PRIMARY KEY(`id`)\n)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1644
+}
