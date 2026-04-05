@@ -26,8 +26,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
 // CDN logos
-const DUBAI_POLICE_LOGO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/1000068048_a156a246.svg";
-const FINE_BADGE_LOGO   = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/1000068049_5df51fd5.svg";
+const DUBAI_POLICE_LOGO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/1000068048_62cb3c80.svg";
+const FINE_BADGE_LOGO   = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/1000068049_f97b8af7.svg";
 
 interface FineResult {
   fineNumber?: string;
