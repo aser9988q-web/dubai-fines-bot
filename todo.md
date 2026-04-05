@@ -10,3 +10,5 @@
 - [x] صفحة سجل الاستعلامات السابقة
 - [x] كتابة اختبارات Vitest
 - [x] حفظ Checkpoint وتسليم المشروع
+- [x] إصلاح مشكلة Playwright في بيئة الإنتاج (إضافة postinstall script لتثبيت المتصفح)
+- [x] إضافة fallback للـ API المباشر مع Playwright كخيار ثانوي
