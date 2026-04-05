@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -15,19 +14,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
-  Car,
   Search,
   AlertTriangle,
   CheckCircle2,
-  Clock,
   History,
-  Shield,
   Loader2,
-  FileText,
-  DollarSign,
-  Calendar,
   MapPin,
+  Calendar,
+  Hash,
+  Building2,
+  ArrowRight,
+  ChevronLeft,
+  Info,
 } from "lucide-react";
+
+// CDN URLs for logos
+const DUBAI_POLICE_LOGO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/1000068048_a156a246.svg";
+const FINE_BADGE_LOGO = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/1000068049_5df51fd5.svg";
 
 interface FineResult {
   fineNumber?: string;
@@ -37,6 +40,7 @@ interface FineResult {
   blackPoints?: number;
   isPaid?: "paid" | "unpaid" | "partial";
   location?: string;
+  source?: string;
 }
 
 interface QueryResult {
@@ -48,12 +52,17 @@ interface QueryResult {
   errorMessage?: string;
 }
 
+type ActiveTab = "all" | "impound" | "payable" | "blackpoints" | "unpayable";
+
 export default function Home() {
-  const [plateSource, setPlateSource] = useState("");
+  const [plateSource, setPlateSource] = useState("DXB");
   const [plateNumber, setPlateNumber] = useState("");
-  const [plateCode, setPlateCode] = useState("");
+  const [plateCode, setPlateCode] = useState("1");
   const [result, setResult] = useState<QueryResult | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("all");
+  const [selectedFines, setSelectedFines] = useState<Set<number>>(new Set());
+  const [view, setView] = useState<"form" | "results">("form");
 
   const { data: options } = trpc.fines.getOptions.useQuery();
   const { data: history, refetch: refetchHistory } = trpc.fines.getHistory.useQuery(
@@ -64,10 +73,13 @@ export default function Home() {
   const queryMutation = trpc.fines.query.useMutation({
     onSuccess: (data) => {
       setResult(data as QueryResult);
+      setSelectedFines(new Set());
+      setActiveTab("all");
       if (data.success && data.totalFines === 0) {
         toast.success("لا توجد مخالفات مسجلة على هذه اللوحة");
       } else if (data.success && (data.totalFines ?? 0) > 0) {
         toast.warning(`تم العثور على ${data.totalFines} مخالفة`);
+        setView("results");
       } else if (!data.success) {
         toast.error(data.errorMessage || "فشل الاستعلام");
       }
@@ -80,20 +92,47 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!plateSource) {
-      toast.error("يرجى اختيار الإمارة");
-      return;
-    }
-    if (!plateNumber.trim()) {
-      toast.error("يرجى إدخال رقم اللوحة");
-      return;
-    }
-    if (!plateCode) {
-      toast.error("يرجى اختيار كود اللوحة");
-      return;
-    }
+    if (!plateSource) { toast.error("يرجى اختيار الإمارة"); return; }
+    if (!plateNumber.trim()) { toast.error("يرجى إدخال رقم اللوحة"); return; }
+    if (!plateCode) { toast.error("يرجى اختيار كود اللوحة"); return; }
     setResult(null);
+    setView("form");
     queryMutation.mutate({ plateSource, plateNumber: plateNumber.trim(), plateCode });
+  };
+
+  const toggleFineSelection = (index: number) => {
+    setSelectedFines(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    if (!result?.fines) return;
+    if (selectedFines.size === result.fines.length) {
+      setSelectedFines(new Set());
+    } else {
+      setSelectedFines(new Set(result.fines.map((_, i) => i)));
+    }
+  };
+
+  const filteredFines = result?.fines?.filter(fine => {
+    if (activeTab === "all") return true;
+    if (activeTab === "payable") return fine.isPaid === "unpaid";
+    if (activeTab === "blackpoints") return (fine.blackPoints ?? 0) > 0;
+    return true;
+  }) ?? [];
+
+  const getPlateSourceLabel = (code: string) => {
+    const src = options?.plateSources.find(s => s.value === code);
+    return src?.label || code;
+  };
+
+  const getPlateCodeLabel = (code: string) => {
+    const c = options?.plateCodes.find(c => c.value === code);
+    return c?.label || code;
   };
 
   const getStatusBadge = (status: string) => {
@@ -107,46 +146,133 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background" dir="rtl">
-      {/* Header */}
-      <header className="bg-primary text-primary-foreground shadow-lg">
-        <div className="container py-4">
+    <div className="min-h-screen" style={{ backgroundColor: "#f0f4f2", fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif" }} dir="rtl">
+
+      {/* ===== HEADER ===== */}
+      <header style={{ backgroundColor: "#1a5c3a" }} className="shadow-lg">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-white/10 rounded-full p-2">
-              <Shield className="w-8 h-8" />
-            </div>
+            <img src={DUBAI_POLICE_LOGO} alt="شرطة دبي" className="h-12 w-12 object-contain" />
             <div>
-              <h1 className="text-xl font-bold">نظام استعلام المخالفات المرورية</h1>
-              <p className="text-sm text-primary-foreground/70">شرطة دبي - خدمة إلكترونية</p>
+              <p className="text-white font-bold text-lg leading-tight">شرطة دبي</p>
+              <p className="text-green-200 text-xs">DUBAI POLICE</p>
             </div>
+          </div>
+          <div className="flex items-center gap-2 text-white/80 text-sm">
+            <span>الخدمات</span>
+            <ChevronLeft className="w-4 h-4" />
+            <span>الاستعلام والدفع</span>
+            <ChevronLeft className="w-4 h-4" />
+            <span className="text-white font-semibold">استعلام عن المخالفات</span>
           </div>
         </div>
       </header>
 
-      <main className="container py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* نموذج الاستعلام */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="shadow-md border-border">
-              <CardHeader className="bg-secondary/50 rounded-t-lg border-b border-border pb-4">
-                <CardTitle className="flex items-center gap-2 text-foreground">
-                  <Car className="w-5 h-5 text-primary" />
-                  الاستعلام عن المخالفات المرورية
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  أدخل بيانات اللوحة للاستعلام عن المخالفات من موقع شرطة دبي
+      <div className="max-w-6xl mx-auto px-4 py-6 flex gap-6">
+
+        {/* ===== SIDEBAR ===== */}
+        <aside className="w-64 shrink-0 hidden lg:block">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div style={{ backgroundColor: "#1a5c3a" }} className="px-4 py-3">
+              <p className="text-white font-semibold text-sm">الخدمات</p>
+            </div>
+            <nav className="p-2">
+              {[
+                { label: "الاستعلامات والمتابعة", active: true },
+                { label: "التقارير الجنائية والشكاوى", active: false },
+                { label: "التصاريح والشهادات", active: false },
+                { label: "خدمات المرور", active: false },
+                { label: "الأعمال والشركات", active: false },
+                { label: "المشاركة المجتمعية", active: false },
+                { label: "الطوارئ والاستجابة", active: false },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className={`px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors ${
+                    item.active
+                      ? "text-white font-semibold"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                  style={item.active ? { backgroundColor: "#2e7d52" } : {}}
+                >
+                  {item.label}
+                </div>
+              ))}
+            </nav>
+          </div>
+
+          {/* History */}
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden mt-4">
+            <button
+              className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              <span className="font-semibold text-sm text-gray-700 flex items-center gap-2">
+                <History className="w-4 h-4" style={{ color: "#1a5c3a" }} />
+                الاستعلامات الأخيرة
+              </span>
+              <span className="text-xs" style={{ color: "#1a5c3a" }}>{showHistory ? "إخفاء" : "عرض"}</span>
+            </button>
+            {showHistory && (
+              <div className="px-3 pb-3 space-y-2">
+                {!history || history.length === 0 ? (
+                  <p className="text-gray-400 text-xs text-center py-3">لا توجد استعلامات سابقة</p>
+                ) : (
+                  history.map((q) => {
+                    const statusInfo = getStatusBadge(q.status);
+                    return (
+                      <div
+                        key={q.id}
+                        className="flex items-center justify-between p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                        onClick={() => {
+                          setPlateSource(q.plateSource);
+                          setPlateNumber(q.plateNumber);
+                          setPlateCode(q.plateCode);
+                          setView("form");
+                        }}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-gray-800 truncate" dir="ltr">
+                            {q.plateCode} {q.plateNumber}
+                          </p>
+                          <p className="text-xs text-gray-400">{q.plateSource}</p>
+                        </div>
+                        <Badge variant={statusInfo.variant} className="text-xs shrink-0">
+                          {statusInfo.label}
+                        </Badge>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
+        </aside>
+
+        {/* ===== MAIN CONTENT ===== */}
+        <main className="flex-1 min-w-0">
+
+          {/* ===== FORM VIEW ===== */}
+          {(view === "form" || !result) && (
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              {/* Page title */}
+              <div className="px-6 py-5 border-b border-gray-100">
+                <h1 className="text-2xl font-bold text-gray-900">الاستعلام عن المخالفات</h1>
+                <p className="text-gray-500 text-sm mt-1">
+                  خدمة الاستعلام عن المخالفات المرورية وسدادها
                 </p>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              </div>
+
+              <div className="p-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     {/* الإمارة */}
                     <div className="space-y-2">
-                      <Label htmlFor="plateSource" className="text-foreground font-semibold">
-                        الإمارة <span className="text-destructive">*</span>
+                      <Label className="text-gray-700 font-semibold text-sm">
+                        الإمارة <span className="text-red-500">*</span>
                       </Label>
                       <Select value={plateSource} onValueChange={setPlateSource}>
-                        <SelectTrigger id="plateSource" className="w-full bg-background">
+                        <SelectTrigger className="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500/20">
                           <SelectValue placeholder="اختر الإمارة" />
                         </SelectTrigger>
                         <SelectContent>
@@ -161,16 +287,15 @@ export default function Home() {
 
                     {/* رقم اللوحة */}
                     <div className="space-y-2">
-                      <Label htmlFor="plateNumber" className="text-foreground font-semibold">
-                        رقم اللوحة <span className="text-destructive">*</span>
+                      <Label className="text-gray-700 font-semibold text-sm">
+                        رقم اللوحة <span className="text-red-500">*</span>
                       </Label>
                       <Input
-                        id="plateNumber"
                         type="text"
                         placeholder="مثال: 12345"
                         value={plateNumber}
                         onChange={(e) => setPlateNumber(e.target.value)}
-                        className="bg-background text-center font-bold text-lg tracking-widest"
+                        className="bg-white border-gray-200 text-center font-bold text-lg tracking-widest focus:border-green-500 focus:ring-green-500/20"
                         maxLength={10}
                         dir="ltr"
                       />
@@ -178,11 +303,11 @@ export default function Home() {
 
                     {/* كود اللوحة */}
                     <div className="space-y-2">
-                      <Label htmlFor="plateCode" className="text-foreground font-semibold">
-                        كود اللوحة <span className="text-destructive">*</span>
+                      <Label className="text-gray-700 font-semibold text-sm">
+                        كود اللوحة <span className="text-red-500">*</span>
                       </Label>
                       <Select value={plateCode} onValueChange={setPlateCode}>
-                        <SelectTrigger id="plateCode" className="w-full bg-background">
+                        <SelectTrigger className="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500/20">
                           <SelectValue placeholder="اختر الكود" />
                         </SelectTrigger>
                         <SelectContent>
@@ -198,23 +323,27 @@ export default function Home() {
 
                   {/* معاينة اللوحة */}
                   {(plateNumber || plateCode || plateSource) && (
-                    <div className="bg-muted rounded-lg p-4 text-center">
-                      <p className="text-xs text-muted-foreground mb-2">معاينة اللوحة</p>
-                      <div className="inline-flex items-center gap-2 bg-white border-2 border-primary rounded-lg px-6 py-3 shadow-sm">
-                        <span className="text-primary font-bold text-lg">{plateCode || "—"}</span>
-                        <Separator orientation="vertical" className="h-8 bg-primary/30" />
-                        <span className="font-bold text-2xl tracking-widest text-foreground" dir="ltr">
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <p className="text-xs text-gray-400 mb-3">معاينة اللوحة</p>
+                      <div
+                        className="inline-flex items-center gap-3 rounded-xl px-8 py-4 shadow-md"
+                        style={{ backgroundColor: "#1a5c3a" }}
+                      >
+                        <span className="text-white/70 text-sm font-bold">{plateSource || "—"}</span>
+                        <div className="w-px h-8 bg-white/30" />
+                        <span className="text-white font-black text-3xl tracking-widest" dir="ltr">
                           {plateNumber || "——"}
                         </span>
-                        <Separator orientation="vertical" className="h-8 bg-primary/30" />
-                        <span className="text-muted-foreground text-xs">{plateSource || "—"}</span>
+                        <div className="w-px h-8 bg-white/30" />
+                        <span className="text-white font-bold text-xl">{getPlateCodeLabel(plateCode) || "—"}</span>
                       </div>
                     </div>
                   )}
 
                   <Button
                     type="submit"
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 text-base"
+                    className="w-full text-white font-bold py-4 text-base rounded-xl transition-all"
+                    style={{ backgroundColor: "#1a5c3a" }}
                     disabled={queryMutation.isPending}
                   >
                     {queryMutation.isPending ? (
@@ -230,319 +359,270 @@ export default function Home() {
                     )}
                   </Button>
                 </form>
-              </CardContent>
-            </Card>
 
-            {/* نتائج الاستعلام */}
-            {queryMutation.isPending && (
-              <Card className="border-primary/20 shadow-md">
-                <CardContent className="py-12 text-center">
-                  <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-                  <p className="text-foreground font-semibold text-lg">جاري الاستعلام من موقع شرطة دبي</p>
-                  <p className="text-muted-foreground text-sm mt-2">
-                    يتم الاتصال بالموقع الرسمي وجلب البيانات، قد يستغرق هذا بضع ثوانٍ...
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+                {/* Loading state */}
+                {queryMutation.isPending && (
+                  <div className="mt-8 text-center py-8">
+                    <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: "#1a5c3a" }} />
+                    <p className="text-gray-700 font-semibold">جاري الاستعلام من موقع شرطة دبي</p>
+                    <p className="text-gray-400 text-sm mt-2">يتم الاتصال بالموقع الرسمي وجلب البيانات...</p>
+                  </div>
+                )}
 
-            {result && !queryMutation.isPending && (
-              <div className="space-y-4 animate-fade-in-up">
-                {/* ملخص النتائج */}
-                <Card
-                  className={`border-2 shadow-md ${
-                    !result.success
-                      ? "border-destructive/50 bg-destructive/5"
-                      : result.totalFines === 0
-                      ? "border-green-500/50 bg-green-50"
-                      : "border-amber-500/50 bg-amber-50"
-                  }`}
-                >
-                  <CardContent className="py-6">
-                    <div className="flex items-center gap-4">
+                {/* No fines result */}
+                {result && result.success && result.totalFines === 0 && (
+                  <div className="mt-6 text-center py-10 bg-green-50 rounded-xl border border-green-200">
+                    <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-3" />
+                    <p className="text-green-700 font-bold text-xl">سجل نظيف!</p>
+                    <p className="text-gray-500 text-sm mt-2">لا توجد أي مخالفات مرورية مسجلة على هذه اللوحة</p>
+                  </div>
+                )}
+
+                {/* Error result */}
+                {result && !result.success && (
+                  <div className="mt-6 bg-red-50 rounded-xl border border-red-200 p-5 flex items-start gap-3">
+                    <AlertTriangle className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-red-700 font-bold">فشل الاستعلام</p>
+                      <p className="text-red-500 text-sm mt-1">{result.errorMessage}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ===== RESULTS VIEW (مطابق للموقع الأصلي) ===== */}
+          {view === "results" && result && result.success && (result.totalFines ?? 0) > 0 && (
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+
+              {/* Results header */}
+              <div className="px-6 py-5 border-b border-gray-100">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">مراجعة المخالفات</h1>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-gray-500 text-sm">رقم اللوحة:</span>
                       <div
-                        className={`rounded-full p-3 ${
-                          !result.success
-                            ? "bg-destructive/10"
-                            : result.totalFines === 0
-                            ? "bg-green-100"
-                            : "bg-amber-100"
-                        }`}
+                        className="inline-flex items-center gap-2 rounded-lg px-4 py-1.5 text-white text-sm font-bold"
+                        style={{ backgroundColor: "#1a5c3a" }}
+                        dir="ltr"
                       >
-                        {!result.success ? (
-                          <AlertTriangle className="w-8 h-8 text-destructive" />
-                        ) : result.totalFines === 0 ? (
-                          <CheckCircle2 className="w-8 h-8 text-green-600" />
-                        ) : (
-                          <AlertTriangle className="w-8 h-8 text-amber-600" />
+                        <span>{getPlateSourceLabel(plateSource)}</span>
+                        <span>{plateNumber}</span>
+                        <span>{getPlateCodeLabel(plateCode)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={selectAll}
+                      className="text-sm border-gray-200"
+                    >
+                      {selectedFines.size === (result.fines?.length ?? 0) ? "إلغاء التحديد" : "تحديد الكل"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-sm border-gray-200"
+                    >
+                      طلب قائمة المخالفات
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tabs */}
+              <div className="px-6 pt-4 flex gap-2 overflow-x-auto">
+                {[
+                  { key: "all", label: "الكل" },
+                  { key: "impound", label: "الحجز" },
+                  { key: "payable", label: "قابلة للدفع" },
+                  { key: "blackpoints", label: "النقاط السوداء" },
+                  { key: "unpayable", label: "غير قابلة للدفع" },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key as ActiveTab)}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${
+                      activeTab === tab.key
+                        ? "text-white border-transparent"
+                        : "text-gray-600 border-gray-200 bg-white hover:bg-gray-50"
+                    }`}
+                    style={activeTab === tab.key ? { backgroundColor: "#1a5c3a", borderColor: "#1a5c3a" } : {}}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Fines list */}
+              <div className="p-6 space-y-4">
+                {filteredFines.length === 0 ? (
+                  <div className="text-center py-10 text-gray-400">
+                    <Info className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                    <p>لا توجد مخالفات في هذه الفئة</p>
+                  </div>
+                ) : (
+                  filteredFines.map((fine, index) => (
+                    <div
+                      key={index}
+                      className={`rounded-xl border-2 transition-all ${
+                        selectedFines.has(index) ? "border-green-400 bg-green-50/30" : "border-gray-100 bg-white"
+                      } shadow-sm overflow-hidden`}
+                    >
+                      {/* Fine card header */}
+                      <div className="px-5 py-3 flex items-center justify-between border-b border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedFines.has(index)}
+                            onChange={() => toggleFineSelection(index)}
+                            className="w-4 h-4 rounded accent-green-600"
+                          />
+                          {/* Red badge logo */}
+                          <img
+                            src={FINE_BADGE_LOGO}
+                            alt="مخالفة"
+                            className="w-8 h-8 object-contain"
+                          />
+                          <span
+                            className="text-xs font-bold px-2 py-1 rounded-full text-white"
+                            style={{
+                              backgroundColor:
+                                fine.isPaid === "paid" ? "#16a34a" :
+                                fine.isPaid === "partial" ? "#d97706" : "#dc2626"
+                            }}
+                          >
+                            {fine.isPaid === "paid" ? "مدفوعة" : fine.isPaid === "partial" ? "مدفوعة جزئياً" : "قابلة للدفع"}
+                          </span>
+                        </div>
+                        <div className="text-left" dir="ltr">
+                          <span className="text-2xl font-black text-gray-900">
+                            ₿ {fine.amount || "0"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Fine card body */}
+                      <div className="px-5 py-4 grid grid-cols-2 gap-3">
+                        {fine.source && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Building2 className="w-4 h-4 shrink-0" style={{ color: "#1a5c3a" }} />
+                            <span className="font-medium text-gray-500">المصدر:</span>
+                            <span className="font-semibold text-gray-800">{fine.source}</span>
+                          </div>
+                        )}
+                        {fine.location && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <MapPin className="w-4 h-4 shrink-0" style={{ color: "#1a5c3a" }} />
+                            <span className="font-medium text-gray-500">الموقع:</span>
+                            <span className="font-semibold text-gray-800 truncate">{fine.location}</span>
+                          </div>
+                        )}
+                        {fine.fineNumber && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Hash className="w-4 h-4 shrink-0" style={{ color: "#1a5c3a" }} />
+                            <span className="font-medium text-gray-500">رقم التذكرة:</span>
+                            <span className="font-semibold text-gray-800 font-mono">{fine.fineNumber}</span>
+                          </div>
+                        )}
+                        {fine.fineDate && (
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Calendar className="w-4 h-4 shrink-0" style={{ color: "#1a5c3a" }} />
+                            <span className="font-medium text-gray-500">التاريخ والوقت:</span>
+                            <span className="font-semibold text-gray-800">{fine.fineDate}</span>
+                          </div>
                         )}
                       </div>
-                      <div className="flex-1">
-                        {!result.success ? (
-                          <>
-                            <h3 className="font-bold text-destructive text-lg">فشل الاستعلام</h3>
-                            <p className="text-muted-foreground text-sm mt-1">{result.errorMessage}</p>
-                          </>
-                        ) : result.totalFines === 0 ? (
-                          <>
-                            <h3 className="font-bold text-green-700 text-lg">لا توجد مخالفات</h3>
-                            <p className="text-muted-foreground text-sm mt-1">
-                              لا توجد مخالفات مرورية مسجلة على هذه اللوحة
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <h3 className="font-bold text-amber-700 text-lg">
-                              تم العثور على {result.totalFines} مخالفة
-                            </h3>
-                            <p className="text-muted-foreground text-sm mt-1">
-                              إجمالي المبلغ المستحق:{" "}
-                              <span className="font-bold text-destructive">
-                                {result.totalAmount} درهم
-                              </span>
-                            </p>
-                          </>
-                        )}
-                      </div>
-                      {result.success && (result.totalFines ?? 0) > 0 && (
-                        <div className="text-left">
-                          <div className="bg-destructive/10 rounded-lg px-4 py-3 text-center">
-                            <p className="text-xs text-muted-foreground">الإجمالي</p>
-                            <p className="text-2xl font-bold text-destructive">{result.totalAmount}</p>
-                            <p className="text-xs text-muted-foreground">درهم إماراتي</p>
+
+                      {/* Fine details section */}
+                      {fine.description && (
+                        <div
+                          className="mx-5 mb-4 rounded-xl p-4"
+                          style={{ backgroundColor: "#f0f9f4", border: "1px solid #bbf7d0" }}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <div
+                              className="w-6 h-6 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: "#1a5c3a" }}
+                            >
+                              <span className="text-white text-xs font-bold">!</span>
+                            </div>
+                            <span className="font-bold text-sm" style={{ color: "#1a5c3a" }}>تفاصيل المخالفة</span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <Info className="w-4 h-4 shrink-0 mt-0.5 text-gray-400" />
+                            <p className="text-sm text-gray-700">{fine.description}</p>
                           </div>
                         </div>
                       )}
+
+                      {/* Black points */}
+                      {(fine.blackPoints ?? 0) > 0 && (
+                        <div className="mx-5 mb-4 bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                          <span className="text-red-700 text-sm font-semibold">
+                            {fine.blackPoints} نقطة سوداء
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
-
-                {/* تفاصيل المخالفات */}
-                {result.fines && result.fines.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="font-bold text-foreground text-base flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-primary" />
-                      تفاصيل المخالفات
-                    </h3>
-                    {result.fines.map((fine, index) => (
-                      <Card key={index} className="fine-card border border-border shadow-sm">
-                        <CardContent className="py-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 space-y-2">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                {fine.fineNumber && (
-                                  <Badge variant="outline" className="text-xs font-mono">
-                                    #{fine.fineNumber}
-                                  </Badge>
-                                )}
-                                <Badge
-                                  variant={
-                                    fine.isPaid === "paid"
-                                      ? "default"
-                                      : fine.isPaid === "partial"
-                                      ? "secondary"
-                                      : "destructive"
-                                  }
-                                  className="text-xs"
-                                >
-                                  {fine.isPaid === "paid"
-                                    ? "مدفوعة"
-                                    : fine.isPaid === "partial"
-                                    ? "مدفوعة جزئياً"
-                                    : "غير مدفوعة"}
-                                </Badge>
-                                {(fine.blackPoints ?? 0) > 0 && (
-                                  <Badge variant="destructive" className="text-xs">
-                                    {fine.blackPoints} نقطة سوداء
-                                  </Badge>
-                                )}
-                              </div>
-                              {fine.description && (
-                                <p className="text-sm text-foreground font-medium">{fine.description}</p>
-                              )}
-                              <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
-                                {fine.fineDate && (
-                                  <span className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3" />
-                                    {fine.fineDate}
-                                  </span>
-                                )}
-                                {fine.location && (
-                                  <span className="flex items-center gap-1">
-                                    <MapPin className="w-3 h-3" />
-                                    {fine.location}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {fine.amount && (
-                              <div className="text-left shrink-0">
-                                <div className="flex items-center gap-1 text-destructive font-bold text-lg">
-                                  <DollarSign className="w-4 h-4" />
-                                  {fine.amount}
-                                </div>
-                                <p className="text-xs text-muted-foreground">درهم</p>
-                              </div>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-
-                {/* رسالة عند عدم وجود تفاصيل */}
-                {result.success && result.totalFines === 0 && (
-                  <Card className="border-green-200 bg-green-50/50">
-                    <CardContent className="py-8 text-center">
-                      <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-3" />
-                      <p className="text-green-700 font-bold text-lg">سجل نظيف!</p>
-                      <p className="text-muted-foreground text-sm mt-1">
-                        لا توجد أي مخالفات مرورية مسجلة على هذه اللوحة
-                      </p>
-                    </CardContent>
-                  </Card>
+                  ))
                 )}
               </div>
-            )}
-          </div>
 
-          {/* الشريط الجانبي */}
-          <div className="space-y-4">
-            {/* معلومات الخدمة */}
-            <Card className="shadow-sm border-border">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
-                  عن الخدمة
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-muted-foreground">
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                  <span>استعلام مباشر من موقع شرطة دبي الرسمي</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                  <span>نتائج فورية ومحدّثة</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                  <span>حفظ سجل الاستعلامات السابقة</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                  <span>دعم جميع إمارات الدولة</span>
-                </div>
-                <Separator />
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                  <p className="text-amber-700 text-xs font-medium flex items-start gap-1">
-                    <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
-                    هذه خدمة تعليمية. البيانات تُجلب من الموقع الرسمي لشرطة دبي.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* سجل الاستعلامات */}
-            <Card className="shadow-sm border-border">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <History className="w-4 h-4 text-primary" />
-                    الاستعلامات الأخيرة
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowHistory(!showHistory)}
-                    className="text-xs text-primary hover:text-primary/80"
-                  >
-                    {showHistory ? "إخفاء" : "عرض"}
-                  </Button>
-                </div>
-              </CardHeader>
-              {showHistory && (
-                <CardContent className="pt-0">
-                  {!history || history.length === 0 ? (
-                    <p className="text-muted-foreground text-sm text-center py-4">
-                      لا توجد استعلامات سابقة
-                    </p>
-                  ) : (
-                    <div className="space-y-2">
-                      {history.map((q) => {
-                        const statusInfo = getStatusBadge(q.status);
-                        return (
-                          <div
-                            key={q.id}
-                            className="flex items-center justify-between p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
-                            onClick={() => {
-                              setPlateSource(q.plateSource);
-                              setPlateNumber(q.plateNumber);
-                              setPlateCode(q.plateCode);
-                            }}
-                          >
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-mono font-bold text-foreground truncate" dir="ltr">
-                                {q.plateCode} {q.plateNumber}
-                              </p>
-                              <p className="text-xs text-muted-foreground">{q.plateSource}</p>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <Badge variant={statusInfo.variant} className="text-xs">
-                                {statusInfo.label}
-                              </Badge>
-                              {q.totalFines != null && q.totalFines > 0 && (
-                                <span className="text-xs text-destructive font-bold">
-                                  {q.totalFines}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
+              {/* Footer summary */}
+              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-6">
+                    <div>
+                      <span className="text-gray-500 text-sm">عدد المخالفات</span>
+                      <span className="font-bold text-gray-900 text-lg mr-2">{result.totalFines ?? 0}</span>
                     </div>
-                  )}
-                </CardContent>
-              )}
-            </Card>
-
-            {/* إحصائيات سريعة */}
-            {result?.success && (
-              <Card className="shadow-sm border-border">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-primary" />
-                    نتيجة الاستعلام
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-muted rounded-lg p-3 text-center">
-                      <p className="text-2xl font-bold text-foreground">{result.totalFines ?? 0}</p>
-                      <p className="text-xs text-muted-foreground">عدد المخالفات</p>
-                    </div>
-                    <div className="bg-muted rounded-lg p-3 text-center">
-                      <p className="text-2xl font-bold text-destructive">{result.totalAmount ?? "0"}</p>
-                      <p className="text-xs text-muted-foreground">درهم إجمالاً</p>
+                    <Separator orientation="vertical" className="h-8" />
+                    <div>
+                      <span className="text-gray-500 text-sm">الإجمالي</span>
+                      <span className="font-black text-xl mr-2" style={{ color: "#1a5c3a" }}>
+                        ₿ {result.totalAmount ?? "0"}
+                      </span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </div>
-      </main>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => { setView("form"); setResult(null); }}
+                      className="border-gray-300 text-gray-600 hover:bg-gray-100"
+                    >
+                      <ArrowRight className="w-4 h-4 ml-1" />
+                      رجوع
+                    </Button>
+                    <Button
+                      disabled={selectedFines.size === 0}
+                      className="text-white font-bold"
+                      style={{ backgroundColor: selectedFines.size > 0 ? "#1a5c3a" : "#9ca3af" }}
+                      onClick={() => toast.info("خدمة الدفع الإلكتروني قريباً")}
+                    >
+                      دفع المخالفات المحددة
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
 
-      {/* Footer */}
-      <footer className="bg-primary text-primary-foreground mt-12 py-6">
-        <div className="container text-center">
-          <p className="text-sm text-primary-foreground/70">
-            نظام استعلام المخالفات المرورية — مبني على خدمات شرطة دبي الإلكترونية
-          </p>
-          <p className="text-xs text-primary-foreground/50 mt-1">
-            للأغراض التعليمية فقط
-          </p>
+      {/* ===== FOOTER ===== */}
+      <footer style={{ backgroundColor: "#1a5c3a" }} className="mt-12 py-6">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <img src={DUBAI_POLICE_LOGO} alt="شرطة دبي" className="h-8 w-8 object-contain" />
+            <p className="text-white font-semibold">شرطة دبي — خدمة الاستعلام عن المخالفات المرورية</p>
+          </div>
+          <p className="text-green-300 text-xs">للأغراض التعليمية فقط · البيانات من الموقع الرسمي لشرطة دبي</p>
         </div>
       </footer>
     </div>
