@@ -28,10 +28,7 @@ import { Badge } from "@/components/ui/badge";
 // ===== ASSETS =====
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
 
-// ===== SOURCE LOGOS - CDN URLs (real official logos) =====
-const DUBAI_POLICE_LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/dubai_police_383c21be.svg";
-const RTA_LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/rta_logo_9401b807.png";
-const SALIK_LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/salik_logo_80cc7bdf.png";
+// ===== SOURCE LOGOS - Inline SVG components (no external dependencies) =====
 
 type SourceType = "dubai_police" | "rta" | "salik" | "unknown";
 
@@ -44,23 +41,68 @@ function detectSourceType(source: string): SourceType {
   return "unknown";
 }
 
+function DubaiPoliceLogo({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      {/* Shield shape */}
+      <path d="M50 5 L85 20 L85 55 Q85 80 50 95 Q15 80 15 55 L15 20 Z" fill="#006633" />
+      {/* Inner shield */}
+      <path d="M50 12 L78 24 L78 54 Q78 74 50 87 Q22 74 22 54 L22 24 Z" fill="#008755" />
+      {/* Star */}
+      <polygon points="50,22 53.5,33 65,33 55.5,39.5 59,51 50,44.5 41,51 44.5,39.5 35,33 46.5,33" fill="#FFD700" />
+      {/* Bottom text area */}
+      <rect x="30" y="60" width="40" height="8" rx="2" fill="rgba(255,255,255,0.2)" />
+      <text x="50" y="67" textAnchor="middle" fill="white" fontSize="5" fontFamily="Arial" fontWeight="bold">DUBAI POLICE</text>
+    </svg>
+  );
+}
+
+function RTALogo({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      {/* White background */}
+      <rect width="100" height="100" fill="white" rx="8" />
+      {/* Red triangle - main shape */}
+      <polygon points="10,80 90,80 90,30" fill="#CC0000" />
+      {/* RTA text */}
+      <text x="62" y="72" textAnchor="middle" fill="white" fontSize="18" fontFamily="Arial" fontWeight="900">RTA</text>
+      {/* Arabic text */}
+      <text x="38" y="25" textAnchor="middle" fill="#333" fontSize="7" fontFamily="Arial">هيئة الطرق</text>
+      <text x="38" y="35" textAnchor="middle" fill="#666" fontSize="5.5" fontFamily="Arial">ROADS &amp; TRANSPORT</text>
+    </svg>
+  );
+}
+
+function SalikLogo({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      {/* White background */}
+      <rect width="100" height="100" fill="white" rx="8" />
+      {/* Dark triangle left */}
+      <polygon points="8,75 8,25 42,50" fill="#4A4A6A" />
+      {/* Light triangle middle */}
+      <polygon points="18,75 18,35 48,55" fill="#9090B0" opacity="0.7" />
+      {/* Salik Arabic text */}
+      <text x="72" y="48" textAnchor="middle" fill="#4A4A6A" fontSize="14" fontFamily="Arial" fontWeight="bold">سالك</text>
+      {/* Salik English text */}
+      <text x="72" y="65" textAnchor="middle" fill="#6A6A8A" fontSize="13" fontFamily="Arial" fontWeight="600">Salik</text>
+    </svg>
+  );
+}
+
 function SourceIcon({ source, size = 28 }: { source: string; size?: number }) {
   const type = detectSourceType(source);
-  const logoUrl = type === "dubai_police" ? DUBAI_POLICE_LOGO_URL
-    : type === "rta" ? RTA_LOGO_URL
-    : type === "salik" ? SALIK_LOGO_URL
-    : null;
-  if (logoUrl) {
-    return (
-      <img
-        src={logoUrl}
-        alt={type}
-        style={{ width: size, height: size, objectFit: "contain" }}
-        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-      />
-    );
-  }
-  return <Building2 style={{ width: size * 0.7, height: size * 0.7, color: "#008755" }} />;
+  if (type === "dubai_police") return <DubaiPoliceLogo size={size} />;
+  if (type === "rta") return <RTALogo size={size} />;
+  if (type === "salik") return <SalikLogo size={size} />;
+  // Unknown source: show initials in colored circle
+  const initials = (source || "?").substring(0, 2).toUpperCase();
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="48" fill="#e8f5ee" stroke="#008755" strokeWidth="3" />
+      <text x="50" y="62" textAnchor="middle" fill="#008755" fontSize="32" fontFamily="Arial" fontWeight="bold">{initials}</text>
+    </svg>
+  );
 }
 
 function getSourceBgColor(source: string): string {
@@ -488,7 +530,7 @@ export default function Home() {
       >
         {/* Right: Logo + Name */}
         <div className="flex items-center gap-3">
-          <img src={DUBAI_POLICE_LOGO_URL} alt="شرطة دبي" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
+          <DubaiPoliceLogo size={48} />
           <div className="hidden md:block">
             <div className="text-lg font-black" style={{ color: "#008755" }}>شرطة دبي</div>
             <div className="text-xs text-gray-500">Dubai Police</div>
@@ -987,46 +1029,45 @@ export default function Home() {
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
             style={{ backgroundColor: "#ffffff", borderTop: "1.5px solid #e8ede9", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)" }}
           >
-            {/* Stats row */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
+            {/* Stats row - compact */}
+            <div className="flex items-center justify-between px-3 pt-2 pb-1">
               <div className="text-center flex-1">
-                <p className="text-xs text-gray-500">المخالفات</p>
-                <p className="text-base font-black text-gray-900">{allFines.length}</p>
+                <p className="text-[10px] text-gray-500 leading-tight">المخالفات</p>
+                <p className="text-sm font-black text-gray-900">{allFines.length}</p>
               </div>
-              <div className="w-px h-8 bg-gray-200" />
+              <div className="w-px h-6 bg-gray-200" />
               <div className="text-center flex-1">
-                <p className="text-xs text-gray-500">قابل للدفع</p>
-                <p className="text-base font-black text-gray-900">{payableCount}</p>
+                <p className="text-[10px] text-gray-500 leading-tight">قابل للدفع</p>
+                <p className="text-sm font-black text-gray-900">{payableCount}</p>
               </div>
-              <div className="w-px h-8 bg-gray-200" />
+              <div className="w-px h-6 bg-gray-200" />
               <div className="text-center flex-1">
-                <p className="text-xs text-gray-500">إجمالي المبلغ</p>
-                <p className="text-base font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                <p className="text-[10px] text-gray-500 leading-tight">إجمالي المبلغ</p>
+                <p className="text-sm font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
               </div>
             </div>
-            {/* Installment checkbox */}
-            <div className="flex items-center gap-2 px-4 pt-2">
-              <input type="checkbox" className="w-4 h-4 cursor-pointer" style={{ accentColor: "#008755" }} />
-              <span className="text-xs text-gray-500">الدفع بالتقسيط عبر الخصم المباشر</span>
-            </div>
-            {/* Action buttons */}
-            <div className="flex gap-2 px-4 py-2">
+            {/* Action buttons + installment in one row */}
+            <div className="flex items-center gap-2 px-3 pb-3">
               <button
                 onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                className="flex items-center justify-center gap-1 py-2.5 rounded-xl text-sm font-bold transition-all"
-                style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb", minWidth: "80px" }}
+                className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-sm font-bold transition-all flex-shrink-0"
+                style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb" }}
               >
                 <ArrowRight className="w-4 h-4" />
                 <span>رجوع</span>
               </button>
               <button
                 disabled={selectedFines.size === 0}
-                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all"
+                className="flex-1 py-2 rounded-xl text-sm font-bold text-white transition-all"
                 style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af", boxShadow: selectedFines.size > 0 ? "0 4px 12px rgba(0,135,85,0.3)" : "none" }}
                 onClick={() => toast.info("سيتم تفعيل الدفع قريباً")}
               >
-                دفع المخالفات المحددة
+                دفع المحدد
               </button>
+              <label className="flex items-center gap-1 flex-shrink-0 cursor-pointer">
+                <input type="checkbox" className="w-3.5 h-3.5 cursor-pointer" style={{ accentColor: "#008755" }} />
+                <span className="text-[10px] text-gray-500 leading-tight">تقسيط<br/>مباشر</span>
+              </label>
             </div>
           </div>
         </div>
