@@ -665,20 +665,20 @@ export default function Home() {
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="flex flex-col gap-3">
                 {[
                   { value: ksaLetter1, setter: setKsaLetter1, label: "رمز اللوحة 1" },
                   { value: ksaLetter2, setter: setKsaLetter2, label: "رمز اللوحة 2" },
                   { value: ksaLetter3, setter: setKsaLetter3, label: "رمز اللوحة 3" },
                 ].map((item, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <label className="text-xs font-semibold text-gray-600 block text-right">{item.label}</label>
+                  <div key={idx} className="space-y-2">
+                    <label className="text-sm font-bold text-gray-700 block text-right">{item.label}</label>
                     <div className="relative">
                       <select
                         value={item.value}
                         onChange={(e) => item.setter(e.target.value)}
-                        className="w-full text-sm rounded-xl px-3 py-3 appearance-none focus:outline-none"
-                        style={{ backgroundColor: "#f8faf9", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af" }}
+                        className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none"
+                        style={{ backgroundColor: "#f8faf9", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af", fontWeight: item.value ? "600" : "400" }}
                         dir="rtl"
                       >
                         <option value="">اختر</option>
@@ -686,7 +686,7 @@ export default function Home() {
                           <option key={c.value} value={c.value}>{c.label}</option>
                         ))}
                       </select>
-                      <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-xs">▼</span></div>
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
                     </div>
                   </div>
                 ))}
