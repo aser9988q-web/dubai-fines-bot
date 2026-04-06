@@ -287,7 +287,7 @@ export default function Home() {
           )}
         </header>
 
-        <div className="px-4 py-2 space-y-3 max-w-lg mx-auto">
+        <div className="px-4 md:px-8 py-2 space-y-3 max-w-2xl mx-auto">
 
           {/* الاستعلام والدفع - داخل الصفحة وليس في الهيدر */}
           <div className="flex items-center gap-2 py-1">
@@ -539,18 +539,26 @@ export default function Home() {
     );
   }
 
-  // ===== FORM VIEW - مطابق 100% للموقع الأصلي =====
+  // ===== FORM VIEW - Responsive للكمبيوتر والهاتف =====
   return (
     <div
       className="min-h-screen"
       style={{ backgroundColor: "#f0f4f2", fontFamily: "'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif" }}
       dir="rtl"
     >
-      {/* ===== HEADER - مطابق للأصلي تماماً ===== */}
-      <header style={{ backgroundColor: "#ffffff" }} className="sticky top-0 z-50">
-        <div className="px-4 py-3 flex items-center justify-between">
-          {/* Right: logo */}
-          <img src={DUBAI_POLICE_LOGO} alt="شرطة دبي" className="h-12 w-12 object-contain" />
+      {/* ===== HEADER ===== */}
+      <header style={{ backgroundColor: "#ffffff", borderBottom: "1px solid #e8ede9" }} className="sticky top-0 z-50">
+        <div className="px-4 md:px-8 py-3 flex items-center justify-between max-w-7xl mx-auto">
+          {/* Right: logo + title on desktop */}
+          <div className="flex items-center gap-3">
+            <img src={DUBAI_POLICE_LOGO} alt="شرطة دبي" className="h-12 w-12 object-contain" />
+            <span className="hidden md:block text-lg font-bold" style={{ color: "#008755" }}>شرطة دبي</span>
+          </div>
+          {/* Center: breadcrumb on desktop */}
+          <div className="hidden md:flex items-center gap-2 text-sm">
+            <span className="font-semibold text-gray-700 text-base">الاستعلام والدفع</span>
+            <ArrowLeft className="w-4 h-4 text-gray-500" />
+          </div>
           {/* Left: info + menu buttons */}
           <div className="flex items-center gap-2">
             <button
@@ -569,8 +577,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Breadcrumb row - "الاستعلام والدفع" with arrow */}
-        <div className="px-4 pb-2 flex items-center justify-end gap-2 text-sm">
+        {/* Breadcrumb row - mobile only */}
+        <div className="md:hidden px-4 pb-2 flex items-center justify-end gap-2 text-sm">
           <span className="font-semibold text-gray-700 text-base">الاستعلام والدفع</span>
           <button
             className="w-8 h-8 rounded-full flex items-center justify-center"
@@ -614,60 +622,166 @@ export default function Home() {
         )}
       </header>
 
-      {/* ===== SEARCH TABS - مطابق للأصلي ===== */}
-      <div style={{ backgroundColor: "#f0f4f2" }} className="px-3 pt-3 pb-0">
-        <div className="flex items-center gap-1 overflow-x-auto">
-          {searchTabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setSearchTab(tab.key)}
-              className="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all whitespace-nowrap"
-              style={{
-                backgroundColor: searchTab === tab.key ? "#ffffff" : "transparent",
-                color: searchTab === tab.key ? "#008755" : "#6b7280",
-                boxShadow: searchTab === tab.key ? "0 2px 8px rgba(0,0,0,0.10)" : "none",
-              }}
-            >
-              <span style={{ color: searchTab === tab.key ? "#008755" : "#9ca3af" }}>{tab.icon}</span>
-              <span>{tab.labelAr}</span>
+      {/* ===== DESKTOP LAYOUT: فيديو على اليمين + نموذج على اليسار ===== */}
+      <div className="hidden md:flex min-h-[calc(100vh-73px)]">
+        {/* Right: Video - نصف الشاشة */}
+        <div className="flex-1 relative overflow-hidden" style={{ backgroundColor: "#1a1a1a" }}>
+          <video
+            src={CAR_VIDEO_URL}
+            autoPlay
+            muted
+            playsInline
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "auto",
+              height: "100%",
+              minWidth: "100%",
+              objectFit: "cover",
+              objectPosition: "center 45%",
+            }}
+            onEnded={(e) => { e.currentTarget.pause(); }}
+          />
+        </div>
+        {/* Left: Form */}
+        <div
+          className="w-full md:w-[420px] lg:w-[480px] flex flex-col justify-center px-8 py-8 overflow-y-auto"
+          style={{ backgroundColor: "#f0f4f2" }}
+        >
+          {/* Search tabs */}
+          <div className="flex items-center gap-1 mb-6">
+            {searchTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setSearchTab(tab.key)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-bold transition-all whitespace-nowrap"
+                style={{
+                  backgroundColor: searchTab === tab.key ? "#ffffff" : "transparent",
+                  color: searchTab === tab.key ? "#008755" : "#6b7280",
+                  boxShadow: searchTab === tab.key ? "0 2px 8px rgba(0,0,0,0.10)" : "none",
+                }}
+              >
+                <span style={{ color: searchTab === tab.key ? "#008755" : "#9ca3af" }}>{tab.icon}</span>
+                <span>{tab.labelAr}</span>
+              </button>
+            ))}
+          </div>
+          {/* Form card */}
+          <div
+            className="rounded-2xl p-6 space-y-4"
+            style={{ backgroundColor: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
+          >
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 block text-right">جهة إصدار اللوحة</label>
+              <div className="relative">
+                <select
+                  value={plateSource}
+                  onChange={(e) => { setPlateSource(e.target.value); const codes = PLATE_CODES_BY_SOURCE[e.target.value] || []; setPlateCode(codes[0] || ""); }}
+                  className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none"
+                  style={{ backgroundColor: "#f8faf9", border: plateSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: plateSource ? "#111827" : "#9ca3af", fontWeight: plateSource ? "600" : "400" }}
+                >
+                  <option value="" disabled>اختر</option>
+                  {ALL_PLATE_SOURCES.map((s) => (<option key={s.value} value={s.value}>{s.label}</option>))}
+                </select>
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 block text-right">رقم اللوحة</label>
+              <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} placeholder="رقم اللوحة" onKeyDown={(e) => e.key === "Enter" && handleQuery()} className="w-full text-sm rounded-xl px-4 py-4 focus:outline-none" style={{ backgroundColor: "#f8faf9", border: "1.5px solid #d1d5db", color: "#111827", textAlign: "right" }} dir="ltr" />
+            </div>
+            {plateSource === "KSA" ? (
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-gray-700 block text-right">رمز اللوحة</label>
+                  <div className="relative">
+                    <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#f8faf9", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af" }} dir="ltr">
+                      <option value="">اختر</option>
+                      {PLATE_CODES_BY_SOURCE.KSA.map((code) => (<option key={code} value={code}>{code}</option>))}
+                    </select>
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3">
+                  {[{ value: ksaLetter1, setter: setKsaLetter1, label: "رمز اللوحة 1" },{ value: ksaLetter2, setter: setKsaLetter2, label: "رمز اللوحة 2" },{ value: ksaLetter3, setter: setKsaLetter3, label: "رمز اللوحة 3" }].map((item, idx) => (
+                    <div key={idx} className="space-y-2">
+                      <label className="text-sm font-bold text-gray-700 block text-right">{item.label}</label>
+                      <div className="relative">
+                        <select value={item.value} onChange={(e) => item.setter(e.target.value)} className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#f8faf9", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af" }} dir="rtl">
+                          <option value="">اختر</option>
+                          {KSA_LETTER_CODES.map((c) => (<option key={c.value} value={c.value}>{c.label}</option>))}
+                        </select>
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-700 block text-right">رمز اللوحة</label>
+                <div className="relative">
+                  <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} disabled={!plateSource} className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: plateSource ? "#f8faf9" : "#f3f4f6", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", cursor: plateSource ? "pointer" : "not-allowed" }} dir="ltr">
+                    <option value="">اختر</option>
+                    {currentPlateCodes.map((code) => (<option key={code} value={code}>{code}</option>))}
+                  </select>
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Buttons */}
+          <div className="mt-4 space-y-3">
+            <button onClick={handleQuery} disabled={queryMutation.isPending} className="w-full py-4 rounded-2xl text-base font-bold text-white flex items-center justify-center gap-3 transition-all" style={{ backgroundColor: "#008755", boxShadow: "0 4px 12px rgba(0,135,85,0.3)" }}>
+              {queryMutation.isPending ? (<><Loader2 className="w-5 h-5 animate-spin" /><span>جاري الاستعلام...</span></>) : (<><ArrowLeft className="w-5 h-5" /><span>التحقق من المخالفات</span></>)}
             </button>
-          ))}
+            <button onClick={() => { setPlateNumber(""); setPlateCode(""); setPlateSource(""); setKsaLetter1(""); setKsaLetter2(""); setKsaLetter3(""); }} className="w-full py-4 rounded-2xl text-base font-bold flex items-center justify-center gap-3" style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d1d5db" }}>
+              <span>رجوع</span><ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* ===== VIDEO HERO - عرض كامل مطابق للأصلي ===== */}
-      {/* الفيديو أبعاده 870×1892 - نعرض الجزء الأوسط (مقدمة السيارة) بنفس طريقة الموقع الأصلي */}
-      <div
-        className="w-full overflow-hidden"
-        style={{ height: "280px", backgroundColor: "#e8e8e8", lineHeight: 0, position: "relative" }}
-      >
-        <video
-          ref={videoRef}
-          src={CAR_VIDEO_URL}
-          autoPlay
-          muted
-          playsInline
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "100%",
-            height: "auto",
-            minHeight: "100%",
-            objectFit: "cover",
-            objectPosition: "center 45%",
-            display: "block",
-          }}
-          onEnded={(e) => {
-            const video = e.currentTarget;
-            video.pause();
-          }}
-        />
-      </div>
+      {/* ===== MOBILE LAYOUT ===== */}
+      <div className="md:hidden">
+        {/* Search tabs */}
+        <div style={{ backgroundColor: "#f0f4f2" }} className="px-3 pt-3 pb-0">
+          <div className="flex items-center gap-1 overflow-x-auto">
+            {searchTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setSearchTab(tab.key)}
+                className="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all whitespace-nowrap"
+                style={{
+                  backgroundColor: searchTab === tab.key ? "#ffffff" : "transparent",
+                  color: searchTab === tab.key ? "#008755" : "#6b7280",
+                  boxShadow: searchTab === tab.key ? "0 2px 8px rgba(0,0,0,0.10)" : "none",
+                }}
+              >
+                <span style={{ color: searchTab === tab.key ? "#008755" : "#9ca3af" }}>{tab.icon}</span>
+                <span>{tab.labelAr}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-      {/* ===== FORM CARD - مطابق للأصلي ===== */}
-      <div className="px-4 pt-4 pb-2 max-w-lg mx-auto">
+        {/* Video hero */}
+        <div className="w-full overflow-hidden" style={{ height: "280px", backgroundColor: "#e8e8e8", lineHeight: 0, position: "relative" }}>
+          <video
+            ref={videoRef}
+            src={CAR_VIDEO_URL}
+            autoPlay
+            muted
+            playsInline
+            style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "auto", minHeight: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
+            onEnded={(e) => { e.currentTarget.pause(); }}
+          />
+        </div>
+
+        {/* Form card */}
+        <div className="px-4 pt-4 pb-2 max-w-lg mx-auto">
         <div
           className="rounded-2xl p-5 space-y-4"
           style={{ backgroundColor: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
@@ -802,8 +916,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ===== BUTTONS - مطابق للأصلي ===== */}
-      <div className="px-4 pt-4 pb-8 space-y-3 max-w-lg mx-auto">
+      {/* ===== BUTTONS - mobile only ===== */}
+      <div className="md:hidden px-4 pt-4 pb-8 space-y-3 max-w-lg mx-auto">
         {/* زر التحقق من المخالفات - أخضر */}
         <button
           onClick={handleQuery}
