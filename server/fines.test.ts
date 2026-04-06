@@ -116,4 +116,110 @@ describe("fines.query - success", () => {
     expect(result.success).toBe(false);
     expect(result.errorMessage).toBeDefined();
   });
+
+  it("يجب أن يعيد status=paid للمخالفة المدفوعة", async () => {
+    const { scrapeDubaiFines } = await import("./scraper");
+    vi.mocked(scrapeDubaiFines).mockResolvedValueOnce({
+      success: true,
+      fines: [
+        {
+          fineNumber: "F001",
+          fineDate: "2024-01-01",
+          description: "تجاوز السرعة",
+          amount: "400",
+          blackPoints: 0,
+          isPaid: "paid",
+          location: "شارع الشيخ زايد",
+          ticketNo: "T001",
+          source: "Dubai Police",
+          trafficDepartment: "Dubai Police",
+        },
+      ],
+      totalAmount: "400",
+    });
+
+    const ctx = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.fines.query({
+      plateSource: "DXB",
+      plateNumber: "12345",
+      plateCode: "2",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.fines).toHaveLength(1);
+    expect(result.fines[0].status).toBe("paid");
+    expect(result.fines[0].isPaid).toBe(true);
+    expect(result.fines[0].source).toBe("Dubai Police");
+  });
+
+  it("يجب أن يعيد status=blackpoints للمخالفة ذات النقاط السوداء", async () => {
+    const { scrapeDubaiFines } = await import("./scraper");
+    vi.mocked(scrapeDubaiFines).mockResolvedValueOnce({
+      success: true,
+      fines: [
+        {
+          fineNumber: "F002",
+          fineDate: "2024-01-02",
+          description: "تجاوز الإشارة الحمراء",
+          amount: "800",
+          blackPoints: 4,
+          isPaid: "unpaid",
+          location: "دوار الإمارات",
+          ticketNo: "T002",
+          source: "RTA",
+          trafficDepartment: "RTA",
+        },
+      ],
+      totalAmount: "800",
+    });
+
+    const ctx = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.fines.query({
+      plateSource: "DXB",
+      plateNumber: "12345",
+      plateCode: "2",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.fines[0].status).toBe("blackpoints");
+    expect(result.fines[0].isPaid).toBe(false);
+    expect(result.fines[0].source).toBe("RTA");
+  });
+
+  it("يجب أن يعيد status=payable للمخالفة غير المدفوعة بدون نقاط سوداء", async () => {
+    const { scrapeDubaiFines } = await import("./scraper");
+    vi.mocked(scrapeDubaiFines).mockResolvedValueOnce({
+      success: true,
+      fines: [
+        {
+          fineNumber: "F003",
+          fineDate: "2024-01-03",
+          description: "وقوف خاطئ",
+          amount: "200",
+          blackPoints: 0,
+          isPaid: "unpaid",
+          location: "مركز دبي التجاري",
+          ticketNo: "T003",
+          source: "Salik",
+          trafficDepartment: "Salik",
+        },
+      ],
+      totalAmount: "200",
+    });
+
+    const ctx = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.fines.query({
+      plateSource: "DXB",
+      plateNumber: "12345",
+      plateCode: "2",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.fines[0].status).toBe("payable");
+    expect(result.fines[0].isPaid).toBe(false);
+    expect(result.fines[0].source).toBe("Salik");
+  });
 });

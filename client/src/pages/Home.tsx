@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
@@ -22,15 +22,76 @@ import {
   Bell,
   User,
   Home as HomeIcon,
-  Settings,
-  HelpCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 // ===== ASSETS =====
 const DUBAI_POLICE_LOGO = "/dubai-police-logo.svg";
-const FINE_BADGE_LOGO   = "/fine-badge-logo.svg";
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
+
+// ===== SOURCE LOGOS =====
+// Logo URLs from CDN
+const SOURCE_LOGOS: Record<string, { url: string; bgColor: string; label: string }> = {
+  // Dubai Police
+  "DUBAI POLICE": { url: "https://i.ibb.co/vCqX3Zy/dubai-police-logo.png", bgColor: "#e8f5ee", label: "شرطة دبي" },
+  "Dubai Police": { url: "https://i.ibb.co/vCqX3Zy/dubai-police-logo.png", bgColor: "#e8f5ee", label: "شرطة دبي" },
+  "شرطة دبي": { url: "https://i.ibb.co/vCqX3Zy/dubai-police-logo.png", bgColor: "#e8f5ee", label: "شرطة دبي" },
+  // RTA
+  "RTA": { url: "https://i.ibb.co/YBBqFhN/rta-logo.png", bgColor: "#fff0f0", label: "هيئة الطرق والمواصلات" },
+  "Roads and Transport Authority": { url: "https://i.ibb.co/YBBqFhN/rta-logo.png", bgColor: "#fff0f0", label: "هيئة الطرق والمواصلات" },
+  "هيئة الطرق والمواصلات": { url: "https://i.ibb.co/YBBqFhN/rta-logo.png", bgColor: "#fff0f0", label: "هيئة الطرق والمواصلات" },
+  // Salik
+  "SALIK": { url: "https://i.ibb.co/QmYbKzV/salik-logo.png", bgColor: "#f5f5f5", label: "سالك" },
+  "Salik": { url: "https://i.ibb.co/QmYbKzV/salik-logo.png", bgColor: "#f5f5f5", label: "سالك" },
+  "سالك": { url: "https://i.ibb.co/QmYbKzV/salik-logo.png", bgColor: "#f5f5f5", label: "سالك" },
+};
+
+// Helper: get source logo info
+function getSourceLogo(source: string): { url: string; bgColor: string; label: string } | null {
+  if (!source) return null;
+  // Direct match
+  if (SOURCE_LOGOS[source]) return SOURCE_LOGOS[source];
+  // Case-insensitive partial match
+  const upper = source.toUpperCase();
+  if (upper.includes("DUBAI POLICE") || upper.includes("شرطة دبي")) return SOURCE_LOGOS["DUBAI POLICE"];
+  if (upper.includes("RTA") || upper.includes("ROAD") || upper.includes("TRANSPORT") || upper.includes("طرق")) return SOURCE_LOGOS["RTA"];
+  if (upper.includes("SALIK") || upper.includes("سالك")) return SOURCE_LOGOS["SALIK"];
+  return null;
+}
+
+// ===== SOURCE BADGE COMPONENT =====
+function SourceBadge({ source }: { source: string }) {
+  const logo = getSourceLogo(source);
+  if (!logo) {
+    return (
+      <div className="flex items-center gap-2">
+        <Building2 className="w-4 h-4" style={{ color: "#008755" }} />
+        <span className="text-sm font-bold text-gray-800">{source || "—"}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <div
+        className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
+        style={{ backgroundColor: logo.bgColor, border: "1px solid #e5e7eb" }}
+      >
+        <img
+          src={logo.url}
+          alt={logo.label}
+          className="w-6 h-6 object-contain"
+          onError={(e) => {
+            const parent = (e.target as HTMLImageElement).parentElement;
+            if (parent) {
+              parent.innerHTML = `<span style="font-size:10px;color:#666;font-weight:bold">${source.slice(0, 2).toUpperCase()}</span>`;
+            }
+          }}
+        />
+      </div>
+      <span className="text-sm font-bold text-gray-800">{source || "—"}</span>
+    </div>
+  );
+}
 
 // ===== PLATE SOURCES =====
 const ALL_PLATE_SOURCES = [
@@ -78,15 +139,16 @@ const KSA_LETTER_CODES = [
   { value: "ق", label: "ق - G" },
   { value: "ك", label: "ك - K" },
   { value: "ل", label: "ل - L" },
-  { value: "م", label: "م - Z" },
+  { value: "م", label: "م - M" },
   { value: "ن", label: "ن - N" },
   { value: "ه", label: "ه - H" },
   { value: "و", label: "و - U" },
-  { value: "ى", label: "ى - V" },
+  { value: "ي", label: "ي - V" },
 ];
 
 type SearchTab = "plate" | "licence" | "tcnumber";
 type ViewMode = "form" | "results";
+type FilterStatus = "all" | "payable" | "seized" | "notpayable" | "blackpoints";
 
 interface FineResult {
   ticketNo: string;
@@ -215,7 +277,7 @@ export default function Home() {
   const [result, setResult] = useState<QueryResult | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [selectedFines, setSelectedFines] = useState<Set<number>>(new Set());
-  const [filterStatus, setFilterStatus] = useState<"all" | "payable" | "seized">("all");
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const videoRef = useRef<HTMLVideoElement>(null);
   const [headerScrolled, setHeaderScrolled] = useState(false);
 
@@ -232,6 +294,7 @@ export default function Home() {
       setResult(data as QueryResult);
       setView("results");
       setSelectedFines(new Set());
+      setFilterStatus("all");
     },
     onError: (err) => {
       toast.error("فشل الاستعلام: " + err.message);
@@ -260,10 +323,14 @@ export default function Home() {
     setKsaLetter1(""); setKsaLetter2(""); setKsaLetter3("");
   };
 
-  const filteredFines = (result?.fines || []).filter((fine) => {
+  const allFines = result?.fines || [];
+
+  const filteredFines = allFines.filter((fine) => {
     if (filterStatus === "all") return true;
-    if (filterStatus === "payable") return !fine.isPaid && fine.status !== "seized";
+    if (filterStatus === "payable") return !fine.isPaid && fine.status !== "seized" && fine.status !== "blackpoints";
     if (filterStatus === "seized") return fine.status === "seized";
+    if (filterStatus === "notpayable") return fine.isPaid;
+    if (filterStatus === "blackpoints") return fine.status === "blackpoints";
     return true;
   });
 
@@ -328,6 +395,65 @@ export default function Home() {
     : plateCode;
   const plateDisplay = [plateSourceLabel.toUpperCase(), plateNumber, finalPlateCodeDisplay].filter(Boolean).join(" ");
 
+  // Filter tabs config
+  const filterTabs = [
+    {
+      key: "all" as FilterStatus,
+      label: "الكل",
+      count: allFines.length,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z"/>
+        </svg>
+      ),
+    },
+    {
+      key: "seized" as FilterStatus,
+      label: "الحجز",
+      count: allFines.filter(f => f.status === "seized").length,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      ),
+    },
+    {
+      key: "payable" as FilterStatus,
+      label: "قابل للدفع",
+      count: allFines.filter(f => !f.isPaid && f.status !== "seized" && f.status !== "blackpoints").length,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+      ),
+    },
+    {
+      key: "notpayable" as FilterStatus,
+      label: "غير قابل للدفع",
+      count: allFines.filter(f => f.isPaid).length,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+        </svg>
+      ),
+    },
+    {
+      key: "blackpoints" as FilterStatus,
+      label: "النقاط السوداء",
+      count: allFines.filter(f => f.status === "blackpoints").length,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      ),
+    },
+  ];
+
   // ===== SHARED HEADER =====
   const SharedHeader = ({ transparent = false }: { transparent?: boolean }) => (
     <header
@@ -335,7 +461,6 @@ export default function Home() {
       style={{
         backgroundColor: transparent && !headerScrolled ? "transparent" : "#ffffff",
         borderBottom: transparent && !headerScrolled ? "none" : "1px solid #e8ede9",
-        backdropFilter: transparent && !headerScrolled ? "none" : "none",
       }}
     >
       {/* Top bar - desktop only */}
@@ -372,32 +497,18 @@ export default function Home() {
           <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">
             <HomeIcon className="w-4 h-4" /> الرئيسية
           </button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">
-            الخدمات
-          </button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">
-            الأخبار
-          </button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">
-            عن شرطة دبي
-          </button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">
-            تواصل معنا
-          </button>
+          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">الخدمات</button>
+          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">الأخبار</button>
+          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">عن شرطة دبي</button>
+          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">تواصل معنا</button>
         </nav>
 
         {/* Left: Icons */}
         <div className="flex items-center gap-2">
-          <button
-            className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors"
-            style={{ color: "#374151" }}
-          >
+          <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
             <Search className="w-5 h-5" />
           </button>
-          <button
-            className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors"
-            style={{ color: "#374151" }}
-          >
+          <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
             <Bell className="w-5 h-5" />
           </button>
           <button
@@ -438,7 +549,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Breadcrumb - mobile: only show when not scrolled (header transparent) */}
+      {/* Breadcrumb - mobile */}
       <div className="md:hidden px-4 pb-3 pt-1 flex items-center justify-end gap-2 text-sm">
         <span className="font-semibold text-gray-700">الاستعلام والدفع</span>
         <button className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#f0f0f0", border: "1px solid #e5e7eb" }}>
@@ -476,9 +587,159 @@ export default function Home() {
     </header>
   );
 
+  // ===== FINE CARD COMPONENT =====
+  const FineCard = ({ fine, idx, isMobile = false }: { fine: FineResult; idx: number; isMobile?: boolean }) => {
+    const isSelected = selectedFines.has(idx);
+    const amt = parseFloat((fine.amount || "0").replace(/[^0-9.]/g, ""));
+    const sourceLogo = getSourceLogo(fine.source);
+
+    const toggleSelect = () => {
+      const next = new Set(selectedFines);
+      if (isSelected) next.delete(idx); else next.add(idx);
+      setSelectedFines(next);
+    };
+
+    // Status badge config
+    const statusConfig = fine.isPaid
+      ? { label: "مدفوع", bg: "#e8f5ee", color: "#008755", icon: "✓" }
+      : fine.status === "seized"
+      ? { label: "محجوز", bg: "#fff0f0", color: "#dc2626", icon: "🔒" }
+      : fine.status === "blackpoints"
+      ? { label: "نقاط سوداء", bg: "#fef3c7", color: "#d97706", icon: "⚠" }
+      : { label: "قابل للدفع", bg: "#fff3e0", color: "#f57c00", icon: "●" };
+
+    return (
+      <div
+        className="rounded-2xl overflow-hidden cursor-pointer transition-all"
+        style={{
+          backgroundColor: "#ffffff",
+          border: isSelected ? "2px solid #008755" : "1.5px solid #e8ede9",
+          boxShadow: isSelected ? "0 4px 16px rgba(0,135,85,0.15)" : "0 2px 8px rgba(0,0,0,0.06)",
+        }}
+        onClick={toggleSelect}
+      >
+        {/* Card header */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-3">
+          <div className="flex items-baseline gap-1">
+            <span className={`font-black text-gray-900 ${isMobile ? "text-2xl" : "text-3xl"}`}>
+              Đ {isNaN(amt) ? fine.amount : amt.toFixed(0)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className="text-xs font-bold px-3 py-1.5 rounded-full"
+              style={{ backgroundColor: statusConfig.bg, color: statusConfig.color }}
+            >
+              {statusConfig.icon} {statusConfig.label}
+            </span>
+            {/* Source logo in header */}
+            {sourceLogo ? (
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
+                style={{ backgroundColor: sourceLogo.bgColor, border: "1px solid #e5e7eb" }}
+              >
+                <img
+                  src={sourceLogo.url}
+                  alt={sourceLogo.label}
+                  className="w-7 h-7 object-contain"
+                  onError={(e) => {
+                    const parent = (e.target as HTMLImageElement).parentElement;
+                    if (parent) {
+                      parent.innerHTML = `<span style="font-size:9px;color:#666;font-weight:bold;text-align:center;padding:2px">${fine.source.slice(0, 3).toUpperCase()}</span>`;
+                    }
+                  }}
+                />
+              </div>
+            ) : (
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb" }}
+              >
+                <Building2 className="w-4 h-4" style={{ color: "#008755" }} />
+              </div>
+            )}
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => {}}
+              className="w-5 h-5 rounded"
+              style={{ accentColor: "#008755" }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+
+        <div style={{ borderTop: "1px solid #f0f4f2" }} className="mx-4" />
+
+        {/* Details */}
+        <div className="px-4 py-3 space-y-2.5">
+          {/* Source */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-500">
+              <Building2 className="w-4 h-4" style={{ color: "#008755" }} />
+              <span className="text-sm">المصدر</span>
+            </div>
+            <SourceBadge source={fine.source} />
+          </div>
+          {/* Location */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-500">
+              <MapPin className="w-4 h-4" style={{ color: "#008755" }} />
+              <span className="text-sm">الموقع</span>
+            </div>
+            <span className="text-sm font-semibold text-gray-800 text-left max-w-[55%] truncate" dir="rtl">{fine.location || "—"}</span>
+          </div>
+          {/* Speed */}
+          {fine.speed && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-gray-500">
+                <Gauge className="w-4 h-4" style={{ color: "#008755" }} />
+                <span className="text-sm">السرعة</span>
+              </div>
+              <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.speed}</span>
+            </div>
+          )}
+          {/* Ticket No */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-500">
+              <Hash className="w-4 h-4" style={{ color: "#008755" }} />
+              <span className="text-sm">رقم المخالفة</span>
+            </div>
+            <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.ticketNo || "—"}</span>
+          </div>
+          {/* Date */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-500">
+              <Calendar className="w-4 h-4" style={{ color: "#008755" }} />
+              <span className="text-sm">التاريخ والوقت</span>
+            </div>
+            <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.dateTime || "—"}</span>
+          </div>
+        </div>
+
+        {/* Description */}
+        {fine.description && (
+          <>
+            <div style={{ borderTop: "1px solid #f0f0f0" }} className="mx-4" />
+            <div className="px-4 py-3">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Ticket className="w-4 h-4" style={{ color: "#008755" }} />
+                <span className="text-sm font-bold" style={{ color: "#008755" }}>تفاصيل المخالفة</span>
+              </div>
+              <div className="flex items-start gap-2 justify-center">
+                <p className="text-sm text-gray-700 text-center">{fine.description}</p>
+                <Info className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   // ===== RESULTS VIEW =====
   if (view === "results" && result) {
-    const payableFines = filteredFines.filter(f => !f.isPaid);
+    const payableFines = allFines.filter(f => !f.isPaid);
     const payableCount = payableFines.length;
 
     return (
@@ -509,23 +770,20 @@ export default function Home() {
             </div>
 
             {/* Filter tabs + actions */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex gap-2">
-                {[
-                  { key: "all", label: "الكل", count: result.fines.length },
-                  { key: "payable", label: "قابل للدفع", count: result.fines.filter(f => !f.isPaid).length },
-                  { key: "seized", label: "الحجز", count: result.fines.filter(f => f.status === "seized").length },
-                ].map((f) => (
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+              <div className="flex gap-2 flex-wrap">
+                {filterTabs.map((f) => (
                   <button
                     key={f.key}
-                    onClick={() => setFilterStatus(f.key as typeof filterStatus)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all"
+                    onClick={() => setFilterStatus(f.key)}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all"
                     style={{
                       backgroundColor: filterStatus === f.key ? "#008755" : "#ffffff",
                       color: filterStatus === f.key ? "#ffffff" : "#374151",
                       border: filterStatus === f.key ? "none" : "1.5px solid #e5e7eb",
                     }}
                   >
+                    <span style={{ color: filterStatus === f.key ? "#fff" : "#6b7280" }}>{f.icon}</span>
                     {f.label}
                     <span
                       className="text-xs px-1.5 py-0.5 rounded-full font-bold"
@@ -578,102 +836,25 @@ export default function Home() {
 
             {/* Fines grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {filteredFines.map((fine, idx) => {
-                const isSelected = selectedFines.has(idx);
-                const amt = parseFloat((fine.amount || "0").replace(/[^0-9.]/g, ""));
-                return (
-                  <div
-                    key={idx}
-                    className="rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg"
-                    style={{
-                      backgroundColor: "#ffffff",
-                      border: isSelected ? "2px solid #008755" : "1.5px solid #e8ede9",
-                      boxShadow: isSelected ? "0 4px 16px rgba(0,135,85,0.15)" : "0 2px 8px rgba(0,0,0,0.06)",
-                    }}
-                    onClick={() => {
-                      const next = new Set(selectedFines);
-                      if (isSelected) next.delete(idx); else next.add(idx);
-                      setSelectedFines(next);
-                    }}
-                  >
-                    {/* Card top */}
-                    <div className="flex items-center justify-between px-5 pt-5 pb-3">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-black text-gray-900">Đ {isNaN(amt) ? fine.amount : amt.toFixed(0)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="text-xs font-bold px-3 py-1.5 rounded-full"
-                          style={{ backgroundColor: fine.isPaid ? "#e8f5ee" : "#fff3e0", color: fine.isPaid ? "#008755" : "#f57c00" }}
-                        >
-                          {fine.isPaid ? "✓ مدفوع" : "● قابل للدفع"}
-                        </span>
-                        <img src={FINE_BADGE_LOGO} alt="" className="w-8 h-8 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => {}}
-                          className="w-5 h-5 rounded"
-                          style={{ accentColor: "#008755" }}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </div>
-                    </div>
-
-                    <div style={{ borderTop: "1px solid #f0f4f2" }} className="mx-5" />
-
-                    {/* Details grid */}
-                    <div className="px-5 py-4 grid grid-cols-2 gap-3">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-400 flex items-center gap-1"><Building2 className="w-3.5 h-3.5" style={{ color: "#008755" }} /> المصدر</span>
-                        <span className="text-sm font-bold text-gray-800">{fine.source || "—"}</span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3.5 h-3.5" style={{ color: "#008755" }} /> الموقع</span>
-                        <span className="text-sm font-bold text-gray-800 truncate">{fine.location || "—"}</span>
-                      </div>
-                      {fine.speed && (
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs text-gray-400 flex items-center gap-1"><Gauge className="w-3.5 h-3.5" style={{ color: "#008755" }} /> السرعة</span>
-                          <span className="text-sm font-bold text-gray-800" dir="ltr">{fine.speed}</span>
-                        </div>
-                      )}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-400 flex items-center gap-1"><Hash className="w-3.5 h-3.5" style={{ color: "#008755" }} /> رقم المخالفة</span>
-                        <span className="text-sm font-bold text-gray-800" dir="ltr">{fine.ticketNo || "—"}</span>
-                      </div>
-                      <div className="flex flex-col gap-1 col-span-2">
-                        <span className="text-xs text-gray-400 flex items-center gap-1"><Calendar className="w-3.5 h-3.5" style={{ color: "#008755" }} /> التاريخ والوقت</span>
-                        <span className="text-sm font-bold text-gray-800" dir="ltr">{fine.dateTime || "—"}</span>
-                      </div>
-                    </div>
-
-                    {fine.description && (
-                      <>
-                        <div style={{ borderTop: "1px solid #f0f4f2" }} className="mx-5" />
-                        <div className="px-5 py-3">
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <Ticket className="w-4 h-4" style={{ color: "#008755" }} />
-                            <span className="text-sm font-bold" style={{ color: "#008755" }}>تفاصيل المخالفة</span>
-                          </div>
-                          <p className="text-sm text-gray-600 leading-relaxed">{fine.description}</p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
+              {filteredFines.map((fine, idx) => (
+                <FineCard key={idx} fine={fine} idx={idx} isMobile={false} />
+              ))}
             </div>
 
             {/* Bottom summary bar - desktop */}
-            {filteredFines.length > 0 && (
+            {allFines.length > 0 && (
               <div
                 className="mt-6 rounded-2xl overflow-hidden"
                 style={{ backgroundColor: "#ffffff", border: "1.5px solid #e8ede9", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
               >
-                <div className="flex items-center px-6 py-4 gap-8 border-b border-gray-100">
+                <div className="flex items-center px-6 py-4 gap-6 border-b border-gray-100 flex-wrap">
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">المخالفات القابلة للدفع</p>
+                    <p className="text-xs text-gray-500 mb-0.5">المخالفات</p>
+                    <p className="text-2xl font-black text-gray-900">{allFines.length}</p>
+                  </div>
+                  <div className="w-px h-12 bg-gray-200" />
+                  <div className="text-center">
+                    <p className="text-xs text-gray-500 mb-0.5">قابل للدفع</p>
                     <p className="text-2xl font-black text-gray-900">{payableCount}</p>
                   </div>
                   <div className="w-px h-12 bg-gray-200" />
@@ -683,11 +864,11 @@ export default function Home() {
                   </div>
                   <div className="w-px h-12 bg-gray-200" />
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">إجمالي المبلغ المحدد</p>
+                    <p className="text-xs text-gray-500 mb-0.5">إجمالي المبلغ</p>
                     <p className="text-2xl font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
                   </div>
                   <div className="flex-1" />
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4" style={{ accentColor: "#008755" }} />
                       الدفع بالتقسيط عبر الخصم المباشر
@@ -748,17 +929,13 @@ export default function Home() {
               <span className="text-sm font-bold text-gray-700">مراجعة المخالفات رقم اللوحة:</span>
             </div>
 
-            {/* Filter tabs */}
+            {/* Filter tabs - mobile */}
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {[
-                { key: "all", label: "الكل", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z"/></svg> },
-                { key: "seized", label: "الحجز", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> },
-                { key: "payable", label: "قابل للدفع", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path fill="#fff" d="M12 6v6l4 2-1 1.7-5-2.7V6z"/></svg> },
-              ].map((f) => (
+              {filterTabs.map((f) => (
                 <button
                   key={f.key}
-                  onClick={() => setFilterStatus(f.key as typeof filterStatus)}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all"
+                  onClick={() => setFilterStatus(f.key)}
+                  className="flex items-center gap-1.5 px-3 py-2.5 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all"
                   style={{
                     backgroundColor: filterStatus === f.key ? "#ffffff" : "#e8ede9",
                     color: filterStatus === f.key ? "#008755" : "#6b7280",
@@ -768,6 +945,14 @@ export default function Home() {
                 >
                   <span style={{ color: filterStatus === f.key ? "#008755" : "#6b7280" }}>{f.icon}</span>
                   {f.label}
+                  {f.count > 0 && (
+                    <span
+                      className="text-xs px-1.5 py-0.5 rounded-full font-bold"
+                      style={{ backgroundColor: filterStatus === f.key ? "#e8f5ee" : "#d1d5db", color: filterStatus === f.key ? "#008755" : "#6b7280" }}
+                    >
+                      {f.count}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -790,86 +975,26 @@ export default function Home() {
             )}
 
             {/* Fine cards - mobile */}
-            {filteredFines.map((fine, idx) => {
-              const isSelected = selectedFines.has(idx);
-              const amt = parseFloat((fine.amount || "0").replace(/[^0-9.]/g, ""));
-              return (
-                <div
-                  key={idx}
-                  className="rounded-2xl overflow-hidden"
-                  style={{
-                    backgroundColor: "#ffffff",
-                    border: isSelected ? "2px solid #008755" : "1px solid #e8ede9",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                  }}
-                >
-                  <div className="flex items-center justify-between px-4 pt-4 pb-3">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-black text-gray-900">Đ {isNaN(amt) ? fine.amount : amt.toFixed(0)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold px-2 py-1 rounded-full" style={{ backgroundColor: fine.isPaid ? "#e8f5ee" : "#fff3e0", color: fine.isPaid ? "#008755" : "#f57c00" }}>
-                        {fine.isPaid ? "مدفوع" : "قابل للدفع"}
-                      </span>
-                      <img src={FINE_BADGE_LOGO} alt="" className="w-8 h-8 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                      <input type="checkbox" checked={isSelected} onChange={() => { const next = new Set(selectedFines); if (isSelected) next.delete(idx); else next.add(idx); setSelectedFines(next); }} className="w-5 h-5 rounded" style={{ accentColor: "#008755" }} />
-                    </div>
-                  </div>
-                  <div style={{ borderTop: "1px solid #f0f0f0" }} className="mx-4" />
-                  <div className="px-4 py-3 space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-gray-500"><Building2 className="w-4 h-4" style={{ color: "#008755" }} /><span className="text-sm">المصدر</span></div>
-                      <span className="text-sm font-semibold text-gray-800">{fine.source || "—"}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-gray-500"><MapPin className="w-4 h-4" style={{ color: "#008755" }} /><span className="text-sm">الموقع</span></div>
-                      <span className="text-sm font-semibold text-gray-800 text-left max-w-[55%] truncate" dir="rtl">{fine.location || "—"}</span>
-                    </div>
-                    {fine.speed && (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-gray-500"><Gauge className="w-4 h-4" style={{ color: "#008755" }} /><span className="text-sm">السرعة</span></div>
-                        <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.speed}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-gray-500"><Hash className="w-4 h-4" style={{ color: "#008755" }} /><span className="text-sm">رقم المخالفة</span></div>
-                      <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.ticketNo || "—"}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-gray-500"><Calendar className="w-4 h-4" style={{ color: "#008755" }} /><span className="text-sm">التاريخ والوقت</span></div>
-                      <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.dateTime || "—"}</span>
-                    </div>
-                  </div>
-                  {fine.description && (
-                    <>
-                      <div style={{ borderTop: "1px solid #f0f0f0" }} className="mx-4" />
-                      <div className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <Ticket className="w-4 h-4" style={{ color: "#008755" }} />
-                          <span className="text-sm font-bold" style={{ color: "#008755" }}>تفاصيل المخالفة</span>
-                        </div>
-                        <div className="flex items-start gap-2 justify-center">
-                          <p className="text-sm text-gray-700 text-center">{fine.description}</p>
-                          <Info className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })}
+            {filteredFines.map((fine, idx) => (
+              <FineCard key={idx} fine={fine} idx={idx} isMobile={true} />
+            ))}
 
             {/* Bottom summary bar - mobile */}
             <div className="rounded-2xl overflow-hidden mt-4" style={{ backgroundColor: "#ffffff", border: "1px solid #e8ede9", boxShadow: "0 -2px 12px rgba(0,0,0,0.08)" }}>
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                 <div className="text-center flex-1">
                   <p className="text-xs text-gray-500">المخالفات</p>
+                  <p className="text-lg font-black text-gray-900">{allFines.length}</p>
+                </div>
+                <div className="w-px h-10 bg-gray-200" />
+                <div className="text-center flex-1">
+                  <p className="text-xs text-gray-500">قابل للدفع</p>
                   <p className="text-lg font-black text-gray-900">{payableCount}</p>
                 </div>
                 <div className="w-px h-10 bg-gray-200" />
                 <div className="text-center flex-1">
                   <p className="text-xs text-gray-500">إجمالي المبلغ</p>
-                  <p className="text-lg font-black text-gray-900">Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                  <p className="text-lg font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
                 </div>
               </div>
               <div className="flex gap-3 p-3">
@@ -877,7 +1002,7 @@ export default function Home() {
                   <span>رجوع</span><ArrowRight className="w-4 h-4" />
                 </button>
                 <button disabled={selectedFines.size === 0} className="flex-1 py-3 rounded-xl text-sm font-bold text-white transition-all" style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af" }} onClick={() => toast.info("سيتم تفعيل الدفع قريباً")}>
-                  دفع
+                  دفع المخالفات المحددة
                 </button>
               </div>
               <div className="flex items-center gap-2 px-4 pb-3">
