@@ -30,6 +30,12 @@ import { Badge } from "@/components/ui/badge";
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
 const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
+// CDN logos for sources
+const LOGO_DUBAI_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/dubai-police_60714e67.png";
+const LOGO_ABU_DHABI_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/abu-dhabi-police2_34b796f0.png";
+const LOGO_RTA = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/rta_89e6fc51.jpg";
+const LOGO_SHARJAH_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/sharjah-police2_28f5d5aa.png";
+
 // ===== SOURCE LOGOS - Comprehensive mapping system =====
 
 interface SourceConfig {
@@ -90,7 +96,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Dubai Police",
     bgColor: "#e8f5ee",
     borderColor: "#008755",
-    logo: (size) => <PoliceShieldLogo size={size} bg="#006633" accent="#008755" text="DUBAI POLICE" />,
+    logo: (size) => <img src={LOGO_DUBAI_POLICE} alt="Dubai Police" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />,
   },
   // ===== شرطة أبوظبي =====
   {
@@ -98,7 +104,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Abu Dhabi Police",
     bgColor: "#fff5e8",
     borderColor: "#8B0000",
-    logo: (size) => <PoliceShieldLogo size={size} bg="#6B0000" accent="#8B0000" text="ABU DHABI POLICE" />,
+    logo: (size) => <img src={LOGO_ABU_DHABI_POLICE} alt="Abu Dhabi Police" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />,
   },
   // ===== شرطة الشارقة =====
   {
@@ -106,7 +112,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Sharjah Police",
     bgColor: "#e8f0ff",
     borderColor: "#1a3a8c",
-    logo: (size) => <PoliceShieldLogo size={size} bg="#0a2a7c" accent="#1a3a8c" text="SHARJAH POLICE" />,
+    logo: (size) => <img src={LOGO_SHARJAH_POLICE} alt="Sharjah Police" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />,
   },
   // ===== شرطة عجمان =====
   {
@@ -166,15 +172,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "RTA Dubai",
     bgColor: "#fff0f0",
     borderColor: "#CC0000",
-    logo: (size) => (
-      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100" height="100" fill="white" rx="8" />
-        <polygon points="5,90 95,90 95,22" fill="#CC0000" />
-        <text x="65" y="78" textAnchor="middle" fill="white" fontSize="20" fontFamily="Arial" fontWeight="900">RTA</text>
-        <text x="33" y="20" textAnchor="middle" fill="#333" fontSize="7" fontFamily="Arial" fontWeight="bold">هيئة الطرق</text>
-        <text x="33" y="31" textAnchor="middle" fill="#555" fontSize="5.5" fontFamily="Arial">ROADS &amp; TRANSPORT</text>
-      </svg>
-    ),
+    logo: (size) => <img src={LOGO_RTA} alt="RTA Dubai" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />,
   },
   // ===== مركز النقل المتكامل - أبوظبي =====
   {
@@ -512,8 +510,8 @@ function SourceIcon({ source, size = 28 }: { source: string; size?: number }) {
   // Fallback: initials in colored circle
   const initials = (source || "?").substring(0, 2).toUpperCase();
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="48" fill="#e8f5ee" stroke="#008755" strokeWidth="3" />
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: "50%" }}>
+      <circle cx="50" cy="50" r="50" fill="#e8f5ee" />
       <text x="50" y="62" textAnchor="middle" fill="#008755" fontSize="32" fontFamily="Arial" fontWeight="bold">{initials}</text>
     </svg>
   );
@@ -534,10 +532,10 @@ function SourceBadge({ source }: { source: string }) {
   return (
     <div className="flex items-center gap-2">
       <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
-        style={{ backgroundColor: bgColor, border: "1px solid #e5e7eb" }}
+        className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+        style={{ backgroundColor: bgColor, border: "1.5px solid #e5e7eb" }}
       >
-        <SourceIcon source={source} size={24} />
+        <SourceIcon source={source} size={32} />
       </div>
       <span className="text-sm font-bold text-gray-800">{label}</span>
     </div>
@@ -1087,12 +1085,12 @@ export default function Home() {
             >
               {statusConfig.icon} {statusConfig.label}
             </span>
-            {/* Source logo in header - real CDN logo */}
+            {/* Source logo in header - real CDN logo, circular */}
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
-              style={{ backgroundColor: sourceBgColor, border: "1px solid #e5e7eb", padding: "3px" }}
+              className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+              style={{ backgroundColor: sourceBgColor, border: "1.5px solid #e5e7eb" }}
             >
-              <SourceIcon source={fine.source} size={26} />
+              <SourceIcon source={fine.source} size={36} />
             </div>
             {/* Checkbox - click only on checkbox, not entire card */}
             <div
