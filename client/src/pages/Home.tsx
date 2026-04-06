@@ -901,7 +901,7 @@ export default function Home() {
     >
       <SharedHeader transparent={true} />
 
-      {/* ===== DESKTOP LAYOUT ===== */
+      {/* ===== DESKTOP LAYOUT ===== */}
       <div className="hidden md:flex min-h-[calc(100vh-130px)]">
         {/* Right: Video */}
         <div className="flex-1 relative overflow-hidden" style={{ backgroundColor: "#1a1a1a" }}>
