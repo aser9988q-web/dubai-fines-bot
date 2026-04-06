@@ -217,14 +217,21 @@ export default function Home() {
     const payableFines = filteredFines.filter(f => !f.isPaid);
     const payableCount = payableFines.length;
 
+    // عرض رقم اللوحة بالشكل الصحيح
+    const plateSourceLabel = ALL_PLATE_SOURCES.find(s => s.value === plateSource)?.labelEn || plateSource;
+    const finalPlateCode = plateSource === "KSA"
+      ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(" ")
+      : plateCode;
+    const plateDisplay = [plateSourceLabel.toUpperCase(), plateNumber, finalPlateCode].filter(Boolean).join(" ");
+
     return (
       <div
         className="min-h-screen"
         style={{ backgroundColor: "#f0f4f2", fontFamily: "'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif" }}
         dir="rtl"
       >
-        {/* Header */}
-        <header style={{ backgroundColor: "#ffffff" }} className="sticky top-0 z-50">
+        {/* Header - شفاف بدون خلفية */}
+        <header className="sticky top-0 z-50" style={{ backgroundColor: "transparent" }}>
           <div className="px-4 py-3 flex items-center justify-between">
             {/* Right: logo */}
             <img src={DUBAI_POLICE_LOGO} alt="شرطة دبي" className="h-12 w-12 object-contain" />
@@ -233,13 +240,13 @@ export default function Home() {
               <button
                 onClick={() => setShowHistory(!showHistory)}
                 className="w-11 h-11 rounded-full flex items-center justify-center text-lg font-semibold"
-                style={{ backgroundColor: "#f5f5f5", border: "1px solid #e5e7eb", color: "#374151" }}
+                style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", color: "#374151" }}
               >
                 ⓘ
               </button>
               <button
                 className="w-11 h-11 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: "#f5f5f5", border: "1px solid #e5e7eb" }}
+                style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb" }}
               >
                 <Menu className="w-5 h-5 text-gray-700" />
               </button>
@@ -280,18 +287,77 @@ export default function Home() {
           )}
         </header>
 
-        <div className="px-4 py-4 space-y-3 max-w-lg mx-auto">
+        <div className="px-4 py-2 space-y-3 max-w-lg mx-auto">
+
+          {/* الاستعلام والدفع - داخل الصفحة وليس في الهيدر */}
+          <div className="flex items-center gap-2 py-1">
+            <button
+              onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+              className="flex items-center justify-center w-8 h-8 rounded-full"
+              style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb" }}
+            >
+              <ArrowRight className="w-4 h-4 text-gray-600" />
+            </button>
+            <span className="text-sm font-semibold text-gray-700">الاستعلام والدفع</span>
+          </div>
+
+          {/* أزرار الأعلى: تحديد الكل + طلب قائمة المخالفات + ... */}
+          <div className="flex items-center gap-2">
+            <button
+              className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+              style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }}
+              onClick={() => toast.info("سيتم تفعيله قريباً")}
+            >
+              ...
+            </button>
+            <button
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold"
+              style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }}
+              onClick={() => toast.info("سيتم تفعيله قريباً")}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
+              <span>طلب قائمة المخالفات</span>
+            </button>
+            <button
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mr-auto"
+              style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }}
+              onClick={() => {
+                if (filteredFines.length === 0) return;
+                const allIdxs = new Set(filteredFines.map((_, i) => i));
+                if (selectedFines.size === filteredFines.length) {
+                  setSelectedFines(new Set());
+                } else {
+                  setSelectedFines(allIdxs);
+                }
+              }}
+            >
+              <span>تحديد الكل</span>
+            </button>
+          </div>
+
+          {/* شريط رقم اللوحة */}
+          <div className="flex items-center justify-between py-1">
+            <div
+              className="px-3 py-2 rounded-xl text-sm font-bold"
+              style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", color: "#374151", letterSpacing: "1px" }}
+              dir="ltr"
+            >
+              {plateDisplay}
+            </div>
+            <span className="text-sm font-bold text-gray-700">مراجعة المخالفات رقم اللوحة:</span>
+          </div>
+
           {/* Filter tabs */}
           <div className="flex gap-2 overflow-x-auto pb-1">
             {[
-              { key: "all", label: "الكل" },
-              { key: "payable", label: "قابل للدفع" },
-              { key: "seized", label: "الحجز" },
+              { key: "all", label: "الكل", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z"/></svg> },
+              { key: "seized", label: "الحجز", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> },
+              { key: "payable", label: "قابل للدفع", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path fill="#fff" d="M12 6v6l4 2-1 1.7-5-2.7V6z"/></svg> },
             ].map((f) => (
               <button
                 key={f.key}
                 onClick={() => setFilterStatus(f.key as typeof filterStatus)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all"
                 style={{
                   backgroundColor: filterStatus === f.key ? "#ffffff" : "#e8ede9",
                   color: filterStatus === f.key ? "#008755" : "#6b7280",
@@ -299,6 +365,7 @@ export default function Home() {
                   boxShadow: filterStatus === f.key ? "0 1px 4px rgba(0,135,85,0.15)" : "none",
                 }}
               >
+                <span style={{ color: filterStatus === f.key ? "#008755" : "#6b7280" }}>{f.icon}</span>
                 {f.label}
               </button>
             ))}
@@ -338,7 +405,7 @@ export default function Home() {
                 {/* Card top row */}
                 <div className="flex items-center justify-between px-4 pt-4 pb-3">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-black text-gray-900">₿ {isNaN(amt) ? fine.amount : amt.toFixed(0)}</span>
+                    <span className="text-2xl font-black text-gray-900">Đ {isNaN(amt) ? fine.amount : amt.toFixed(0)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span
@@ -439,7 +506,7 @@ export default function Home() {
               <div className="w-px h-10 bg-gray-200" />
               <div className="text-center flex-1">
                 <p className="text-xs text-gray-500">إجمالي المبلغ</p>
-                <p className="text-lg font-black text-gray-900">₿ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                <p className="text-lg font-black text-gray-900">Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
               </div>
             </div>
             <div className="flex gap-3 p-3">
