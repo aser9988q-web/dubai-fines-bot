@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
@@ -145,19 +145,19 @@ function PlateFormFields({
           <select
             value={plateSource}
             onChange={(e) => { setPlateSource(e.target.value); const codes = PLATE_CODES_BY_SOURCE[e.target.value] || []; setPlateCode(codes[0] || ""); }}
-            className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none"
-            style={{ backgroundColor: "#f8faf9", border: plateSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: plateSource ? "#111827" : "#9ca3af", fontWeight: plateSource ? "600" : "400" }}
+            className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none"
+            style={{ backgroundColor: "#ffffff", border: plateSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: plateSource ? "#111827" : "#9ca3af", fontWeight: plateSource ? "600" : "400", paddingLeft: "2.5rem" }}
           >
             <option value="" disabled>اختر</option>
             {ALL_PLATE_SOURCES.map((s) => (<option key={s.value} value={s.value}>{s.label}</option>))}
           </select>
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
         </div>
       </div>
       {/* رقم اللوحة */}
       <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700 block text-right">رقم اللوحة</label>
-        <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} placeholder="رقم اللوحة" onKeyDown={(e) => e.key === "Enter" && onEnter()} className="w-full text-sm rounded-xl px-4 py-4 focus:outline-none" style={{ backgroundColor: "#f8faf9", border: "1.5px solid #d1d5db", color: "#111827", textAlign: "right" }} dir="ltr" />
+        <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} placeholder="رقم اللوحة" onKeyDown={(e) => e.key === "Enter" && onEnter()} className="w-full text-base rounded-xl px-4 py-4 focus:outline-none" style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
       </div>
       {/* رمز اللوحة */}
       {plateSource === "KSA" ? (
@@ -165,11 +165,11 @@ function PlateFormFields({
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 block text-right">رمز اللوحة</label>
             <div className="relative">
-              <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#f8faf9", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af" }} dir="ltr">
+              <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
                 <option value="">اختر</option>
                 {PLATE_CODES_BY_SOURCE.KSA.map((code) => (<option key={code} value={code}>{code}</option>))}
               </select>
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
             </div>
           </div>
           <div className="flex flex-col gap-3">
@@ -177,11 +177,11 @@ function PlateFormFields({
               <div key={idx} className="space-y-2">
                 <label className="text-sm font-bold text-gray-700 block text-right">{item.label}</label>
                 <div className="relative">
-                  <select value={item.value} onChange={(e) => item.setter(e.target.value)} className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#f8faf9", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af" }} dir="rtl">
+                  <select value={item.value} onChange={(e) => item.setter(e.target.value)} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="rtl">
                     <option value="">اختر</option>
                     {KSA_LETTER_CODES.map((c) => (<option key={c.value} value={c.value}>{c.label}</option>))}
                   </select>
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
                 </div>
               </div>
             ))}
@@ -191,11 +191,11 @@ function PlateFormFields({
         <div className="space-y-2">
           <label className="text-sm font-bold text-gray-700 block text-right">رمز اللوحة</label>
           <div className="relative">
-            <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} disabled={!plateSource} className="w-full text-sm rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: plateSource ? "#f8faf9" : "#f3f4f6", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", cursor: plateSource ? "pointer" : "not-allowed" }} dir="ltr">
+            <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} disabled={!plateSource} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: plateSource ? "#ffffff" : "#f3f4f6", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", cursor: plateSource ? "pointer" : "not-allowed", paddingLeft: "2.5rem" }} dir="ltr">
               <option value="">اختر</option>
               {currentPlateCodes.map((code) => (<option key={code} value={code}>{code}</option>))}
             </select>
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"><span className="text-gray-500 text-sm">▼</span></div>
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
         </div>
       )}
@@ -217,6 +217,13 @@ export default function Home() {
   const [selectedFines, setSelectedFines] = useState<Set<number>>(new Set());
   const [filterStatus, setFilterStatus] = useState<"all" | "payable" | "seized">("all");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setHeaderScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const { data: history } = trpc.fines.getHistory.useQuery(undefined, { retry: false });
 
@@ -277,30 +284,34 @@ export default function Home() {
     return map[status] || { label: status, variant: "outline" };
   };
 
-  // Tab icons
+  // Tab icons - matching original Dubai Police website exactly
   const PlateIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="2" y="7" width="20" height="10" rx="2"/>
-      <line x1="6" y1="7" x2="6" y2="17"/>
-      <line x1="18" y1="7" x2="18" y2="17"/>
+    <svg width="20" height="20" viewBox="0 0 32 20" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="1" y="1" width="30" height="18" rx="3"/>
+      <rect x="4" y="4" width="24" height="12" rx="1.5" strokeWidth="1.2"/>
+      <line x1="8" y1="1" x2="8" y2="19" strokeWidth="1"/>
+      <line x1="24" y1="1" x2="24" y2="19" strokeWidth="1"/>
     </svg>
   );
   const LicenceIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <rect x="2" y="3" width="20" height="18" rx="2"/>
-      <circle cx="8" cy="10" r="2"/>
-      <line x1="13" y1="8" x2="19" y2="8"/>
-      <line x1="13" y1="12" x2="19" y2="12"/>
-      <line x1="5" y1="16" x2="19" y2="16"/>
+      <line x1="6" y1="8" x2="18" y2="8" strokeWidth="1.5"/>
+      <line x1="6" y1="12" x2="18" y2="12" strokeWidth="1.5"/>
+      <line x1="6" y1="16" x2="14" y2="16" strokeWidth="1.5"/>
+      <line x1="6" y1="8" x2="6" y2="16" strokeWidth="1.5"/>
+      <line x1="18" y1="8" x2="18" y2="12" strokeWidth="1.5"/>
+      <line x1="14" y1="12" x2="14" y2="16" strokeWidth="1.5"/>
     </svg>
   );
   const TCIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-      <polyline points="10 9 9 9 8 9"/>
+      <line x1="4" y1="6" x2="20" y2="6"/>
+      <line x1="4" y1="12" x2="20" y2="12"/>
+      <line x1="4" y1="18" x2="20" y2="18"/>
+      <line x1="4" y1="6" x2="4" y2="18"/>
+      <line x1="12" y1="6" x2="12" y2="18"/>
+      <line x1="20" y1="6" x2="20" y2="18"/>
     </svg>
   );
 
@@ -320,10 +331,11 @@ export default function Home() {
   // ===== SHARED HEADER =====
   const SharedHeader = ({ transparent = false }: { transparent?: boolean }) => (
     <header
-      className="sticky top-0 z-50"
+      className="sticky top-0 z-50 transition-all duration-300"
       style={{
-        backgroundColor: transparent ? "transparent" : "#ffffff",
-        borderBottom: transparent ? "none" : "1px solid #e8ede9",
+        backgroundColor: transparent && !headerScrolled ? "transparent" : "#ffffff",
+        borderBottom: transparent && !headerScrolled ? "none" : "1px solid #e8ede9",
+        backdropFilter: transparent && !headerScrolled ? "none" : "none",
       }}
     >
       {/* Top bar - desktop only */}
@@ -343,8 +355,8 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-4 md:px-8 py-3 flex items-center justify-between"
-        style={{ backgroundColor: transparent ? "transparent" : "#ffffff" }}
+        className="px-4 md:px-8 py-3 flex items-center justify-between transition-all duration-300"
+        style={{ backgroundColor: transparent && !headerScrolled ? "transparent" : "#ffffff" }}
       >
         {/* Right: Logo + Name */}
         <div className="flex items-center gap-3">
@@ -426,11 +438,11 @@ export default function Home() {
         </div>
       )}
 
-      {/* Breadcrumb - mobile */}
-      <div className="md:hidden px-4 pb-2 flex items-center justify-end gap-2 text-sm">
+      {/* Breadcrumb - mobile: only show when not scrolled (header transparent) */}
+      <div className="md:hidden px-4 pb-3 pt-1 flex items-center justify-end gap-2 text-sm">
         <span className="font-semibold text-gray-700">الاستعلام والدفع</span>
-        <button className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#f5f5f5", border: "1px solid #e5e7eb" }}>
-          <ArrowLeft className="w-4 h-4 text-gray-500" />
+        <button className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#f0f0f0", border: "1px solid #e5e7eb" }}>
+          <ChevronLeft className="w-4 h-4 text-gray-500" />
         </button>
       </div>
 
@@ -887,9 +899,9 @@ export default function Home() {
       style={{ backgroundColor: "#f0f4f2", fontFamily: "'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif" }}
       dir="rtl"
     >
-      <SharedHeader transparent={false} />
+      <SharedHeader transparent={true} />
 
-      {/* ===== DESKTOP LAYOUT ===== */}
+      {/* ===== DESKTOP LAYOUT ===== */
       <div className="hidden md:flex min-h-[calc(100vh-130px)]">
         {/* Right: Video */}
         <div className="flex-1 relative overflow-hidden" style={{ backgroundColor: "#1a1a1a" }}>
