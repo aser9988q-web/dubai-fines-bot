@@ -16,6 +16,7 @@ export interface FineResult {
   violationCode?: string;
   source?: string;
   sourceAr?: string;
+  speed?: string;
 }
 
 export interface ScraperResult {
@@ -102,9 +103,11 @@ export async function scrapeDubaiFines(
   plateNo: string,
   plateCodeId: string
 ): Promise<ScraperResult> {
-  // الحصول على categoryId من الكود
-  const plateCodeInfo = PLATE_CODES.find((c) => c.value === plateCodeId);
+  // الحصول على categoryId من الكود - يدعم البحث بـ value أو label
+  const plateCodeInfo = PLATE_CODES.find((c) => c.value === plateCodeId || c.label === plateCodeId);
   const plateCat = plateCodeInfo?.categoryId || 2;
+  // تحويل label إلى value إذا كان المُدخل label
+  const resolvedPlateCodeId = plateCodeInfo?.value || plateCodeId;
 
   console.log(
     `[Scraper] Querying fines: plateNo=${plateNo} plateSrcCode=${plateSrcCode} plateCodeId=${plateCodeId} plateCat=${plateCat}`
@@ -118,7 +121,7 @@ export async function scrapeDubaiFines(
         plateNo,
         plateCat,
         plateSrcCode,
-        plateCodeId: parseInt(plateCodeId),
+        plateCodeId: parseInt(resolvedPlateCodeId),
       },
       {
         headers: API_HEADERS,
@@ -153,6 +156,9 @@ export async function scrapeDubaiFines(
       // المصدر: beneficiary هو الجهة المصدرة
       const sourceText = ticket.beneficiary || ticket.trafficDepartmentEn || ticket.trafficDepartment || "";
 
+      // السرعة: قد تكون في ticketSpeed أو vehicleSpeed أو measuredSpeed
+      const speedValue = ticket.ticketSpeed?.toString() || ticket.vehicleSpeed?.toString() || ticket.measuredSpeed?.toString() || ticket.speed?.toString() || "";
+
       return {
         fineNumber: ticket.ticketNo?.toString(),
         fineDate: dateTime,
@@ -169,6 +175,7 @@ export async function scrapeDubaiFines(
         violationCode: ticket.violationCode?.toString(),
         source: sourceText,
         sourceAr: ticket.beneficiary || "",
+        speed: speedValue || undefined,
       };
     });
 

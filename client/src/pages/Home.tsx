@@ -14,6 +14,7 @@ import {
   Menu,
   ArrowLeft,
   ArrowRight,
+  Gauge,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -87,6 +88,7 @@ interface FineResult {
   dateTime: string;
   status: string;
   isPaid: boolean;
+  speed?: string;
 }
 
 interface QueryResult {
@@ -380,6 +382,15 @@ export default function Home() {
                       {fine.location || "—"}
                     </span>
                   </div>
+                  {fine.speed && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-gray-500">
+                        <Gauge className="w-4 h-4" style={{ color: "#008755" }} />
+                        <span className="text-sm">السرعة</span>
+                      </div>
+                      <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.speed}</span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-gray-500">
                       <Hash className="w-4 h-4" style={{ color: "#008755" }} />

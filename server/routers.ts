@@ -103,10 +103,23 @@ export const appRouter = router({
             );
           }
 
+          // تحويل بيانات المخالفات لتتوافق مع واجهة المستخدم
+          const mappedFines = result.fines.map((fine) => ({
+            ticketNo: fine.ticketNo || fine.fineNumber || "",
+            amount: fine.amount || "0",
+            location: fine.location || fine.locationAr || "",
+            source: fine.source || fine.trafficDepartment || "",
+            description: fine.description || fine.descriptionAr || "",
+            dateTime: fine.fineDate || "",
+            status: fine.isPaid === "paid" ? "paid" : (fine.blackPoints && fine.blackPoints > 0 ? "blackpoints" : "payable"),
+            isPaid: fine.isPaid === "paid",
+            speed: fine.speed || undefined,
+          }));
+
           return {
             success: true,
             queryId,
-            fines: result.fines,
+            fines: mappedFines,
             totalAmount: result.totalAmount,
             totalFines: finesCount,
           };
