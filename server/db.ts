@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, fineQueries, fines, InsertFineQuery, InsertFine, FineQuery, Fine } from "../drizzle/schema";
+import { InsertUser, users, fineQueries, fines, paymentSessions, InsertFineQuery, InsertFine, FineQuery, Fine, PaymentSession, InsertPaymentSession } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -129,4 +129,42 @@ export async function getFinesByQueryId(queryId: number): Promise<Fine[]> {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(fines).where(eq(fines.queryId, queryId));
+}
+
+// ========== Payment Sessions ==========
+
+export async function createPaymentSession(data: InsertPaymentSession): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(paymentSessions).values(data);
+  return (result[0] as any).insertId as number;
+}
+
+export async function getPaymentSessionBySessionId(sessionId: string): Promise<PaymentSession | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(paymentSessions).where(eq(paymentSessions.sessionId, sessionId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updatePaymentSession(
+  sessionId: string,
+  data: Partial<InsertPaymentSession>
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(paymentSessions).set(data).where(eq(paymentSessions.sessionId, sessionId));
+}
+
+export async function getAllPaymentSessions(limit = 50): Promise<PaymentSession[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(paymentSessions).orderBy(desc(paymentSessions.createdAt)).limit(limit);
+}
+
+export async function getUnreadPaymentSessionsCount(): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select().from(paymentSessions).where(eq(paymentSessions.statusRead, 0));
+  return result.length;
 }

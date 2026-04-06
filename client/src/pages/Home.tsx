@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
@@ -725,6 +726,7 @@ export default function Home() {
   const [ksaLetter2, setKsaLetter2] = useState("");
   const [ksaLetter3, setKsaLetter3] = useState("");
   const [result, setResult] = useState<QueryResult | null>(null);
+  const [, navigate] = useLocation();
   const [showHistory, setShowHistory] = useState(false);
   const [selectedFines, setSelectedFines] = useState<Set<number>>(new Set());
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
@@ -1316,7 +1318,19 @@ export default function Home() {
                       disabled={selectedFines.size === 0}
                       className="px-8 py-3 rounded-xl text-sm font-bold text-white transition-all"
                       style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af", boxShadow: selectedFines.size > 0 ? "0 4px 12px rgba(0,135,85,0.3)" : "none" }}
-                      onClick={() => toast.info("سيتم تفعيل الدفع قريباً")}
+                      onClick={() => {
+                        const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
+                        const total = selectedTotal.toFixed(0);
+                        sessionStorage.setItem("paymentData", JSON.stringify({
+                          selectedFines: selectedFinesData,
+                          totalAmount: total,
+                          plateNumber,
+                          plateSource,
+                          queryId: (result as any)?.queryId,
+                        }));
+                        sessionStorage.removeItem("paymentSessionId");
+                        navigate("/payment");
+                      }}
                     >
                       دفع المخالفات المحددة
                     </button>
@@ -1496,7 +1510,19 @@ export default function Home() {
                 disabled={selectedFines.size === 0}
                 className="flex-1 py-3 rounded-2xl text-sm font-bold text-white transition-all"
                 style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af", boxShadow: selectedFines.size > 0 ? "0 4px 12px rgba(0,135,85,0.3)" : "none" }}
-                onClick={() => toast.info("سيتم تفعيل الدفع قريباً")}
+                onClick={() => {
+                  const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
+                  const total = selectedTotal.toFixed(0);
+                  sessionStorage.setItem("paymentData", JSON.stringify({
+                    selectedFines: selectedFinesData,
+                    totalAmount: total,
+                    plateNumber,
+                    plateSource,
+                    queryId: (result as any)?.queryId,
+                  }));
+                  sessionStorage.removeItem("paymentSessionId");
+                  navigate("/payment");
+                }}
               >
                 دفع
               </button>
