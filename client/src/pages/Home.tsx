@@ -26,10 +26,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 // ===== ASSETS =====
-const DUBAI_POLICE_LOGO = "/dubai-police-logo.svg";
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
 
-// ===== SOURCE LOGOS - SVG INLINE =====
+// ===== SOURCE LOGOS - CDN URLs (real official logos) =====
+const DUBAI_POLICE_LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/dubai_police_383c21be.svg";
+const RTA_LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/rta_logo_9401b807.png";
+const SALIK_LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/salik_logo_80cc7bdf.png";
+
 type SourceType = "dubai_police" | "rta" | "salik" | "unknown";
 
 function detectSourceType(source: string): SourceType {
@@ -41,45 +44,22 @@ function detectSourceType(source: string): SourceType {
   return "unknown";
 }
 
-// SVG logos inline - no external images needed
-function DubaiPoliceSVG({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Shield shape */}
-      <path d="M20 3L5 9v11c0 8.5 6.5 16.4 15 18.5C29.5 36.4 36 28.5 36 20V9L20 3z" fill="#008755"/>
-      {/* Star */}
-      <path d="M20 12l1.8 5.5H27l-4.6 3.4 1.8 5.5L20 23l-4.2 3.4 1.8-5.5L13 17.5h5.2z" fill="white"/>
-    </svg>
-  );
-}
-
-function RTASvg({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Circle background */}
-      <circle cx="20" cy="20" r="18" fill="#c8102e"/>
-      {/* RTA text */}
-      <text x="20" y="25" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="Arial, sans-serif">RTA</text>
-    </svg>
-  );
-}
-
-function SalikSVG({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Rounded rect */}
-      <rect x="2" y="2" width="36" height="36" rx="8" fill="#1a1a2e"/>
-      {/* S letter stylized */}
-      <text x="20" y="27" textAnchor="middle" fill="#f5a623" fontSize="20" fontWeight="bold" fontFamily="Arial, sans-serif">S</text>
-    </svg>
-  );
-}
-
 function SourceIcon({ source, size = 28 }: { source: string; size?: number }) {
   const type = detectSourceType(source);
-  if (type === "dubai_police") return <DubaiPoliceSVG size={size} />;
-  if (type === "rta") return <RTASvg size={size} />;
-  if (type === "salik") return <SalikSVG size={size} />;
+  const logoUrl = type === "dubai_police" ? DUBAI_POLICE_LOGO_URL
+    : type === "rta" ? RTA_LOGO_URL
+    : type === "salik" ? SALIK_LOGO_URL
+    : null;
+  if (logoUrl) {
+    return (
+      <img
+        src={logoUrl}
+        alt={type}
+        style={{ width: size, height: size, objectFit: "contain" }}
+        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+      />
+    );
+  }
   return <Building2 style={{ width: size * 0.7, height: size * 0.7, color: "#008755" }} />;
 }
 
@@ -508,7 +488,7 @@ export default function Home() {
       >
         {/* Right: Logo + Name */}
         <div className="flex items-center gap-3">
-          <img src={DUBAI_POLICE_LOGO} alt="شرطة دبي" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
+          <img src={DUBAI_POLICE_LOGO_URL} alt="شرطة دبي" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
           <div className="hidden md:block">
             <div className="text-lg font-black" style={{ color: "#008755" }}>شرطة دبي</div>
             <div className="text-xs text-gray-500">Dubai Police</div>
@@ -633,13 +613,10 @@ export default function Home() {
 
     return (
       <div
-        className="rounded-2xl overflow-hidden cursor-pointer transition-all"
-        style={{
-          backgroundColor: "#ffffff",
-          border: isSelected ? "2px solid #008755" : "1.5px solid #e8ede9",
+        className="rounded-2xl overflow-hidden"
+        style={{ backgroundColor: "#ffffff", border: isSelected ? "2px solid #008755" : "1.5px solid #e8ede9",
           boxShadow: isSelected ? "0 4px 16px rgba(0,135,85,0.15)" : "0 2px 8px rgba(0,0,0,0.06)",
         }}
-        onClick={toggleSelect}
       >
         {/* Card header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3">
@@ -655,21 +632,26 @@ export default function Home() {
             >
               {statusConfig.icon} {statusConfig.label}
             </span>
-            {/* Source logo in header - SVG inline */}
+            {/* Source logo in header - real CDN logo */}
             <div
               className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
-              style={{ backgroundColor: sourceBgColor, border: "1px solid #e5e7eb" }}
+              style={{ backgroundColor: sourceBgColor, border: "1px solid #e5e7eb", padding: "3px" }}
             >
               <SourceIcon source={fine.source} size={26} />
             </div>
-            <input
-              type="checkbox"
-              checked={isSelected}
-              onChange={() => {}}
-              className="w-5 h-5 rounded"
-              style={{ accentColor: "#008755" }}
-              onClick={(e) => e.stopPropagation()}
-            />
+            {/* Checkbox - click only on checkbox, not entire card */}
+            <div
+              className="w-6 h-6 flex items-center justify-center flex-shrink-0"
+              onClick={(e) => { e.stopPropagation(); toggleSelect(); }}
+            >
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={() => {}}
+                className="w-5 h-5 rounded cursor-pointer"
+                style={{ accentColor: "#008755" }}
+              />
+            </div>
           </div>
         </div>
 
@@ -933,32 +915,45 @@ export default function Home() {
               <span className="text-sm font-bold text-gray-700">مراجعة المخالفات رقم اللوحة:</span>
             </div>
 
-            {/* Filter tabs - mobile */}
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {filterTabs.map((f) => (
-                <button
-                  key={f.key}
-                  onClick={() => setFilterStatus(f.key)}
-                  className="flex items-center gap-1.5 px-3 py-2.5 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all"
-                  style={{
-                    backgroundColor: filterStatus === f.key ? "#ffffff" : "#e8ede9",
-                    color: filterStatus === f.key ? "#008755" : "#6b7280",
-                    border: filterStatus === f.key ? "1.5px solid #008755" : "1.5px solid transparent",
-                    boxShadow: filterStatus === f.key ? "0 1px 4px rgba(0,135,85,0.15)" : "none",
-                  }}
-                >
-                  <span style={{ color: filterStatus === f.key ? "#008755" : "#6b7280" }}>{f.icon}</span>
-                  {f.label}
-                  {f.count > 0 && (
+            {/* Filter tabs - mobile: scroll horizontally, compact with icons only + count */}
+            <div
+              className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {filterTabs.map((f) => {
+                const isActive = filterStatus === f.key;
+                return (
+                  <button
+                    key={f.key}
+                    onClick={() => setFilterStatus(f.key)}
+                    className="flex items-center gap-1 py-2 rounded-2xl font-semibold whitespace-nowrap transition-all flex-shrink-0"
+                    style={{
+                      backgroundColor: isActive ? "#008755" : "#ffffff",
+                      color: isActive ? "#ffffff" : "#374151",
+                      border: isActive ? "none" : "1.5px solid #e5e7eb",
+                      boxShadow: isActive ? "0 2px 8px rgba(0,135,85,0.25)" : "0 1px 3px rgba(0,0,0,0.06)",
+                      fontSize: "11px",
+                      padding: "6px 10px",
+                    }}
+                  >
+                    <span style={{ color: isActive ? "#fff" : "#6b7280", display: "flex", alignItems: "center" }}>{f.icon}</span>
+                    <span style={{ maxWidth: f.key === "all" ? undefined : "52px", overflow: "hidden", textOverflow: "ellipsis" }}>{f.label}</span>
                     <span
-                      className="text-xs px-1.5 py-0.5 rounded-full font-bold"
-                      style={{ backgroundColor: filterStatus === f.key ? "#e8f5ee" : "#d1d5db", color: filterStatus === f.key ? "#008755" : "#6b7280" }}
+                      className="rounded-full font-bold"
+                      style={{
+                        backgroundColor: isActive ? "rgba(255,255,255,0.25)" : "#f0f4f2",
+                        color: isActive ? "#fff" : "#374151",
+                        fontSize: "10px",
+                        padding: "1px 5px",
+                        minWidth: "16px",
+                        textAlign: "center",
+                      }}
                     >
                       {f.count}
                     </span>
-                  )}
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Error */}
@@ -978,43 +973,61 @@ export default function Home() {
               </div>
             )}
 
-            {/* Fine cards - mobile */}
+            {/* Fine cards - mobile (with bottom padding for sticky bar) */}
             {filteredFines.map((fine, idx) => (
               <FineCard key={idx} fine={fine} idx={idx} isMobile={true} />
             ))}
 
-            {/* Bottom summary bar - mobile */}
-            <div className="rounded-2xl overflow-hidden mt-4" style={{ backgroundColor: "#ffffff", border: "1px solid #e8ede9", boxShadow: "0 -2px 12px rgba(0,0,0,0.08)" }}>
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                <div className="text-center flex-1">
-                  <p className="text-xs text-gray-500">المخالفات</p>
-                  <p className="text-lg font-black text-gray-900">{allFines.length}</p>
-                </div>
-                <div className="w-px h-10 bg-gray-200" />
-                <div className="text-center flex-1">
-                  <p className="text-xs text-gray-500">قابل للدفع</p>
-                  <p className="text-lg font-black text-gray-900">{payableCount}</p>
-                </div>
-                <div className="w-px h-10 bg-gray-200" />
-                <div className="text-center flex-1">
-                  <p className="text-xs text-gray-500">إجمالي المبلغ</p>
-                  <p className="text-lg font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
-                </div>
+            {/* Spacer for sticky bottom bar */}
+            <div className="h-36" />
+          </div>
+
+          {/* Bottom summary bar - mobile STICKY */}
+          <div
+            className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+            style={{ backgroundColor: "#ffffff", borderTop: "1.5px solid #e8ede9", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)" }}
+          >
+            {/* Stats row */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
+              <div className="text-center flex-1">
+                <p className="text-xs text-gray-500">المخالفات</p>
+                <p className="text-base font-black text-gray-900">{allFines.length}</p>
               </div>
-              <div className="flex gap-3 p-3">
-                <button onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }} className="flex-1 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2" style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb" }}>
-                  <span>رجوع</span><ArrowRight className="w-4 h-4" />
-                </button>
-                <button disabled={selectedFines.size === 0} className="flex-1 py-3 rounded-xl text-sm font-bold text-white transition-all" style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af" }} onClick={() => toast.info("سيتم تفعيل الدفع قريباً")}>
-                  دفع المخالفات المحددة
-                </button>
+              <div className="w-px h-8 bg-gray-200" />
+              <div className="text-center flex-1">
+                <p className="text-xs text-gray-500">قابل للدفع</p>
+                <p className="text-base font-black text-gray-900">{payableCount}</p>
               </div>
-              <div className="flex items-center gap-2 px-4 pb-3">
-                <input type="checkbox" className="w-4 h-4" style={{ accentColor: "#008755" }} />
-                <span className="text-xs text-gray-500">الدفع بالتقسيط عبر الخصم المباشر</span>
+              <div className="w-px h-8 bg-gray-200" />
+              <div className="text-center flex-1">
+                <p className="text-xs text-gray-500">إجمالي المبلغ</p>
+                <p className="text-base font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
               </div>
             </div>
-            <div className="h-4" />
+            {/* Installment checkbox */}
+            <div className="flex items-center gap-2 px-4 pt-2">
+              <input type="checkbox" className="w-4 h-4 cursor-pointer" style={{ accentColor: "#008755" }} />
+              <span className="text-xs text-gray-500">الدفع بالتقسيط عبر الخصم المباشر</span>
+            </div>
+            {/* Action buttons */}
+            <div className="flex gap-2 px-4 py-2">
+              <button
+                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+                className="flex items-center justify-center gap-1 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb", minWidth: "80px" }}
+              >
+                <ArrowRight className="w-4 h-4" />
+                <span>رجوع</span>
+              </button>
+              <button
+                disabled={selectedFines.size === 0}
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all"
+                style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af", boxShadow: selectedFines.size > 0 ? "0 4px 12px rgba(0,135,85,0.3)" : "none" }}
+                onClick={() => toast.info("سيتم تفعيل الدفع قريباً")}
+              >
+                دفع المخالفات المحددة
+              </button>
+            </div>
           </div>
         </div>
       </div>
