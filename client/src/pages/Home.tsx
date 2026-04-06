@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 
 // ===== ASSETS =====
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
+const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
 // ===== SOURCE LOGOS - Inline SVG components (no external dependencies) =====
 
@@ -530,7 +531,7 @@ export default function Home() {
       >
         {/* Right: Logo + Name */}
         <div className="flex items-center gap-3">
-          <DubaiPoliceLogo size={48} />
+          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-12 w-12 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }} />
           <div className="hidden md:block">
             <div className="text-lg font-black" style={{ color: "#008755" }}>شرطة دبي</div>
             <div className="text-xs text-gray-500">Dubai Police</div>
