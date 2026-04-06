@@ -503,6 +503,10 @@ function getSourceConfig(source: string): SourceConfig | null {
 
 function SourceIcon({ source, size = 28 }: { source: string; size?: number }) {
   const config = getSourceConfig(source);
+  // Debug: log source value to understand what comes from API
+  if (typeof window !== 'undefined') {
+    console.log('[SourceIcon] source value:', JSON.stringify(source), '| matched:', config?.label ?? 'NO MATCH');
+  }
   if (config) return <>{config.logo(size)}</>;
   // Fallback: initials in colored circle
   const initials = (source || "?").substring(0, 2).toUpperCase();
@@ -1455,33 +1459,34 @@ export default function Home() {
             <div className="h-36" />
           </div>
 
-          {/* Bottom summary bar - mobile STICKY */}
+          {/* Bottom summary bar - mobile STICKY - مطابق للموقع الأصلي */}
           <div
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
             style={{ backgroundColor: "#ffffff", borderTop: "1.5px solid #e8ede9", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)" }}
           >
-            {/* Stats row - compact */}
-            <div className="flex items-center justify-between px-3 pt-2 pb-1">
+            {/* Stats row */}
+            <div className="flex items-center justify-between px-4 pt-3 pb-2">
               <div className="text-center flex-1">
-                <p className="text-[10px] text-gray-500 leading-tight">المخالفات</p>
-                <p className="text-sm font-black text-gray-900">{allFines.length}</p>
+                <p className="text-xs text-gray-500 leading-tight">المخالفات</p>
+                <p className="text-base font-black text-gray-900">{allFines.length}</p>
               </div>
-              <div className="w-px h-6 bg-gray-200" />
+              <div className="w-px h-8 bg-gray-200" />
               <div className="text-center flex-1">
-                <p className="text-[10px] text-gray-500 leading-tight">قابل للدفع</p>
-                <p className="text-sm font-black text-gray-900">{payableCount}</p>
+                <p className="text-xs text-gray-500 leading-tight">قابل للدفع</p>
+                <p className="text-base font-black text-gray-900">{payableCount}</p>
               </div>
-              <div className="w-px h-6 bg-gray-200" />
+              <div className="w-px h-8 bg-gray-200" />
               <div className="text-center flex-1">
-                <p className="text-[10px] text-gray-500 leading-tight">إجمالي المبلغ</p>
-                <p className="text-sm font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                <p className="text-xs text-gray-500 leading-tight">إجمالي المبلغ</p>
+                <p className="text-base font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
               </div>
             </div>
-            {/* Action buttons + installment in one row */}
-            <div className="flex items-center gap-2 px-3 pb-3">
+
+            {/* Main action buttons row */}
+            <div className="flex items-center gap-2 px-4 pb-2">
               <button
                 onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-sm font-bold transition-all flex-shrink-0"
+                className="flex items-center justify-center gap-1.5 px-5 py-3 rounded-2xl text-sm font-bold transition-all flex-shrink-0"
                 style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb" }}
               >
                 <ArrowRight className="w-4 h-4" />
@@ -1489,15 +1494,19 @@ export default function Home() {
               </button>
               <button
                 disabled={selectedFines.size === 0}
-                className="flex-1 py-2 rounded-xl text-sm font-bold text-white transition-all"
+                className="flex-1 py-3 rounded-2xl text-sm font-bold text-white transition-all"
                 style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af", boxShadow: selectedFines.size > 0 ? "0 4px 12px rgba(0,135,85,0.3)" : "none" }}
                 onClick={() => toast.info("سيتم تفعيل الدفع قريباً")}
               >
-                دفع المحدد
+                دفع
               </button>
-              <label className="flex items-center gap-1 flex-shrink-0 cursor-pointer">
-                <input type="checkbox" className="w-3.5 h-3.5 cursor-pointer" style={{ accentColor: "#008755" }} />
-                <span className="text-[10px] text-gray-500 leading-tight">تقسيط<br/>مباشر</span>
+            </div>
+
+            {/* Installment row - تحت الأزرار */}
+            <div className="flex items-center gap-2 px-4 pb-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="w-4 h-4 cursor-pointer rounded" style={{ accentColor: "#008755" }} />
+                <span className="text-xs text-gray-500">الدفع بالتقسيط عبر الخصم المباشر</span>
               </label>
             </div>
           </div>
