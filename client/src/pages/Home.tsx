@@ -29,74 +29,154 @@ import { Badge } from "@/components/ui/badge";
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
 const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
-// ===== SOURCE LOGOS - Inline SVG components (no external dependencies) =====
+// ===== SOURCE LOGOS - Comprehensive mapping system =====
 
-type SourceType = "dubai_police" | "rta" | "salik" | "unknown";
+interface SourceConfig {
+  label: string;
+  labelEn: string;
+  bgColor: string;
+  borderColor: string;
+  logo: (size: number) => React.ReactElement;
+}
 
-function detectSourceType(source: string): SourceType {
-  if (!source) return "unknown";
+const SOURCE_MAP: SourceConfig[] = [
+  {
+    label: "شرطة دبي",
+    labelEn: "Dubai Police",
+    bgColor: "#e8f5ee",
+    borderColor: "#008755",
+    logo: (size) => (
+      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 4 L88 18 L88 56 Q88 82 50 96 Q12 82 12 56 L12 18 Z" fill="#006633" />
+        <path d="M50 11 L80 23 L80 55 Q80 76 50 88 Q20 76 20 55 L20 23 Z" fill="#008755" />
+        <circle cx="50" cy="38" r="14" fill="none" stroke="#FFD700" strokeWidth="2" />
+        <polygon points="50,26 52.5,34 61,34 54.5,39 57,47 50,42 43,47 45.5,39 39,34 47.5,34" fill="#FFD700" />
+        <rect x="28" y="62" width="44" height="10" rx="3" fill="rgba(255,255,255,0.15)" />
+        <text x="50" y="70" textAnchor="middle" fill="white" fontSize="5.5" fontFamily="Arial" fontWeight="bold">DUBAI POLICE</text>
+      </svg>
+    ),
+  },
+  {
+    label: "شرطة أبوظبي",
+    labelEn: "Abu Dhabi Police",
+    bgColor: "#fff5e8",
+    borderColor: "#c8860a",
+    logo: (size) => (
+      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        {/* Outer circle */}
+        <circle cx="50" cy="50" r="46" fill="#8B0000" />
+        <circle cx="50" cy="50" r="40" fill="#A00000" />
+        {/* Eagle/Falcon silhouette */}
+        <ellipse cx="50" cy="42" rx="16" ry="18" fill="#C8860A" />
+        <path d="M34 42 Q26 35 22 50 Q30 55 34 48Z" fill="#C8860A" />
+        <path d="M66 42 Q74 35 78 50 Q70 55 66 48Z" fill="#C8860A" />
+        <circle cx="50" cy="35" r="8" fill="#C8860A" />
+        <circle cx="47" cy="33" r="1.5" fill="#8B0000" />
+        <path d="M44 60 L50 75 L56 60Z" fill="#C8860A" />
+        {/* Text */}
+        <text x="50" y="88" textAnchor="middle" fill="white" fontSize="5" fontFamily="Arial" fontWeight="bold">ABU DHABI POLICE</text>
+      </svg>
+    ),
+  },
+  {
+    label: "شرطة الشارقة",
+    labelEn: "Sharjah Police",
+    bgColor: "#e8f0ff",
+    borderColor: "#1a3a8c",
+    logo: (size) => (
+      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" fill="#1a3a8c" />
+        <circle cx="50" cy="50" r="38" fill="#2a4aac" />
+        <path d="M50 18 L56 36 L75 36 L60 47 L66 65 L50 54 L34 65 L40 47 L25 36 L44 36 Z" fill="#FFD700" />
+        <text x="50" y="86" textAnchor="middle" fill="white" fontSize="5" fontFamily="Arial" fontWeight="bold">SHARJAH POLICE</text>
+      </svg>
+    ),
+  },
+  {
+    label: "شرطة عجمان",
+    labelEn: "Ajman Police",
+    bgColor: "#f0f8ff",
+    borderColor: "#1a6a8c",
+    logo: (size) => (
+      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" fill="#1a6a8c" />
+        <circle cx="50" cy="50" r="38" fill="#2a7aac" />
+        <path d="M50 20 L55 35 L70 35 L58 44 L63 59 L50 50 L37 59 L42 44 L30 35 L45 35 Z" fill="white" />
+        <text x="50" y="86" textAnchor="middle" fill="white" fontSize="5" fontFamily="Arial" fontWeight="bold">AJMAN POLICE</text>
+      </svg>
+    ),
+  },
+  {
+    label: "هيئة الطرق والمواصلات",
+    labelEn: "RTA",
+    bgColor: "#fff0f0",
+    borderColor: "#CC0000",
+    logo: (size) => (
+      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="white" rx="8" />
+        <polygon points="5,90 95,90 95,25" fill="#CC0000" />
+        <text x="65" y="80" textAnchor="middle" fill="white" fontSize="20" fontFamily="Arial" fontWeight="900">RTA</text>
+        <text x="35" y="22" textAnchor="middle" fill="#333" fontSize="7.5" fontFamily="Arial" fontWeight="bold">هيئة الطرق</text>
+        <text x="35" y="33" textAnchor="middle" fill="#666" fontSize="6" fontFamily="Arial">ROADS &amp; TRANSPORT</text>
+      </svg>
+    ),
+  },
+  {
+    label: "سالك",
+    labelEn: "Salik",
+    bgColor: "#f0f0f8",
+    borderColor: "#4A4A6A",
+    logo: (size) => (
+      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="white" rx="8" />
+        <polygon points="5,80 5,20 45,50" fill="#4A4A6A" />
+        <polygon points="18,80 18,30 52,55" fill="#8080A0" opacity="0.65" />
+        <text x="72" y="46" textAnchor="middle" fill="#4A4A6A" fontSize="15" fontFamily="Arial" fontWeight="bold">سالك</text>
+        <text x="72" y="64" textAnchor="middle" fill="#6A6A8A" fontSize="14" fontFamily="Arial" fontWeight="600">Salik</text>
+      </svg>
+    ),
+  },
+  {
+    label: "درب",
+    labelEn: "Darb",
+    bgColor: "#f0f8f0",
+    borderColor: "#2d7a2d",
+    logo: (size) => (
+      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="white" rx="8" />
+        <rect x="5" y="5" width="90" height="90" rx="6" fill="#2d7a2d" />
+        <text x="50" y="48" textAnchor="middle" fill="white" fontSize="18" fontFamily="Arial" fontWeight="900">درب</text>
+        <text x="50" y="68" textAnchor="middle" fill="rgba(255,255,255,0.85)" fontSize="14" fontFamily="Arial" fontWeight="600">Darb</text>
+      </svg>
+    ),
+  },
+];
+
+function getSourceConfig(source: string): SourceConfig | null {
+  if (!source) return null;
   const upper = source.toUpperCase();
-  if (upper.includes("DUBAI POLICE") || upper.includes("شرطة دبي") || upper.includes("POLICE")) return "dubai_police";
-  if (upper.includes("RTA") || upper.includes("ROAD") || upper.includes("TRANSPORT") || upper.includes("طرق")) return "rta";
-  if (upper.includes("SALIK") || upper.includes("سالك")) return "salik";
-  return "unknown";
-}
-
-function DubaiPoliceLogo({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      {/* Shield shape */}
-      <path d="M50 5 L85 20 L85 55 Q85 80 50 95 Q15 80 15 55 L15 20 Z" fill="#006633" />
-      {/* Inner shield */}
-      <path d="M50 12 L78 24 L78 54 Q78 74 50 87 Q22 74 22 54 L22 24 Z" fill="#008755" />
-      {/* Star */}
-      <polygon points="50,22 53.5,33 65,33 55.5,39.5 59,51 50,44.5 41,51 44.5,39.5 35,33 46.5,33" fill="#FFD700" />
-      {/* Bottom text area */}
-      <rect x="30" y="60" width="40" height="8" rx="2" fill="rgba(255,255,255,0.2)" />
-      <text x="50" y="67" textAnchor="middle" fill="white" fontSize="5" fontFamily="Arial" fontWeight="bold">DUBAI POLICE</text>
-    </svg>
-  );
-}
-
-function RTALogo({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      {/* White background */}
-      <rect width="100" height="100" fill="white" rx="8" />
-      {/* Red triangle - main shape */}
-      <polygon points="10,80 90,80 90,30" fill="#CC0000" />
-      {/* RTA text */}
-      <text x="62" y="72" textAnchor="middle" fill="white" fontSize="18" fontFamily="Arial" fontWeight="900">RTA</text>
-      {/* Arabic text */}
-      <text x="38" y="25" textAnchor="middle" fill="#333" fontSize="7" fontFamily="Arial">هيئة الطرق</text>
-      <text x="38" y="35" textAnchor="middle" fill="#666" fontSize="5.5" fontFamily="Arial">ROADS &amp; TRANSPORT</text>
-    </svg>
-  );
-}
-
-function SalikLogo({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      {/* White background */}
-      <rect width="100" height="100" fill="white" rx="8" />
-      {/* Dark triangle left */}
-      <polygon points="8,75 8,25 42,50" fill="#4A4A6A" />
-      {/* Light triangle middle */}
-      <polygon points="18,75 18,35 48,55" fill="#9090B0" opacity="0.7" />
-      {/* Salik Arabic text */}
-      <text x="72" y="48" textAnchor="middle" fill="#4A4A6A" fontSize="14" fontFamily="Arial" fontWeight="bold">سالك</text>
-      {/* Salik English text */}
-      <text x="72" y="65" textAnchor="middle" fill="#6A6A8A" fontSize="13" fontFamily="Arial" fontWeight="600">Salik</text>
-    </svg>
-  );
+  const lower = source.toLowerCase();
+  // Dubai Police
+  if (upper.includes("DUBAI POLICE") || lower.includes("شرطة دبي") || (upper.includes("DUBAI") && upper.includes("POLICE"))) return SOURCE_MAP[0];
+  // Abu Dhabi Police
+  if (upper.includes("ABU DHABI") || lower.includes("أبوظبي") || lower.includes("ابوظبي") || lower.includes("شرطة أبوظبي") || lower.includes("شرطة ابوظبي")) return SOURCE_MAP[1];
+  // Sharjah Police
+  if (upper.includes("SHARJAH") || lower.includes("شرطة الشارقة") || lower.includes("الشارقة")) return SOURCE_MAP[2];
+  // Ajman Police
+  if (upper.includes("AJMAN") || lower.includes("شرطة عجمان") || lower.includes("عجمان")) return SOURCE_MAP[3];
+  // RTA
+  if (upper.includes("RTA") || upper.includes("ROAD") || upper.includes("TRANSPORT") || lower.includes("طرق") || lower.includes("مواصلات")) return SOURCE_MAP[4];
+  // Salik
+  if (upper.includes("SALIK") || lower.includes("سالك")) return SOURCE_MAP[5];
+  // Darb
+  if (upper.includes("DARB") || lower.includes("درب")) return SOURCE_MAP[6];
+  return null;
 }
 
 function SourceIcon({ source, size = 28 }: { source: string; size?: number }) {
-  const type = detectSourceType(source);
-  if (type === "dubai_police") return <DubaiPoliceLogo size={size} />;
-  if (type === "rta") return <RTALogo size={size} />;
-  if (type === "salik") return <SalikLogo size={size} />;
-  // Unknown source: show initials in colored circle
+  const config = getSourceConfig(source);
+  if (config) return <>{config.logo(size)}</>;
+  // Fallback: initials in colored circle
   const initials = (source || "?").substring(0, 2).toUpperCase();
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -107,19 +187,11 @@ function SourceIcon({ source, size = 28 }: { source: string; size?: number }) {
 }
 
 function getSourceBgColor(source: string): string {
-  const type = detectSourceType(source);
-  if (type === "dubai_police") return "#e8f5ee";
-  if (type === "rta") return "#fff0f0";
-  if (type === "salik") return "#f0f0f8";
-  return "#f0f4f2";
+  return getSourceConfig(source)?.bgColor ?? "#f0f4f2";
 }
 
 function getSourceLabel(source: string): string {
-  const type = detectSourceType(source);
-  if (type === "dubai_police") return "شرطة دبي";
-  if (type === "rta") return "هيئة الطرق";
-  if (type === "salik") return "سالك";
-  return source || "—";
+  return getSourceConfig(source)?.label ?? (source || "—");
 }
 
 // ===== SOURCE BADGE COMPONENT =====
@@ -441,15 +513,16 @@ export default function Home() {
     : plateCode;
   const plateDisplay = [plateSourceLabel.toUpperCase(), plateNumber, finalPlateCodeDisplay].filter(Boolean).join(" ");
 
-  // Filter tabs config
+  // Filter tabs config - مطابق للموقع الأصلي
   const filterTabs = [
     {
       key: "all" as FilterStatus,
       label: "الكل",
       count: allFines.length,
+      // أيقونة كتاب/سجل مطابقة للموقع الأصلي
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z"/>
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
         </svg>
       ),
     },
@@ -457,9 +530,10 @@ export default function Home() {
       key: "seized" as FilterStatus,
       label: "الحجز",
       count: allFines.filter(f => f.status === "seized").length,
+      // أيقونة قفل مطابقة للموقع الأصلي
       icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
       ),
@@ -468,21 +542,13 @@ export default function Home() {
       key: "payable" as FilterStatus,
       label: "قابل للدفع",
       count: allFines.filter(f => !f.isPaid && f.status !== "seized" && f.status !== "blackpoints").length,
+      // أيقونة عملات معدنية مطابقة للموقع الأصلي
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="10"/>
-          <path d="M12 6v6l4 2"/>
-        </svg>
-      ),
-    },
-    {
-      key: "notpayable" as FilterStatus,
-      label: "غير قابل للدفع",
-      count: allFines.filter(f => f.isPaid).length,
-      icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+          <path d="M12 8v4"/>
+          <path d="M12 16h.01"/>
+          <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3"/>
         </svg>
       ),
     },
@@ -490,11 +556,23 @@ export default function Home() {
       key: "blackpoints" as FilterStatus,
       label: "النقاط السوداء",
       count: allFines.filter(f => f.status === "blackpoints").length,
+      // أيقونة علامة تعجب داخل معين مطابقة للموقع الأصلي
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
+          <path d="M12 2L2 19.5h20L12 2z"/>
+          <line x1="12" y1="10" x2="12" y2="14"/>
           <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      ),
+    },
+    {
+      key: "notpayable" as FilterStatus,
+      label: "غير قابل للدفع",
+      count: allFines.filter(f => f.isPaid).length,
+      // أيقونة درع/حماية مطابقة للموقع الأصلي
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
       ),
     },
@@ -952,10 +1030,34 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Plate number bar */}
+            {/* Plate number bar - تصميم لوحة دبي الرسمية */}
             <div className="flex items-center justify-between py-1">
-              <div className="px-3 py-2 rounded-xl text-sm font-bold" style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", color: "#374151", letterSpacing: "1px" }} dir="ltr">{plateDisplay}</div>
-              <span className="text-sm font-bold text-gray-700">مراجعة المخالفات رقم اللوحة:</span>
+              {/* Dubai plate design */}
+              <div
+                className="flex items-stretch rounded-xl overflow-hidden flex-shrink-0"
+                style={{ border: "1.5px solid #c8c8c8", backgroundColor: "#ffffff", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
+                dir="ltr"
+              >
+                {/* Left section: code + source */}
+                <div
+                  className="flex flex-col items-center justify-center px-2 py-1"
+                  style={{ backgroundColor: "#f5f5f5", borderRight: "1.5px solid #c8c8c8", minWidth: "44px" }}
+                >
+                  <span className="text-sm font-black text-gray-900 leading-none" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
+                    {finalPlateCodeDisplay || plateCode || "—"}
+                  </span>
+                  <span className="text-[8px] font-black text-gray-600 tracking-widest mt-0.5" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
+                    {plateSource === "DXB" ? "DUBAI" : plateSource === "AUH" ? "ABU DHABI" : plateSource === "SHJ" ? "SHARJAH" : plateSource || "UAE"}
+                  </span>
+                </div>
+                {/* Right section: plate number */}
+                <div className="flex items-center justify-center px-3 py-1">
+                  <span className="text-base font-black text-gray-900" style={{ fontFamily: "'Arial Black', Arial, sans-serif", letterSpacing: "2px" }}>
+                    {plateNumber || "—"}
+                  </span>
+                </div>
+              </div>
+              <span className="text-sm font-bold text-gray-700 mr-2">مراجعة المخالفات رقم اللوحة:</span>
             </div>
 
             {/* Filter tabs - mobile: scroll horizontally, compact with icons only + count */}
