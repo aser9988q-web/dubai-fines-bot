@@ -29,66 +29,89 @@ import { Badge } from "@/components/ui/badge";
 const DUBAI_POLICE_LOGO = "/dubai-police-logo.svg";
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
 
-// ===== SOURCE LOGOS =====
-// Logo URLs from CDN
-const SOURCE_LOGOS: Record<string, { url: string; bgColor: string; label: string }> = {
-  // Dubai Police
-  "DUBAI POLICE": { url: "https://i.ibb.co/vCqX3Zy/dubai-police-logo.png", bgColor: "#e8f5ee", label: "شرطة دبي" },
-  "Dubai Police": { url: "https://i.ibb.co/vCqX3Zy/dubai-police-logo.png", bgColor: "#e8f5ee", label: "شرطة دبي" },
-  "شرطة دبي": { url: "https://i.ibb.co/vCqX3Zy/dubai-police-logo.png", bgColor: "#e8f5ee", label: "شرطة دبي" },
-  // RTA
-  "RTA": { url: "https://i.ibb.co/YBBqFhN/rta-logo.png", bgColor: "#fff0f0", label: "هيئة الطرق والمواصلات" },
-  "Roads and Transport Authority": { url: "https://i.ibb.co/YBBqFhN/rta-logo.png", bgColor: "#fff0f0", label: "هيئة الطرق والمواصلات" },
-  "هيئة الطرق والمواصلات": { url: "https://i.ibb.co/YBBqFhN/rta-logo.png", bgColor: "#fff0f0", label: "هيئة الطرق والمواصلات" },
-  // Salik
-  "SALIK": { url: "https://i.ibb.co/QmYbKzV/salik-logo.png", bgColor: "#f5f5f5", label: "سالك" },
-  "Salik": { url: "https://i.ibb.co/QmYbKzV/salik-logo.png", bgColor: "#f5f5f5", label: "سالك" },
-  "سالك": { url: "https://i.ibb.co/QmYbKzV/salik-logo.png", bgColor: "#f5f5f5", label: "سالك" },
-};
+// ===== SOURCE LOGOS - SVG INLINE =====
+type SourceType = "dubai_police" | "rta" | "salik" | "unknown";
 
-// Helper: get source logo info
-function getSourceLogo(source: string): { url: string; bgColor: string; label: string } | null {
-  if (!source) return null;
-  // Direct match
-  if (SOURCE_LOGOS[source]) return SOURCE_LOGOS[source];
-  // Case-insensitive partial match
+function detectSourceType(source: string): SourceType {
+  if (!source) return "unknown";
   const upper = source.toUpperCase();
-  if (upper.includes("DUBAI POLICE") || upper.includes("شرطة دبي")) return SOURCE_LOGOS["DUBAI POLICE"];
-  if (upper.includes("RTA") || upper.includes("ROAD") || upper.includes("TRANSPORT") || upper.includes("طرق")) return SOURCE_LOGOS["RTA"];
-  if (upper.includes("SALIK") || upper.includes("سالك")) return SOURCE_LOGOS["SALIK"];
-  return null;
+  if (upper.includes("DUBAI POLICE") || upper.includes("شرطة دبي") || upper.includes("POLICE")) return "dubai_police";
+  if (upper.includes("RTA") || upper.includes("ROAD") || upper.includes("TRANSPORT") || upper.includes("طرق")) return "rta";
+  if (upper.includes("SALIK") || upper.includes("سالك")) return "salik";
+  return "unknown";
+}
+
+// SVG logos inline - no external images needed
+function DubaiPoliceSVG({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Shield shape */}
+      <path d="M20 3L5 9v11c0 8.5 6.5 16.4 15 18.5C29.5 36.4 36 28.5 36 20V9L20 3z" fill="#008755"/>
+      {/* Star */}
+      <path d="M20 12l1.8 5.5H27l-4.6 3.4 1.8 5.5L20 23l-4.2 3.4 1.8-5.5L13 17.5h5.2z" fill="white"/>
+    </svg>
+  );
+}
+
+function RTASvg({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Circle background */}
+      <circle cx="20" cy="20" r="18" fill="#c8102e"/>
+      {/* RTA text */}
+      <text x="20" y="25" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="Arial, sans-serif">RTA</text>
+    </svg>
+  );
+}
+
+function SalikSVG({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Rounded rect */}
+      <rect x="2" y="2" width="36" height="36" rx="8" fill="#1a1a2e"/>
+      {/* S letter stylized */}
+      <text x="20" y="27" textAnchor="middle" fill="#f5a623" fontSize="20" fontWeight="bold" fontFamily="Arial, sans-serif">S</text>
+    </svg>
+  );
+}
+
+function SourceIcon({ source, size = 28 }: { source: string; size?: number }) {
+  const type = detectSourceType(source);
+  if (type === "dubai_police") return <DubaiPoliceSVG size={size} />;
+  if (type === "rta") return <RTASvg size={size} />;
+  if (type === "salik") return <SalikSVG size={size} />;
+  return <Building2 style={{ width: size * 0.7, height: size * 0.7, color: "#008755" }} />;
+}
+
+function getSourceBgColor(source: string): string {
+  const type = detectSourceType(source);
+  if (type === "dubai_police") return "#e8f5ee";
+  if (type === "rta") return "#fff0f0";
+  if (type === "salik") return "#f0f0f8";
+  return "#f0f4f2";
+}
+
+function getSourceLabel(source: string): string {
+  const type = detectSourceType(source);
+  if (type === "dubai_police") return "شرطة دبي";
+  if (type === "rta") return "هيئة الطرق";
+  if (type === "salik") return "سالك";
+  return source || "—";
 }
 
 // ===== SOURCE BADGE COMPONENT =====
 function SourceBadge({ source }: { source: string }) {
-  const logo = getSourceLogo(source);
-  if (!logo) {
-    return (
-      <div className="flex items-center gap-2">
-        <Building2 className="w-4 h-4" style={{ color: "#008755" }} />
-        <span className="text-sm font-bold text-gray-800">{source || "—"}</span>
-      </div>
-    );
-  }
+  const bgColor = getSourceBgColor(source);
+  const label = getSourceLabel(source);
   return (
     <div className="flex items-center gap-2">
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
-        style={{ backgroundColor: logo.bgColor, border: "1px solid #e5e7eb" }}
+        style={{ backgroundColor: bgColor, border: "1px solid #e5e7eb" }}
       >
-        <img
-          src={logo.url}
-          alt={logo.label}
-          className="w-6 h-6 object-contain"
-          onError={(e) => {
-            const parent = (e.target as HTMLImageElement).parentElement;
-            if (parent) {
-              parent.innerHTML = `<span style="font-size:10px;color:#666;font-weight:bold">${source.slice(0, 2).toUpperCase()}</span>`;
-            }
-          }}
-        />
+        <SourceIcon source={source} size={24} />
       </div>
-      <span className="text-sm font-bold text-gray-800">{source || "—"}</span>
+      <span className="text-sm font-bold text-gray-800">{label}</span>
     </div>
   );
 }
@@ -591,7 +614,7 @@ export default function Home() {
   const FineCard = ({ fine, idx, isMobile = false }: { fine: FineResult; idx: number; isMobile?: boolean }) => {
     const isSelected = selectedFines.has(idx);
     const amt = parseFloat((fine.amount || "0").replace(/[^0-9.]/g, ""));
-    const sourceLogo = getSourceLogo(fine.source);
+    const sourceBgColor = getSourceBgColor(fine.source);
 
     const toggleSelect = () => {
       const next = new Set(selectedFines);
@@ -632,32 +655,13 @@ export default function Home() {
             >
               {statusConfig.icon} {statusConfig.label}
             </span>
-            {/* Source logo in header */}
-            {sourceLogo ? (
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
-                style={{ backgroundColor: sourceLogo.bgColor, border: "1px solid #e5e7eb" }}
-              >
-                <img
-                  src={sourceLogo.url}
-                  alt={sourceLogo.label}
-                  className="w-7 h-7 object-contain"
-                  onError={(e) => {
-                    const parent = (e.target as HTMLImageElement).parentElement;
-                    if (parent) {
-                      parent.innerHTML = `<span style="font-size:9px;color:#666;font-weight:bold;text-align:center;padding:2px">${fine.source.slice(0, 3).toUpperCase()}</span>`;
-                    }
-                  }}
-                />
-              </div>
-            ) : (
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb" }}
-              >
-                <Building2 className="w-4 h-4" style={{ color: "#008755" }} />
-              </div>
-            )}
+            {/* Source logo in header - SVG inline */}
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
+              style={{ backgroundColor: sourceBgColor, border: "1px solid #e5e7eb" }}
+            >
+              <SourceIcon source={fine.source} size={26} />
+            </div>
             <input
               type="checkbox"
               checked={isSelected}
