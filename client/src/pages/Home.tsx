@@ -39,88 +39,175 @@ interface SourceConfig {
   logo: (size: number) => React.ReactElement;
 }
 
+// Helper: شعار شرطة عام (دائرة مع نجمة)
+function PoliceShieldLogo({ size, bg, accent, text }: { size: number; bg: string; accent: string; text: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 4 L88 18 L88 56 Q88 82 50 96 Q12 82 12 56 L12 18 Z" fill={bg} />
+      <path d="M50 10 L82 22 L82 55 Q82 78 50 90 Q18 78 18 55 L18 22 Z" fill={accent} />
+      <polygon points="50,24 53,33 63,33 55,39 58,48 50,42 42,48 45,39 37,33 47,33" fill="#FFD700" />
+      <text x="50" y="72" textAnchor="middle" fill="white" fontSize="4.5" fontFamily="Arial" fontWeight="bold">{text}</text>
+    </svg>
+  );
+}
+
+// Helper: شعار هيئة عام (مربع ملون)
+function AgencyLogo({ size, bg, text1, text2, textColor = "white" }: { size: number; bg: string; text1: string; text2: string; textColor?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" fill="white" rx="10" />
+      <rect x="5" y="5" width="90" height="90" rx="8" fill={bg} />
+      <text x="50" y="46" textAnchor="middle" fill={textColor} fontSize="13" fontFamily="Arial" fontWeight="900">{text1}</text>
+      <text x="50" y="64" textAnchor="middle" fill={textColor} fontSize="10" fontFamily="Arial" fontWeight="600" opacity="0.9">{text2}</text>
+    </svg>
+  );
+}
+
+// Helper: شعار بلدية (مربع بحدود)
+function MunicipalityLogo({ size, bg, abbr, city }: { size: number; bg: string; abbr: string; city: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" fill="white" rx="10" />
+      <rect x="5" y="5" width="90" height="90" rx="8" fill={bg} />
+      {/* Building icon */}
+      <rect x="35" y="28" width="30" height="35" fill="rgba(255,255,255,0.25)" rx="2" />
+      <rect x="40" y="35" width="6" height="8" fill="rgba(255,255,255,0.6)" rx="1" />
+      <rect x="54" y="35" width="6" height="8" fill="rgba(255,255,255,0.6)" rx="1" />
+      <rect x="40" y="48" width="6" height="8" fill="rgba(255,255,255,0.6)" rx="1" />
+      <rect x="54" y="48" width="6" height="8" fill="rgba(255,255,255,0.6)" rx="1" />
+      <rect x="44" y="56" width="12" height="7" fill="rgba(255,255,255,0.4)" rx="1" />
+      <text x="50" y="76" textAnchor="middle" fill="white" fontSize="8" fontFamily="Arial" fontWeight="900">{abbr}</text>
+      <text x="50" y="88" textAnchor="middle" fill="rgba(255,255,255,0.85)" fontSize="5.5" fontFamily="Arial">{city}</text>
+    </svg>
+  );
+}
+
 const SOURCE_MAP: SourceConfig[] = [
+  // ===== شرطة دبي =====
   {
     label: "شرطة دبي",
     labelEn: "Dubai Police",
     bgColor: "#e8f5ee",
     borderColor: "#008755",
-    logo: (size) => (
-      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50 4 L88 18 L88 56 Q88 82 50 96 Q12 82 12 56 L12 18 Z" fill="#006633" />
-        <path d="M50 11 L80 23 L80 55 Q80 76 50 88 Q20 76 20 55 L20 23 Z" fill="#008755" />
-        <circle cx="50" cy="38" r="14" fill="none" stroke="#FFD700" strokeWidth="2" />
-        <polygon points="50,26 52.5,34 61,34 54.5,39 57,47 50,42 43,47 45.5,39 39,34 47.5,34" fill="#FFD700" />
-        <rect x="28" y="62" width="44" height="10" rx="3" fill="rgba(255,255,255,0.15)" />
-        <text x="50" y="70" textAnchor="middle" fill="white" fontSize="5.5" fontFamily="Arial" fontWeight="bold">DUBAI POLICE</text>
-      </svg>
-    ),
+    logo: (size) => <PoliceShieldLogo size={size} bg="#006633" accent="#008755" text="DUBAI POLICE" />,
   },
+  // ===== شرطة أبوظبي =====
   {
     label: "شرطة أبوظبي",
     labelEn: "Abu Dhabi Police",
     bgColor: "#fff5e8",
-    borderColor: "#c8860a",
-    logo: (size) => (
-      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        {/* Outer circle */}
-        <circle cx="50" cy="50" r="46" fill="#8B0000" />
-        <circle cx="50" cy="50" r="40" fill="#A00000" />
-        {/* Eagle/Falcon silhouette */}
-        <ellipse cx="50" cy="42" rx="16" ry="18" fill="#C8860A" />
-        <path d="M34 42 Q26 35 22 50 Q30 55 34 48Z" fill="#C8860A" />
-        <path d="M66 42 Q74 35 78 50 Q70 55 66 48Z" fill="#C8860A" />
-        <circle cx="50" cy="35" r="8" fill="#C8860A" />
-        <circle cx="47" cy="33" r="1.5" fill="#8B0000" />
-        <path d="M44 60 L50 75 L56 60Z" fill="#C8860A" />
-        {/* Text */}
-        <text x="50" y="88" textAnchor="middle" fill="white" fontSize="5" fontFamily="Arial" fontWeight="bold">ABU DHABI POLICE</text>
-      </svg>
-    ),
+    borderColor: "#8B0000",
+    logo: (size) => <PoliceShieldLogo size={size} bg="#6B0000" accent="#8B0000" text="ABU DHABI POLICE" />,
   },
+  // ===== شرطة الشارقة =====
   {
     label: "شرطة الشارقة",
     labelEn: "Sharjah Police",
     bgColor: "#e8f0ff",
     borderColor: "#1a3a8c",
-    logo: (size) => (
-      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="46" fill="#1a3a8c" />
-        <circle cx="50" cy="50" r="38" fill="#2a4aac" />
-        <path d="M50 18 L56 36 L75 36 L60 47 L66 65 L50 54 L34 65 L40 47 L25 36 L44 36 Z" fill="#FFD700" />
-        <text x="50" y="86" textAnchor="middle" fill="white" fontSize="5" fontFamily="Arial" fontWeight="bold">SHARJAH POLICE</text>
-      </svg>
-    ),
+    logo: (size) => <PoliceShieldLogo size={size} bg="#0a2a7c" accent="#1a3a8c" text="SHARJAH POLICE" />,
   },
+  // ===== شرطة عجمان =====
   {
     label: "شرطة عجمان",
     labelEn: "Ajman Police",
+    bgColor: "#e8f4ff",
+    borderColor: "#0a5a8c",
+    logo: (size) => <PoliceShieldLogo size={size} bg="#0a4a7c" accent="#0a5a8c" text="AJMAN POLICE" />,
+  },
+  // ===== شرطة أم القيوين =====
+  {
+    label: "شرطة أم القيوين",
+    labelEn: "UAQ Police",
     bgColor: "#f0f8ff",
-    borderColor: "#1a6a8c",
+    borderColor: "#2a6a4a",
+    logo: (size) => <PoliceShieldLogo size={size} bg="#1a5a3a" accent="#2a6a4a" text="UAQ POLICE" />,
+  },
+  // ===== شرطة رأس الخيمة =====
+  {
+    label: "شرطة رأس الخيمة",
+    labelEn: "RAK Police",
+    bgColor: "#fff0f8",
+    borderColor: "#8c1a4a",
+    logo: (size) => <PoliceShieldLogo size={size} bg="#7c0a3a" accent="#8c1a4a" text="RAK POLICE" />,
+  },
+  // ===== شرطة الفجيرة =====
+  {
+    label: "شرطة الفجيرة",
+    labelEn: "Fujairah Police",
+    bgColor: "#f8f0ff",
+    borderColor: "#5a1a8c",
+    logo: (size) => <PoliceShieldLogo size={size} bg="#4a0a7c" accent="#5a1a8c" text="FUJAIRAH POLICE" />,
+  },
+  // ===== وزارة الداخلية =====
+  {
+    label: "وزارة الداخلية",
+    labelEn: "MOI",
+    bgColor: "#f5f0e8",
+    borderColor: "#8B6914",
     logo: (size) => (
       <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="46" fill="#1a6a8c" />
-        <circle cx="50" cy="50" r="38" fill="#2a7aac" />
-        <path d="M50 20 L55 35 L70 35 L58 44 L63 59 L50 50 L37 59 L42 44 L30 35 L45 35 Z" fill="white" />
-        <text x="50" y="86" textAnchor="middle" fill="white" fontSize="5" fontFamily="Arial" fontWeight="bold">AJMAN POLICE</text>
+        <rect width="100" height="100" fill="white" rx="10" />
+        <rect x="5" y="5" width="90" height="90" rx="8" fill="#8B6914" />
+        {/* UAE Falcon */}
+        <ellipse cx="50" cy="40" rx="14" ry="16" fill="#C8A020" />
+        <path d="M36 40 Q28 33 24 48 Q32 53 36 46Z" fill="#C8A020" />
+        <path d="M64 40 Q72 33 76 48 Q68 53 64 46Z" fill="#C8A020" />
+        <circle cx="50" cy="33" r="7" fill="#C8A020" />
+        <path d="M44 56 L50 70 L56 56Z" fill="#C8A020" />
+        <text x="50" y="84" textAnchor="middle" fill="white" fontSize="5.5" fontFamily="Arial" fontWeight="bold">MOI UAE</text>
       </svg>
     ),
   },
+  // ===== هيئة الطرق والمواصلات - دبي =====
   {
-    label: "هيئة الطرق والمواصلات",
-    labelEn: "RTA",
+    label: "هيئة الطرق والمواصلات - دبي",
+    labelEn: "RTA Dubai",
     bgColor: "#fff0f0",
     borderColor: "#CC0000",
     logo: (size) => (
       <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="100" fill="white" rx="8" />
-        <polygon points="5,90 95,90 95,25" fill="#CC0000" />
-        <text x="65" y="80" textAnchor="middle" fill="white" fontSize="20" fontFamily="Arial" fontWeight="900">RTA</text>
-        <text x="35" y="22" textAnchor="middle" fill="#333" fontSize="7.5" fontFamily="Arial" fontWeight="bold">هيئة الطرق</text>
-        <text x="35" y="33" textAnchor="middle" fill="#666" fontSize="6" fontFamily="Arial">ROADS &amp; TRANSPORT</text>
+        <polygon points="5,90 95,90 95,22" fill="#CC0000" />
+        <text x="65" y="78" textAnchor="middle" fill="white" fontSize="20" fontFamily="Arial" fontWeight="900">RTA</text>
+        <text x="33" y="20" textAnchor="middle" fill="#333" fontSize="7" fontFamily="Arial" fontWeight="bold">هيئة الطرق</text>
+        <text x="33" y="31" textAnchor="middle" fill="#555" fontSize="5.5" fontFamily="Arial">ROADS &amp; TRANSPORT</text>
       </svg>
     ),
   },
+  // ===== مركز النقل المتكامل - أبوظبي =====
+  {
+    label: "مركز النقل المتكامل - أبوظبي",
+    labelEn: "ITC Abu Dhabi",
+    bgColor: "#e8f0ff",
+    borderColor: "#1a3a8c",
+    logo: (size) => <AgencyLogo size={size} bg="#1a3a8c" text1="ITC" text2="أبوظبي" />,
+  },
+  // ===== هيئة الطرق - الشارقة =====
+  {
+    label: "هيئة الطرق والمواصلات - الشارقة",
+    labelEn: "SRTA Sharjah",
+    bgColor: "#fff5e8",
+    borderColor: "#c86a00",
+    logo: (size) => <AgencyLogo size={size} bg="#c86a00" text1="SRTA" text2="الشارقة" />,
+  },
+  // ===== هيئة النقل - عجمان =====
+  {
+    label: "هيئة النقل - عجمان",
+    labelEn: "TA Ajman",
+    bgColor: "#e8f8ff",
+    borderColor: "#0a6a9c",
+    logo: (size) => <AgencyLogo size={size} bg="#0a6a9c" text1="TA" text2="عجمان" />,
+  },
+  // ===== هيئة رأس الخيمة للمواصلات =====
+  {
+    label: "هيئة رأس الخيمة للمواصلات",
+    labelEn: "RAK TA",
+    bgColor: "#fff0f5",
+    borderColor: "#9c1a4a",
+    logo: (size) => <AgencyLogo size={size} bg="#9c1a4a" text1="RAK" text2="مواصلات" />,
+  },
+  // ===== سالك =====
   {
     label: "سالك",
     labelEn: "Salik",
@@ -129,13 +216,14 @@ const SOURCE_MAP: SourceConfig[] = [
     logo: (size) => (
       <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="100" fill="white" rx="8" />
-        <polygon points="5,80 5,20 45,50" fill="#4A4A6A" />
-        <polygon points="18,80 18,30 52,55" fill="#8080A0" opacity="0.65" />
-        <text x="72" y="46" textAnchor="middle" fill="#4A4A6A" fontSize="15" fontFamily="Arial" fontWeight="bold">سالك</text>
-        <text x="72" y="64" textAnchor="middle" fill="#6A6A8A" fontSize="14" fontFamily="Arial" fontWeight="600">Salik</text>
+        <polygon points="5,82 5,18 48,50" fill="#4A4A6A" />
+        <polygon points="20,82 20,28 55,55" fill="#8080A0" opacity="0.6" />
+        <text x="73" y="44" textAnchor="middle" fill="#4A4A6A" fontSize="15" fontFamily="Arial" fontWeight="bold">سالك</text>
+        <text x="73" y="62" textAnchor="middle" fill="#6A6A8A" fontSize="14" fontFamily="Arial" fontWeight="600">Salik</text>
       </svg>
     ),
   },
+  // ===== درب =====
   {
     label: "درب",
     labelEn: "Darb",
@@ -144,32 +232,272 @@ const SOURCE_MAP: SourceConfig[] = [
     logo: (size) => (
       <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="100" fill="white" rx="8" />
-        <rect x="5" y="5" width="90" height="90" rx="6" fill="#2d7a2d" />
-        <text x="50" y="48" textAnchor="middle" fill="white" fontSize="18" fontFamily="Arial" fontWeight="900">درب</text>
-        <text x="50" y="68" textAnchor="middle" fill="rgba(255,255,255,0.85)" fontSize="14" fontFamily="Arial" fontWeight="600">Darb</text>
+        <rect x="5" y="5" width="90" height="90" rx="7" fill="#2d7a2d" />
+        <text x="50" y="46" textAnchor="middle" fill="white" fontSize="20" fontFamily="Arial" fontWeight="900">درب</text>
+        <text x="50" y="66" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="15" fontFamily="Arial" fontWeight="600">Darb</text>
       </svg>
     ),
+  },
+  // ===== بلدية دبي =====
+  {
+    label: "بلدية دبي",
+    labelEn: "Dubai Municipality",
+    bgColor: "#e8f5ee",
+    borderColor: "#006633",
+    logo: (size) => <MunicipalityLogo size={size} bg="#006633" abbr="DM" city="Dubai" />,
+  },
+  // ===== بلدية مدينة أبوظبي =====
+  {
+    label: "بلدية مدينة أبوظبي",
+    labelEn: "Abu Dhabi City Municipality",
+    bgColor: "#fff5e8",
+    borderColor: "#8B4500",
+    logo: (size) => <MunicipalityLogo size={size} bg="#8B4500" abbr="ADM" city="Abu Dhabi" />,
+  },
+  // ===== بلدية مدينة العين =====
+  {
+    label: "بلدية مدينة العين",
+    labelEn: "Al Ain Municipality",
+    bgColor: "#f0f8e8",
+    borderColor: "#4a7a00",
+    logo: (size) => <MunicipalityLogo size={size} bg="#4a7a00" abbr="AAM" city="Al Ain" />,
+  },
+  // ===== بلدية منطقة الظفرة =====
+  {
+    label: "بلدية منطقة الظفرة",
+    labelEn: "Dhafra Municipality",
+    bgColor: "#f5f0e8",
+    borderColor: "#7a5a00",
+    logo: (size) => <MunicipalityLogo size={size} bg="#7a5a00" abbr="DHM" city="Dhafra" />,
+  },
+  // ===== بلدية مدينة الشارقة =====
+  {
+    label: "بلدية مدينة الشارقة",
+    labelEn: "Sharjah City Municipality",
+    bgColor: "#e8ecff",
+    borderColor: "#2a3a9c",
+    logo: (size) => <MunicipalityLogo size={size} bg="#2a3a9c" abbr="SHM" city="Sharjah" />,
+  },
+  // ===== بلدية منطقة عجمان =====
+  {
+    label: "بلدية منطقة عجمان",
+    labelEn: "Ajman Municipality",
+    bgColor: "#e8f4ff",
+    borderColor: "#0a5a9c",
+    logo: (size) => <MunicipalityLogo size={size} bg="#0a5a9c" abbr="AJM" city="Ajman" />,
+  },
+  // ===== بلدية أم القيوين =====
+  {
+    label: "بلدية أم القيوين",
+    labelEn: "UAQ Municipality",
+    bgColor: "#e8fff5",
+    borderColor: "#007a4a",
+    logo: (size) => <MunicipalityLogo size={size} bg="#007a4a" abbr="UAQ" city="Um Al Quwain" />,
+  },
+  // ===== بلدية رأس الخيمة =====
+  {
+    label: "بلدية رأس الخيمة",
+    labelEn: "RAK Municipality",
+    bgColor: "#fff0f5",
+    borderColor: "#9c1a4a",
+    logo: (size) => <MunicipalityLogo size={size} bg="#9c1a4a" abbr="RAKM" city="Ras Al Khaimah" />,
+  },
+  // ===== بلدية الفجيرة =====
+  {
+    label: "بلدية الفجيرة",
+    labelEn: "Fujairah Municipality",
+    bgColor: "#f5f0ff",
+    borderColor: "#5a1a9c",
+    logo: (size) => <MunicipalityLogo size={size} bg="#5a1a9c" abbr="FJM" city="Fujairah" />,
+  },
+  // ===== دائرة التنمية الاقتصادية - دبي =====
+  {
+    label: "دائرة التنمية الاقتصادية - دبي",
+    labelEn: "DED Dubai",
+    bgColor: "#fff8e8",
+    borderColor: "#c87000",
+    logo: (size) => <AgencyLogo size={size} bg="#c87000" text1="DED" text2="Dubai" />,
+  },
+  // ===== دائرة التنمية الاقتصادية - أبوظبي =====
+  {
+    label: "دائرة التنمية الاقتصادية - أبوظبي",
+    labelEn: "ADDED",
+    bgColor: "#fff5e8",
+    borderColor: "#8B4500",
+    logo: (size) => <AgencyLogo size={size} bg="#8B4500" text1="ADDED" text2="أبوظبي" />,
+  },
+  // ===== دائرة التنمية الاقتصادية - الشارقة =====
+  {
+    label: "دائرة التنمية الاقتصادية - الشارقة",
+    labelEn: "SEDD",
+    bgColor: "#e8ecff",
+    borderColor: "#2a3a9c",
+    logo: (size) => <AgencyLogo size={size} bg="#2a3a9c" text1="SEDD" text2="الشارقة" />,
+  },
+  // ===== الهيئة الاتحادية للهوية والجنسية (ICP) =====
+  {
+    label: "الهيئة الاتحادية للهوية والجنسية والجمارك وأمن المنافذ",
+    labelEn: "ICP",
+    bgColor: "#f5f0e8",
+    borderColor: "#7a5a00",
+    logo: (size) => <AgencyLogo size={size} bg="#7a5a00" text1="ICP" text2="UAE" />,
+  },
+  // ===== النيابة العامة =====
+  {
+    label: "النيابة العامة للدولة",
+    labelEn: "Public Prosecution",
+    bgColor: "#f0f0f5",
+    borderColor: "#3a3a6a",
+    logo: (size) => <AgencyLogo size={size} bg="#3a3a6a" text1="PP" text2="UAE" />,
+  },
+  // ===== دائرة القضاء - أبوظبي =====
+  {
+    label: "دائرة القضاء - أبوظبي",
+    labelEn: "ADJD",
+    bgColor: "#f5f0e8",
+    borderColor: "#8B6914",
+    logo: (size) => <AgencyLogo size={size} bg="#8B6914" text1="ADJD" text2="أبوظبي" />,
+  },
+  // ===== محاكم دبي =====
+  {
+    label: "محاكم دبي",
+    labelEn: "Dubai Courts",
+    bgColor: "#e8f5ee",
+    borderColor: "#006633",
+    logo: (size) => <AgencyLogo size={size} bg="#006633" text1="DC" text2="Dubai" />,
   },
 ];
 
 function getSourceConfig(source: string): SourceConfig | null {
   if (!source) return null;
-  const upper = source.toUpperCase();
-  const lower = source.toLowerCase();
-  // Dubai Police
-  if (upper.includes("DUBAI POLICE") || lower.includes("شرطة دبي") || (upper.includes("DUBAI") && upper.includes("POLICE"))) return SOURCE_MAP[0];
-  // Abu Dhabi Police
-  if (upper.includes("ABU DHABI") || lower.includes("أبوظبي") || lower.includes("ابوظبي") || lower.includes("شرطة أبوظبي") || lower.includes("شرطة ابوظبي")) return SOURCE_MAP[1];
-  // Sharjah Police
-  if (upper.includes("SHARJAH") || lower.includes("شرطة الشارقة") || lower.includes("الشارقة")) return SOURCE_MAP[2];
-  // Ajman Police
-  if (upper.includes("AJMAN") || lower.includes("شرطة عجمان") || lower.includes("عجمان")) return SOURCE_MAP[3];
-  // RTA
-  if (upper.includes("RTA") || upper.includes("ROAD") || upper.includes("TRANSPORT") || lower.includes("طرق") || lower.includes("مواصلات")) return SOURCE_MAP[4];
-  // Salik
-  if (upper.includes("SALIK") || lower.includes("سالك")) return SOURCE_MAP[5];
-  // Darb
-  if (upper.includes("DARB") || lower.includes("درب")) return SOURCE_MAP[6];
+  const s = source.trim();
+  const up = s.toUpperCase();
+  const lo = s.toLowerCase();
+
+  // ===== شرطة دبي =====
+  if (lo.includes("شرطة دبي") || up.includes("DUBAI POLICE") || (up.includes("DUBAI") && up.includes("POLICE")))
+    return SOURCE_MAP[0];
+
+  // ===== شرطة أبوظبي =====
+  if (lo.includes("شرطة أبوظبي") || lo.includes("شرطة ابوظبي") || up.includes("ABU DHABI POLICE") || (up.includes("ABU DHABI") && up.includes("POLICE")))
+    return SOURCE_MAP[1];
+
+  // ===== شرطة الشارقة =====
+  if (lo.includes("شرطة الشارقة") || up.includes("SHARJAH POLICE") || (up.includes("SHARJAH") && up.includes("POLICE")))
+    return SOURCE_MAP[2];
+
+  // ===== شرطة عجمان =====
+  if (lo.includes("شرطة عجمان") || up.includes("AJMAN POLICE") || (up.includes("AJMAN") && up.includes("POLICE")))
+    return SOURCE_MAP[3];
+
+  // ===== شرطة أم القيوين =====
+  if (lo.includes("شرطة أم القيوين") || lo.includes("شرطة ام القيوين") || up.includes("UAQ POLICE") || (up.includes("UAQ") && up.includes("POLICE")) || up.includes("UMM AL QUWAIN"))
+    return SOURCE_MAP[4];
+
+  // ===== شرطة رأس الخيمة =====
+  if (lo.includes("شرطة رأس الخيمة") || lo.includes("شرطة راس الخيمة") || up.includes("RAK POLICE") || (up.includes("RAS AL KHAIMAH") && up.includes("POLICE")))
+    return SOURCE_MAP[5];
+
+  // ===== شرطة الفجيرة =====
+  if (lo.includes("شرطة الفجيرة") || up.includes("FUJAIRAH POLICE") || (up.includes("FUJAIRAH") && up.includes("POLICE")))
+    return SOURCE_MAP[6];
+
+  // ===== وزارة الداخلية =====
+  if (lo.includes("وزارة الداخلية") || up.includes("MINISTRY OF INTERIOR") || up === "MOI")
+    return SOURCE_MAP[7];
+
+  // ===== هيئة الطرق والمواصلات - دبي (RTA) =====
+  if (lo.includes("هيئة الطرق والمواصلات") || up.includes("RTA") || up.includes("ROADS AND TRANSPORT") || up.includes("ROADS & TRANSPORT"))
+    return SOURCE_MAP[8];
+
+  // ===== مركز النقل المتكامل - أبوظبي =====
+  if (lo.includes("مركز النقل المتكامل") || up.includes("ITC") || up.includes("INTEGRATED TRANSPORT"))
+    return SOURCE_MAP[9];
+
+  // ===== هيئة الطرق - الشارقة =====
+  if (lo.includes("هيئة الطرق") && lo.includes("الشارقة") || up.includes("SRTA"))
+    return SOURCE_MAP[10];
+
+  // ===== هيئة النقل - عجمان =====
+  if ((lo.includes("هيئة النقل") && lo.includes("عجمان")) || (up.includes("TA") && up.includes("AJMAN")))
+    return SOURCE_MAP[11];
+
+  // ===== هيئة رأس الخيمة للمواصلات =====
+  if (lo.includes("هيئة رأس الخيمة") || lo.includes("هيئة راس الخيمة") || up.includes("RAK TA") || (up.includes("RAK") && up.includes("TRANSPORT")))
+    return SOURCE_MAP[12];
+
+  // ===== سالك =====
+  if (lo.includes("سالك") || up.includes("SALIK"))
+    return SOURCE_MAP[13];
+
+  // ===== درب =====
+  if (lo.includes("درب") || up.includes("DARB"))
+    return SOURCE_MAP[14];
+
+  // ===== بلدية دبي =====
+  if (lo.includes("بلدية دبي") || up.includes("DUBAI MUNICIPALITY") || up.includes("DUBAI MUN"))
+    return SOURCE_MAP[15];
+
+  // ===== بلدية مدينة أبوظبي =====
+  if (lo.includes("بلدية مدينة أبوظبي") || lo.includes("بلدية مدينة ابوظبي") || up.includes("ABU DHABI CITY MUNICIPALITY"))
+    return SOURCE_MAP[16];
+
+  // ===== بلدية مدينة العين =====
+  if (lo.includes("بلدية مدينة العين") || up.includes("AL AIN MUNICIPALITY"))
+    return SOURCE_MAP[17];
+
+  // ===== بلدية منطقة الظفرة =====
+  if (lo.includes("بلدية منطقة الظفرة") || up.includes("DHAFRA"))
+    return SOURCE_MAP[18];
+
+  // ===== بلدية مدينة الشارقة =====
+  if (lo.includes("بلدية مدينة الشارقة") || up.includes("SHARJAH CITY MUNICIPALITY") || up.includes("SHARJAH MUN"))
+    return SOURCE_MAP[19];
+
+  // ===== بلدية منطقة عجمان =====
+  if (lo.includes("بلدية منطقة عجمان") || lo.includes("بلدية عجمان") || up.includes("AJMAN MUNICIPALITY"))
+    return SOURCE_MAP[20];
+
+  // ===== بلدية أم القيوين =====
+  if (lo.includes("بلدية أم القيوين") || lo.includes("بلدية ام القيوين") || up.includes("UAQ MUNICIPALITY"))
+    return SOURCE_MAP[21];
+
+  // ===== بلدية رأس الخيمة =====
+  if (lo.includes("بلدية رأس الخيمة") || lo.includes("بلدية راس الخيمة") || up.includes("RAK MUNICIPALITY"))
+    return SOURCE_MAP[22];
+
+  // ===== بلدية الفجيرة =====
+  if (lo.includes("بلدية الفجيرة") || up.includes("FUJAIRAH MUNICIPALITY"))
+    return SOURCE_MAP[23];
+
+  // ===== دائرة التنمية الاقتصادية - دبي =====
+  if ((lo.includes("دائرة التنمية") && lo.includes("دبي")) || up.includes("DED") && up.includes("DUBAI"))
+    return SOURCE_MAP[24];
+
+  // ===== دائرة التنمية الاقتصادية - أبوظبي =====
+  if ((lo.includes("دائرة التنمية") && (lo.includes("أبوظبي") || lo.includes("ابوظبي"))) || up.includes("ADDED"))
+    return SOURCE_MAP[25];
+
+  // ===== دائرة التنمية الاقتصادية - الشارقة =====
+  if ((lo.includes("دائرة التنمية") && lo.includes("الشارقة")) || up.includes("SEDD"))
+    return SOURCE_MAP[26];
+
+  // ===== ICP =====
+  if (lo.includes("هيئة الاتحادية للهوية") || up.includes("ICP") || up.includes("IDENTITY") || up.includes("CUSTOMS"))
+    return SOURCE_MAP[27];
+
+  // ===== النيابة العامة =====
+  if (lo.includes("النيابة العامة") || up.includes("PUBLIC PROSECUTION") || up.includes("PROSECUTION"))
+    return SOURCE_MAP[28];
+
+  // ===== دائرة القضاء - أبوظبي =====
+  if ((lo.includes("دائرة القضاء") && (lo.includes("أبوظبي") || lo.includes("ابوظبي"))) || up.includes("ADJD"))
+    return SOURCE_MAP[29];
+
+  // ===== محاكم دبي =====
+  if (lo.includes("محاكم دبي") || up.includes("DUBAI COURTS"))
+    return SOURCE_MAP[30];
+
   return null;
 }
 
