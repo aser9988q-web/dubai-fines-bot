@@ -1848,7 +1848,7 @@ export default function Home() {
           <div
             style={{
               position: "absolute",
-              top: "62%",
+              top: "47%",
               left: "50%",
               transform: "translateX(-50%)",
               width: "68%",
