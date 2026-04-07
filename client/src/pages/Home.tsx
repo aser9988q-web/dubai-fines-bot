@@ -1733,15 +1733,6 @@ export default function Home() {
           <p className="text-sm text-gray-500 mr-3">{t.home.subtitle}</p>
           </div>
 
-          {/* Live plate preview - desktop */}
-          <div className="flex justify-center mb-5">
-            <DubaiPlateDisplayLarge
-              plateSource={plateSource}
-              plateNumber={plateNumber}
-              plateCode={plateSource === 'KSA' ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(' ') : plateCode}
-            />
-          </div>
-
           {/* Search tabs */}
           <div
             className="flex items-center gap-1 mb-5 p-1 rounded-2xl"
@@ -1843,25 +1834,7 @@ export default function Home() {
             style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "auto", minHeight: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
             onEnded={(e) => { e.currentTarget.pause(); }}
           />
-          {/* Live plate preview overlay - shown only when video stops AND user has entered data */}
-          {!isVideoPlaying && (plateSource || plateNumber || plateCode || ksaLetter1 || ksaLetter2 || ksaLetter3) && (
-          <div
-            style={{
-              position: "absolute",
-              top: "47%",
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: "68%",
-              zIndex: 10,
-            }}
-          >
-            <DubaiPlateDisplayLarge
-              plateSource={plateSource}
-              plateNumber={plateNumber}
-              plateCode={plateSource === 'KSA' ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(' ') : plateCode}
-            />
-          </div>
-          )}
+
         </div>
 
         {/* Form card */}
