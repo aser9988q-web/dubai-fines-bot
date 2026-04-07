@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -646,12 +647,13 @@ function PlateFormFields({
   onEnter: () => void;
 }) {
   const currentPlateCodes = plateSource ? (PLATE_CODES_BY_SOURCE[plateSource] || []) : [];
+  const { t } = useLanguage();
 
   return (
     <>
       {/* جهة إصدار اللوحة */}
       <div className="space-y-2">
-        <label className="text-sm font-bold text-gray-700 block text-right">جهة إصدار اللوحة</label>
+        <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateSource}</label>
         <div className="relative">
           <select
             value={plateSource}
@@ -659,7 +661,7 @@ function PlateFormFields({
             className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none"
             style={{ backgroundColor: "#ffffff", border: plateSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: plateSource ? "#111827" : "#9ca3af", fontWeight: plateSource ? "600" : "400", paddingLeft: "2.5rem" }}
           >
-            <option value="" disabled>اختر</option>
+            <option value="" disabled>{t.home.form.plateSourcePlaceholder}</option>
             {ALL_PLATE_SOURCES.map((s) => (<option key={s.value} value={s.value}>{s.label}</option>))}
           </select>
           <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
@@ -667,14 +669,14 @@ function PlateFormFields({
       </div>
       {/* رقم اللوحة */}
       <div className="space-y-2">
-        <label className="text-sm font-bold text-gray-700 block text-right">رقم اللوحة</label>
-        <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} placeholder="رقم اللوحة" onKeyDown={(e) => e.key === "Enter" && onEnter()} className="w-full text-base rounded-xl px-4 py-4 focus:outline-none" style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
+        <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateNumber}</label>
+        <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} placeholder={t.home.form.plateNumberPlaceholder} onKeyDown={(e) => e.key === "Enter" && onEnter()} className="w-full text-base rounded-xl px-4 py-4 focus:outline-none" style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
       </div>
       {/* رمز اللوحة */}
       {plateSource === "KSA" ? (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 block text-right">رمز اللوحة</label>
+            <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateCode}</label>
             <div className="relative">
               <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
                 <option value="">اختر</option>
@@ -700,10 +702,10 @@ function PlateFormFields({
         </>
       ) : (
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 block text-right">رمز اللوحة</label>
+          <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateCode}</label>
           <div className="relative">
             <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} disabled={!plateSource} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: plateSource ? "#ffffff" : "#f3f4f6", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", cursor: plateSource ? "pointer" : "not-allowed", paddingLeft: "2.5rem" }} dir="ltr">
-              <option value="">اختر</option>
+              <option value="">{t.home.form.plateCodePlaceholder}</option>
               {currentPlateCodes.map((code) => (<option key={code} value={code}>{code}</option>))}
             </select>
             <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
@@ -730,6 +732,7 @@ export default function Home() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const videoRef = useRef<HTMLVideoElement>(null);
   const [headerScrolled, setHeaderScrolled] = useState(false);
+  const { t, lang, toggleLanguage, isRTL } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => setHeaderScrolled(window.scrollY > 10);
@@ -833,9 +836,9 @@ export default function Home() {
   );
 
   const searchTabs = [
-    { key: "plate" as SearchTab, labelAr: "اللوحة", icon: <PlateIcon /> },
-    { key: "licence" as SearchTab, labelAr: "الرخصة", icon: <LicenceIcon /> },
-    { key: "tcnumber" as SearchTab, labelAr: "الملف المروري", icon: <TCIcon /> },
+    { key: "plate" as SearchTab, labelAr: t.home.tabs.plate, icon: <PlateIcon /> },
+    { key: "licence" as SearchTab, labelAr: t.home.tabs.license, icon: <LicenceIcon /> },
+    { key: "tcnumber" as SearchTab, labelAr: t.home.tabs.trafficFile, icon: <TCIcon /> },
   ];
 
   // Plate display
@@ -849,7 +852,7 @@ export default function Home() {
   const filterTabs = [
     {
       key: "all" as FilterStatus,
-      label: "الكل",
+      label: t.home.results.filters.all,
       count: allFines.length,
       // أيقونة كتاب/سجل مطابقة للموقع الأصلي
       icon: (
@@ -860,7 +863,7 @@ export default function Home() {
     },
     {
       key: "seized" as FilterStatus,
-      label: "الحجز",
+      label: t.home.results.filters.booking,
       count: allFines.filter(f => f.status === "seized").length,
       // أيقونة قفل مطابقة للموقع الأصلي
       icon: (
@@ -872,7 +875,7 @@ export default function Home() {
     },
     {
       key: "payable" as FilterStatus,
-      label: "قابل للدفع",
+      label: t.home.results.filters.payable,
       count: allFines.filter(f => !f.isPaid && f.status !== "seized" && f.status !== "blackpoints").length,
       // أيقونة عملات معدنية مطابقة للموقع الأصلي
       icon: (
@@ -886,7 +889,7 @@ export default function Home() {
     },
     {
       key: "blackpoints" as FilterStatus,
-      label: "النقاط السوداء",
+      label: t.home.results.filters.blackPoints,
       count: allFines.filter(f => f.status === "blackpoints").length,
       // أيقونة علامة تعجب داخل معين مطابقة للموقع الأصلي
       icon: (
@@ -899,7 +902,7 @@ export default function Home() {
     },
     {
       key: "notpayable" as FilterStatus,
-      label: "غير قابل للدفع",
+      label: t.home.results.filters.notPayable,
       count: allFines.filter(f => f.isPaid).length,
       // أيقونة درع/حماية مطابقة للموقع الأصلي
       icon: (
@@ -925,12 +928,12 @@ export default function Home() {
         style={{ backgroundColor: "#005c38", color: "#ffffff" }}
       >
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> 901</span>
-          <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> info@dubaipolice.gov.ae</span>
+          <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {t.header.topBar.phone}</span>
+          <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {t.header.topBar.email}</span>
         </div>
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-1 hover:opacity-80"><Globe className="w-3 h-3" /> English</button>
-          <button className="flex items-center gap-1 hover:opacity-80"><User className="w-3 h-3" /> تسجيل الدخول</button>
+          <button onClick={toggleLanguage} className="flex items-center gap-1 hover:opacity-80 font-bold"><Globe className="w-3 h-3" /> {t.header.topBar.language}</button>
+          <button className="flex items-center gap-1 hover:opacity-80"><User className="w-3 h-3" /> {t.header.topBar.login}</button>
         </div>
       </div>
 
@@ -943,20 +946,20 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-12 w-12 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }} />
           <div className="hidden md:block">
-            <div className="text-lg font-black" style={{ color: "#008755" }}>شرطة دبي</div>
-            <div className="text-xs text-gray-500">Dubai Police</div>
+            <div className="text-lg font-black" style={{ color: "#008755" }}>{t.header.siteName}</div>
+            <div className="text-xs text-gray-500">{t.header.siteNameEn}</div>
           </div>
         </div>
 
         {/* Center: Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
           <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">
-            <HomeIcon className="w-4 h-4" /> الرئيسية
+            <HomeIcon className="w-4 h-4" /> {t.header.nav.home}
           </button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">الخدمات</button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">الأخبار</button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">عن شرطة دبي</button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">تواصل معنا</button>
+          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.services}</button>
+          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.news}</button>
+          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.about}</button>
+          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.contact}</button>
         </nav>
 
         {/* Left: Icons */}
@@ -994,20 +997,20 @@ export default function Home() {
           style={{ backgroundColor: "#f8faf9", borderColor: "#e8ede9" }}
         >
           <button className="text-gray-500 hover:text-green-700 flex items-center gap-1">
-            <HomeIcon className="w-3.5 h-3.5" /> الرئيسية
+            <HomeIcon className="w-3.5 h-3.5" /> {t.breadcrumb.home}
           </button>
           <ChevronLeft className="w-3.5 h-3.5 text-gray-400" />
-          <button className="text-gray-500 hover:text-green-700">الخدمات</button>
+          <button className="text-gray-500 hover:text-green-700">{t.breadcrumb.services}</button>
           <ChevronLeft className="w-3.5 h-3.5 text-gray-400" />
-          <button className="text-gray-500 hover:text-green-700">خدمات الأفراد</button>
+          <button className="text-gray-500 hover:text-green-700">{t.breadcrumb.individualServices}</button>
           <ChevronLeft className="w-3.5 h-3.5 text-gray-400" />
-          <span className="font-semibold" style={{ color: "#008755" }}>الاستعلام والدفع عن المخالفات المرورية</span>
+          <span className="font-semibold" style={{ color: "#008755" }}>{t.breadcrumb.finesLookup}</span>
         </div>
       )}
 
       {/* Breadcrumb - mobile */}
       <div className="md:hidden px-4 pb-3 pt-1 flex items-center justify-end gap-2 text-sm">
-        <span className="font-semibold text-gray-700">الاستعلام والدفع</span>
+        <span className="font-semibold text-gray-700">{t.breadcrumb.finesLookup}</span>
         <button className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#f0f0f0", border: "1px solid #e5e7eb" }}>
           <ChevronLeft className="w-4 h-4 text-gray-500" />
         </button>
@@ -1057,12 +1060,12 @@ export default function Home() {
 
     // Status badge config
     const statusConfig = fine.isPaid
-      ? { label: "مدفوع", bg: "#e8f5ee", color: "#008755", icon: "✓" }
+      ? { label: t.home.results.status.paid, bg: "#e8f5ee", color: "#008755", icon: "✓" }
       : fine.status === "seized"
-      ? { label: "محجوز", bg: "#fff0f0", color: "#dc2626", icon: "🔒" }
+      ? { label: t.home.results.status.seized, bg: "#fff0f0", color: "#dc2626", icon: "🔒" }
       : fine.status === "blackpoints"
-      ? { label: "نقاط سوداء", bg: "#fef3c7", color: "#d97706", icon: "⚠" }
-      : { label: "قابل للدفع", bg: "#fff3e0", color: "#f57c00", icon: "●" };
+      ? { label: t.home.results.status.blackPoints, bg: "#fef3c7", color: "#d97706", icon: "⚠" }
+      : { label: t.home.results.filters.payable, bg: "#fff3e0", color: "#f57c00", icon: "●" };
 
     return (
       <div
@@ -1116,7 +1119,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-gray-500">
               <Building2 className="w-4 h-4" style={{ color: "#008755" }} />
-              <span className="text-sm">المصدر</span>
+              <span className="text-sm">{t.home.results.fineCard.source}</span>
             </div>
             <SourceBadge source={fine.source} />
           </div>
@@ -1124,7 +1127,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-gray-500">
               <MapPin className="w-4 h-4" style={{ color: "#008755" }} />
-              <span className="text-sm">الموقع</span>
+              <span className="text-sm">{t.home.results.fineCard.location}</span>
             </div>
             <span className="text-sm font-semibold text-gray-800 text-left max-w-[55%] truncate" dir="rtl">{fine.location || "—"}</span>
           </div>
@@ -1133,7 +1136,7 @@ export default function Home() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-gray-500">
                 <Gauge className="w-4 h-4" style={{ color: "#008755" }} />
-                <span className="text-sm">السرعة</span>
+                <span className="text-sm">{t.home.results.fineCard.speed}</span>
               </div>
               <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.speed}</span>
             </div>
@@ -1142,7 +1145,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-gray-500">
               <Hash className="w-4 h-4" style={{ color: "#008755" }} />
-              <span className="text-sm">رقم المخالفة</span>
+              <span className="text-sm">{t.home.results.fineCard.ticketNo}</span>
             </div>
             <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.ticketNo || "—"}</span>
           </div>
@@ -1150,7 +1153,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-gray-500">
               <Calendar className="w-4 h-4" style={{ color: "#008755" }} />
-              <span className="text-sm">التاريخ والوقت</span>
+              <span className="text-sm">{t.home.results.fineCard.dateTime}</span>
             </div>
             <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.dateTime || "—"}</span>
           </div>
@@ -1163,7 +1166,7 @@ export default function Home() {
             <div className="px-4 py-3">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Ticket className="w-4 h-4" style={{ color: "#008755" }} />
-                <span className="text-sm font-bold" style={{ color: "#008755" }}>تفاصيل المخالفة</span>
+                <span className="text-sm font-bold" style={{ color: "#008755" }}>{t.home.results.fineCard.details}</span>
               </div>
               <div className="flex items-start gap-2 justify-center">
                 <p className="text-sm text-gray-700 text-center">{fine.description}</p>
@@ -1243,7 +1246,7 @@ export default function Home() {
                     else setSelectedFines(new Set(filteredFines.map((_, i) => i)));
                   }}
                 >
-                  تحديد الكل
+                  {selectedFines.size === filteredFines.length ? t.home.results.deselectAll : t.home.results.selectAll}
                 </button>
                 <button
                   className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
@@ -1251,7 +1254,7 @@ export default function Home() {
                   onClick={() => toast.info("سيتم تفعيله قريباً")}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
-                  طلب قائمة المخالفات
+                  {t.home.results.requestList}
                 </button>
               </div>
             </div>
@@ -1268,8 +1271,8 @@ export default function Home() {
             {result.success && filteredFines.length === 0 && (
               <div className="flex flex-col items-center gap-3 py-20 bg-white rounded-2xl">
                 <CheckCircle2 className="w-20 h-20" style={{ color: "#008755" }} />
-                <p className="text-xl font-black text-gray-700">سجل نظيف</p>
-                <p className="text-sm text-gray-400">لا توجد مخالفات مرورية مسجلة</p>
+                <p className="text-xl font-black text-gray-700">{t.home.results.noFines}</p>
+                <p className="text-sm text-gray-400">{t.home.results.noFinesDesc}</p>
               </div>
             )}
 
@@ -1288,29 +1291,29 @@ export default function Home() {
               >
                 <div className="flex items-center px-6 py-4 gap-6 border-b border-gray-100 flex-wrap">
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">المخالفات</p>
+                    <p className="text-xs text-gray-500 mb-0.5">{t.home.results.totalFines}</p>
                     <p className="text-2xl font-black text-gray-900">{allFines.length}</p>
                   </div>
                   <div className="w-px h-12 bg-gray-200" />
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">قابل للدفع</p>
+                    <p className="text-xs text-gray-500 mb-0.5">{t.home.results.filters.payable}</p>
                     <p className="text-2xl font-black text-gray-900">{payableCount}</p>
                   </div>
                   <div className="w-px h-12 bg-gray-200" />
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">المحدد للدفع</p>
+                    <p className="text-xs text-gray-500 mb-0.5">{t.home.results.summary.selected}</p>
                     <p className="text-2xl font-black text-gray-900">{selectedFines.size}</p>
                   </div>
                   <div className="w-px h-12 bg-gray-200" />
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">إجمالي المبلغ</p>
+                    <p className="text-xs text-gray-500 mb-0.5">{t.home.results.totalAmount}</p>
                     <p className="text-2xl font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
                   </div>
                   <div className="flex-1" />
                   <div className="flex items-center gap-3 flex-wrap">
-                    <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
+                      <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4" style={{ accentColor: "#008755" }} />
-                      الدفع بالتقسيط عبر الخصم المباشر
+                      {t.home.results.payInstallment}
                     </label>
                     <button
                       disabled={selectedFines.size === 0}
@@ -1330,7 +1333,7 @@ export default function Home() {
                         navigate("/payment");
                       }}
                     >
-                      دفع المخالفات المحددة
+                      {t.home.results.paySelected}
                     </button>
                   </div>
                 </div>
@@ -1457,8 +1460,8 @@ export default function Home() {
             {result.success && filteredFines.length === 0 && (
               <div className="flex flex-col items-center gap-3 py-12">
                 <CheckCircle2 className="w-16 h-16" style={{ color: "#008755" }} />
-                <p className="text-lg font-bold text-gray-700">سجل نظيف</p>
-                <p className="text-sm text-gray-400">لا توجد مخالفات مرورية مسجلة</p>
+            <p className="text-lg font-bold text-gray-700">{t.home.results.noFines}</p>
+              <p className="text-sm text-gray-400">{t.home.results.noFinesDesc}</p>
               </div>
             )}
 
@@ -1479,17 +1482,17 @@ export default function Home() {
             {/* Stats row */}
             <div className="flex items-center justify-between px-4 pt-3 pb-2">
               <div className="text-center flex-1">
-                <p className="text-xs text-gray-500 leading-tight">المخالفات</p>
+                <p className="text-xs text-gray-500 leading-tight">{t.home.results.totalFines}</p>
                 <p className="text-base font-black text-gray-900">{allFines.length}</p>
               </div>
               <div className="w-px h-8 bg-gray-200" />
               <div className="text-center flex-1">
-                <p className="text-xs text-gray-500 leading-tight">قابل للدفع</p>
+                <p className="text-xs text-gray-500 leading-tight">{t.home.results.filters.payable}</p>
                 <p className="text-base font-black text-gray-900">{payableCount}</p>
               </div>
               <div className="w-px h-8 bg-gray-200" />
               <div className="text-center flex-1">
-                <p className="text-xs text-gray-500 leading-tight">إجمالي المبلغ</p>
+                <p className="text-xs text-gray-500 leading-tight">{t.home.results.totalAmount}</p>
                 <p className="text-base font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
               </div>
             </div>
@@ -1502,7 +1505,7 @@ export default function Home() {
                 style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb" }}
               >
                 <ArrowRight className="w-4 h-4" />
-                <span>رجوع</span>
+                <span>{lang === "ar" ? "رجوع" : "Back"}</span>
               </button>
               <button
                 disabled={selectedFines.size === 0}
@@ -1577,9 +1580,9 @@ export default function Home() {
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-1">
               <div className="w-1 h-6 rounded-full" style={{ backgroundColor: "#008755" }} />
-              <h2 className="text-xl font-black text-gray-900">الاستعلام عن المخالفات</h2>
-            </div>
-            <p className="text-sm text-gray-500 mr-3">أدخل بيانات اللوحة للاستعلام عن المخالفات المرورية</p>
+            <h2 className="text-xl font-black text-gray-900">{t.home.title}</h2>
+          </div>
+          <p className="text-sm text-gray-500 mr-3">{t.home.subtitle}</p>
           </div>
 
           {/* Search tabs */}
@@ -1629,9 +1632,9 @@ export default function Home() {
               style={{ backgroundColor: "#008755", boxShadow: "0 4px 16px rgba(0,135,85,0.35)" }}
             >
               {queryMutation.isPending ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /><span>جاري الاستعلام...</span></>
+                <><Loader2 className="w-5 h-5 animate-spin" /><span>{t.home.form.checking}</span></>
               ) : (
-                <><ArrowLeft className="w-5 h-5" /><span>التحقق من المخالفات</span></>
+                <><ArrowLeft className="w-5 h-5" /><span>{t.home.form.checkButton}</span></>
               )}
             </button>
             <button
@@ -1639,14 +1642,14 @@ export default function Home() {
               className="w-full py-3.5 rounded-2xl text-base font-bold flex items-center justify-center gap-3 transition-all hover:bg-gray-50"
               style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d1d5db" }}
             >
-              <span>رجوع</span><ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
+            <span>{lang === "ar" ? "رجوع" : "Back"}</span><ArrowRight className="w-5 h-5" />
+          </button>
+        </div>
 
           {/* Info note */}
           <div className="mt-4 flex items-start gap-2 p-3 rounded-xl" style={{ backgroundColor: "#e8f5ee" }}>
             <Info className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "#008755" }} />
-            <p className="text-xs text-gray-600">يمكنك الاستعلام عن المخالفات المرورية المسجلة على لوحة مركبتك وسداد المستحقات إلكترونياً</p>
+            <p className="text-xs text-gray-600">{t.home.form.infoNote}</p>
           </div>
         </div>
       </div>

