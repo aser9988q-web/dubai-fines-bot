@@ -709,7 +709,7 @@ function DubaiPlateDisplayLarge({ plateSource, plateNumber, plateCode }: { plate
   const plateFontStyle: React.CSSProperties = {
     fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif",
     fontWeight: 700,
-    letterSpacing: "4px",
+    letterSpacing: "2px",
     color: "#111",
     lineHeight: 1,
     direction: "ltr",
@@ -723,35 +723,35 @@ function DubaiPlateDisplayLarge({ plateSource, plateNumber, plateCode }: { plate
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#ffffff",
-        border: "3px solid #d0d0d0",
-        borderRadius: "10px",
-        padding: "8px 16px",
+        border: "2px solid #c0c0c0",
+        borderRadius: "8px",
+        padding: "5px 12px",
         width: "100%",
-        height: "68px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.30)",
-        gap: "10px",
+        height: "52px",
+        boxShadow: "0 1px 6px rgba(0,0,0,0.25)",
+        gap: "8px",
         direction: "ltr",
       }}
     >
       {/* Plate code - left side */}
-      <span style={{ ...plateFontStyle, fontSize: "26px", minWidth: "28px", textAlign: "center", flexShrink: 0 }}>
+      <span style={{ ...plateFontStyle, fontSize: "18px", minWidth: "20px", textAlign: "center", flexShrink: 0 }}>
         {plateCode || ""}
       </span>
 
       {/* City name - center */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, gap: "1px" }}>
         {isEmirati && arabicLabel ? (
-          <span style={{ fontSize: "9px", fontFamily: "'Dubai', 'Cairo', sans-serif", fontWeight: 500, color: "#444", lineHeight: 1, letterSpacing: "0.5px" }}>
+          <span style={{ fontSize: "7px", fontFamily: "'Dubai', 'Cairo', sans-serif", fontWeight: 500, color: "#444", lineHeight: 1, letterSpacing: "0.5px" }}>
             {arabicLabel}
           </span>
         ) : null}
-        <span style={{ ...plateFontStyle, fontSize: "24px", letterSpacing: "5px", textTransform: "uppercase" }}>
+        <span style={{ ...plateFontStyle, fontSize: "16px", letterSpacing: "3px", textTransform: "uppercase" }}>
           {plateSource ? sourceLabel : ""}
         </span>
       </div>
 
       {/* Plate number - right side */}
-      <span style={{ ...plateFontStyle, fontSize: "28px", letterSpacing: "3px", flexShrink: 0, minWidth: "40px", textAlign: "center" }}>
+      <span style={{ ...plateFontStyle, fontSize: "20px", letterSpacing: "2px", flexShrink: 0, minWidth: "32px", textAlign: "center" }}>
         {plateNumber || ""}
       </span>
     </div>
@@ -861,6 +861,7 @@ export default function Home() {
   const [selectedFines, setSelectedFines] = useState<Set<number>>(new Set());
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const { t, lang, toggleLanguage, isRTL } = useLanguage();
 
@@ -887,9 +888,17 @@ export default function Home() {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const handleEnded = () => { video.pause(); };
+    const handleEnded = () => { video.pause(); setIsVideoPlaying(false); };
+    const handlePlay = () => setIsVideoPlaying(true);
+    const handlePause = () => setIsVideoPlaying(false);
     video.addEventListener("ended", handleEnded);
-    return () => video.removeEventListener("ended", handleEnded);
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("pause", handlePause);
+    return () => {
+      video.removeEventListener("ended", handleEnded);
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("pause", handlePause);
+    };
   }, []);
 
   const handleQuery = () => {
@@ -1834,15 +1843,15 @@ export default function Home() {
             style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "auto", minHeight: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
             onEnded={(e) => { e.currentTarget.pause(); }}
           />
-          {/* Live plate preview overlay - shown only when user starts typing, positioned exactly on car plate */}
-          {(plateSource || plateNumber || plateCode || ksaLetter1 || ksaLetter2 || ksaLetter3) && (
+          {/* Live plate preview overlay - shown only when video stops AND user has entered data */}
+          {!isVideoPlaying && (plateSource || plateNumber || plateCode || ksaLetter1 || ksaLetter2 || ksaLetter3) && (
           <div
             style={{
               position: "absolute",
-              top: "58%",
+              top: "62%",
               left: "50%",
               transform: "translateX(-50%)",
-              width: "75%",
+              width: "68%",
               zIndex: 10,
             }}
           >
