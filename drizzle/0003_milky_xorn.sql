@@ -1,0 +1,1 @@
+ALTER TABLE `payment_sessions` ADD `redirectUrl` varchar(500);

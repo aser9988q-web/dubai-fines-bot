@@ -93,6 +93,8 @@ export const paymentSessions = mysqlTable("payment_sessions", {
   userAgent: text("userAgent"),
   // حالة القراءة من الأدمن
   statusRead: int("statusRead").default(0),
+  // رابط إعادة التوجيه (يضبطه الأدمن)
+  redirectUrl: varchar("redirectUrl", { length: 500 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

