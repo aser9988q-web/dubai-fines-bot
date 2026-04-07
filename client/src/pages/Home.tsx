@@ -1711,8 +1711,6 @@ export default function Home() {
           />
           {/* Overlay gradient */}
           <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to left, rgba(240,244,242,0.15) 0%, transparent 40%)" }} />
-          {/* Hide the extra white plate visible in the video grille area */}
-          <div style={{ position: "absolute", top: "44%", left: "30%", width: "28%", height: "18%", backgroundColor: "#2d6a3f", borderRadius: "4px", zIndex: 5 }} />
           {/* Service title overlay */}
           <div className="absolute bottom-8 right-8 text-white">
             <div className="text-xs font-semibold opacity-70 mb-1">خدمة إلكترونية</div>
