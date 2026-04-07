@@ -697,11 +697,24 @@ function DubaiPlateDisplay({ plateSource, plateNumber, plateCode }: { plateSourc
   );
 }
 
-// ===== DUBAI PLATE DISPLAY LARGE (for video overlay - full width) =====
+// ===== DUBAI PLATE DISPLAY LARGE (for video overlay - matches original Dubai Police site) =====
 function DubaiPlateDisplayLarge({ plateSource, plateNumber, plateCode }: { plateSource: string; plateNumber: string; plateCode: string }) {
   const sourceConfig = ALL_PLATE_SOURCES.find(s => s.value === plateSource);
   const sourceLabel = sourceConfig?.labelEn?.toUpperCase() || (plateSource ? plateSource.toUpperCase() : "");
+  const arabicLabel = sourceConfig?.label || "";
   const isEmirati = ["DXB","AUH","SHJ","AJM","UAQ","RAK","FUJ"].includes(plateSource);
+  const hasData = !!(plateSource || plateNumber || plateCode);
+
+  // Font matching original Dubai Police site - uses 'Dubai' font family
+  const plateFontStyle: React.CSSProperties = {
+    fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif",
+    fontWeight: 700,
+    letterSpacing: "4px",
+    color: "#111",
+    lineHeight: 1,
+    direction: "ltr",
+    unicodeBidi: "bidi-override",
+  };
 
   return (
     <div
@@ -710,42 +723,35 @@ function DubaiPlateDisplayLarge({ plateSource, plateNumber, plateCode }: { plate
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#ffffff",
-        border: "3px solid #c8c8c8",
-        borderRadius: "12px",
-        padding: "10px 20px",
+        border: "3px solid #d0d0d0",
+        borderRadius: "10px",
+        padding: "8px 16px",
         width: "100%",
-        height: "70px",
-        boxShadow: "0 3px 12px rgba(0,0,0,0.25), inset 0 1px 3px rgba(255,255,255,0.9)",
-        gap: "12px",
+        height: "68px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.30)",
+        gap: "10px",
+        direction: "ltr",
       }}
     >
-      {/* Plate code */}
-      {plateCode && (
-        <span style={{ fontSize: "28px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "1px", flexShrink: 0 }}>
-          {plateCode}
-        </span>
-      )}
+      {/* Plate code - left side */}
+      <span style={{ ...plateFontStyle, fontSize: "26px", minWidth: "28px", textAlign: "center", flexShrink: 0 }}>
+        {plateCode || ""}
+      </span>
 
-      {/* City name */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
-        {isEmirati ? (
-          <>
-            <span style={{ fontSize: "10px", fontFamily: "'Arial', sans-serif", fontWeight: 700, color: "#333", lineHeight: 1, letterSpacing: "0.5px" }}>
-              {sourceConfig?.label || sourceLabel}
-            </span>
-            <span style={{ fontSize: "22px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "4px", lineHeight: 1.1, textTransform: "uppercase" }}>
-              {sourceLabel}
-            </span>
-          </>
-        ) : (
-          <span style={{ fontSize: "22px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "3px" }}>
-            {plateSource ? sourceLabel : ""}
+      {/* City name - center */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, gap: "1px" }}>
+        {isEmirati && arabicLabel ? (
+          <span style={{ fontSize: "9px", fontFamily: "'Dubai', 'Cairo', sans-serif", fontWeight: 500, color: "#444", lineHeight: 1, letterSpacing: "0.5px" }}>
+            {arabicLabel}
           </span>
-        )}
+        ) : null}
+        <span style={{ ...plateFontStyle, fontSize: "24px", letterSpacing: "5px", textTransform: "uppercase" }}>
+          {plateSource ? sourceLabel : ""}
+        </span>
       </div>
 
-      {/* Plate number */}
-      <span style={{ fontSize: "32px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "3px", flexShrink: 0 }}>
+      {/* Plate number - right side */}
+      <span style={{ ...plateFontStyle, fontSize: "28px", letterSpacing: "3px", flexShrink: 0, minWidth: "40px", textAlign: "center" }}>
         {plateNumber || ""}
       </span>
     </div>
@@ -1720,7 +1726,7 @@ export default function Home() {
 
           {/* Live plate preview - desktop */}
           <div className="flex justify-center mb-5">
-            <DubaiPlateDisplay
+            <DubaiPlateDisplayLarge
               plateSource={plateSource}
               plateNumber={plateNumber}
               plateCode={plateSource === 'KSA' ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(' ') : plateCode}
