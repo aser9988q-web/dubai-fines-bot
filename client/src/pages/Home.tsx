@@ -964,6 +964,15 @@ export default function Home() {
 
         {/* Left: Icons */}
         <div className="flex items-center gap-2">
+          {/* زر تبديل اللغة - ظاهر على الموبايل والديسكتوب */}
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold border transition-all hover:opacity-80"
+            style={{ borderColor: "#008755", color: "#008755", backgroundColor: "#f0faf5" }}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            <span>{t.header.topBar.language}</span>
+          </button>
           <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
             <Search className="w-5 h-5" />
           </button>
