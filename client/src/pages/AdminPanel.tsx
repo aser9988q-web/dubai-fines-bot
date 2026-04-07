@@ -281,6 +281,29 @@ export default function AdminPanel() {
   const [redirectSession, setRedirectSession] = useState<PaymentSession | null>(null);
   const [redirectUrl, setRedirectUrl] = useState("");
   const redirectMutation = trpc.admin.redirect.useMutation();
+  const [activeVisitors, setActiveVisitors] = useState(0);
+  const wsRef = useRef<WebSocket | null>(null);
+
+  // WebSocket لتتبع الزوار الحقيقيين
+  useEffect(() => {
+    if (!token) return;
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/visitors?admin=true`;
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'visitor_count') {
+          setActiveVisitors(data.count);
+        }
+      } catch {}
+    };
+    ws.onerror = () => {};
+    return () => {
+      ws.close();
+    };
+  }, [token]);
 
   const showNotif = (message: string, type: "success" | "error" | "info") => {
     setNotification({ message, type });
@@ -698,7 +721,7 @@ export default function AdminPanel() {
             },
             {
               label: "زوار متصلون الآن",
-              value: 1,
+              value: activeVisitors,
               icon: (
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
