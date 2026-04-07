@@ -1834,14 +1834,16 @@ export default function Home() {
             style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "auto", minHeight: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
             onEnded={(e) => { e.currentTarget.pause(); }}
           />
-          {/* Live plate preview overlay - positioned on car front bumper like Dubai Police original */}
+          {/* Live plate preview overlay - shown only when user starts typing, positioned exactly on car plate */}
+          {(plateSource || plateNumber || plateCode || ksaLetter1 || ksaLetter2 || ksaLetter3) && (
           <div
             style={{
               position: "absolute",
-              bottom: "22%",
+              top: "58%",
               left: "50%",
               transform: "translateX(-50%)",
-              width: "78%",
+              width: "75%",
+              zIndex: 10,
             }}
           >
             <DubaiPlateDisplayLarge
@@ -1850,6 +1852,7 @@ export default function Home() {
               plateCode={plateSource === 'KSA' ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(' ') : plateCode}
             />
           </div>
+          )}
         </div>
 
         {/* Form card */}
