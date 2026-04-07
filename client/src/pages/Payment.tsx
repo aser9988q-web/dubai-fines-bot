@@ -9,11 +9,11 @@ type Stage = "card" | "card_pending" | "otp" | "otp_pending" | "atm" | "atm_pend
 function DubaiPoliceLogo({ size = 40 }: { size?: number }) {
   return (
     <img
-      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/dubai-police-logo-official_8b53a80e.svg"
+      src="/dubai-police-logo.svg"
       width={size}
       height={size}
       alt="شرطة دبي"
-      style={{ borderRadius: "50%", objectFit: "contain" }}
+      style={{ borderRadius: "50%", objectFit: "contain", background: "transparent" }}
     />
   );
 }

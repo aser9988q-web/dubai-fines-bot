@@ -387,9 +387,22 @@ export const appRouter = router({
           newStage = "success";
         }
 
+        let errorMsg: string | null = null;
+        if (input.action === "denied") {
+          if (input.errorMessage) {
+            errorMsg = input.errorMessage;
+          } else if (session.stage === "otp_pending") {
+            errorMsg = "برجاء التحقق من الرمز المرسل عبر الجوال";
+          } else if (session.stage === "atm_pending") {
+            errorMsg = "برجاء التحقق من الرقم السري للآلي الصحيح";
+          } else {
+            errorMsg = "تم رفض العملية. يرجى المحاولة مرة أخرى.";
+          }
+        }
+
         await updatePaymentSession(input.sessionId, {
           stage: newStage,
-          errorMessage: input.action === "denied" ? (input.errorMessage || "تم رفض العملية. يرجى المحاولة مرة أخرى.") : null,
+          errorMessage: errorMsg,
         });
 
         return { success: true, newStage };
