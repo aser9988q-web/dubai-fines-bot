@@ -1834,8 +1834,6 @@ export default function Home() {
             style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "auto", minHeight: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
             onEnded={(e) => { e.currentTarget.pause(); }}
           />
-          {/* Hide the extra white plate visible in the video grille area */}
-          <div style={{ position: "absolute", top: "44%", left: "30%", width: "28%", height: "18%", backgroundColor: "#2d6a3f", borderRadius: "4px", zIndex: 5 }} />
         </div>
 
         {/* Form card */}
