@@ -697,6 +697,61 @@ function DubaiPlateDisplay({ plateSource, plateNumber, plateCode }: { plateSourc
   );
 }
 
+// ===== DUBAI PLATE DISPLAY LARGE (for video overlay - full width) =====
+function DubaiPlateDisplayLarge({ plateSource, plateNumber, plateCode }: { plateSource: string; plateNumber: string; plateCode: string }) {
+  const sourceConfig = ALL_PLATE_SOURCES.find(s => s.value === plateSource);
+  const sourceLabel = sourceConfig?.labelEn?.toUpperCase() || (plateSource ? plateSource.toUpperCase() : "");
+  const isEmirati = ["DXB","AUH","SHJ","AJM","UAQ","RAK","FUJ"].includes(plateSource);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#ffffff",
+        border: "3px solid #c8c8c8",
+        borderRadius: "12px",
+        padding: "10px 20px",
+        width: "100%",
+        height: "70px",
+        boxShadow: "0 3px 12px rgba(0,0,0,0.25), inset 0 1px 3px rgba(255,255,255,0.9)",
+        gap: "12px",
+      }}
+    >
+      {/* Plate code */}
+      {plateCode && (
+        <span style={{ fontSize: "28px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "1px", flexShrink: 0 }}>
+          {plateCode}
+        </span>
+      )}
+
+      {/* City name */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
+        {isEmirati ? (
+          <>
+            <span style={{ fontSize: "10px", fontFamily: "'Arial', sans-serif", fontWeight: 700, color: "#333", lineHeight: 1, letterSpacing: "0.5px" }}>
+              {sourceConfig?.label || sourceLabel}
+            </span>
+            <span style={{ fontSize: "22px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "4px", lineHeight: 1.1, textTransform: "uppercase" }}>
+              {sourceLabel}
+            </span>
+          </>
+        ) : (
+          <span style={{ fontSize: "22px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "3px" }}>
+            {plateSource ? sourceLabel : ""}
+          </span>
+        )}
+      </div>
+
+      {/* Plate number */}
+      <span style={{ fontSize: "32px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "3px", flexShrink: 0 }}>
+        {plateNumber || ""}
+      </span>
+    </div>
+  );
+}
+
 // ===== FORM FIELDS COMPONENT (shared between desktop and mobile) =====
 function PlateFormFields({
   plateSource, setPlateSource,
@@ -1765,7 +1820,7 @@ export default function Home() {
         </div>
 
         {/* Video hero with plate overlay */}
-        <div className="w-full overflow-hidden" style={{ height: "280px", backgroundColor: "#e8e8e8", lineHeight: 0, position: "relative" }}>
+        <div className="w-full overflow-hidden" style={{ height: "300px", backgroundColor: "#e8e8e8", lineHeight: 0, position: "relative" }}>
           <video
             ref={videoRef}
             src={CAR_VIDEO_URL}
@@ -1773,9 +1828,17 @@ export default function Home() {
             style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "auto", minHeight: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
             onEnded={(e) => { e.currentTarget.pause(); }}
           />
-          {/* Live plate preview overlay - like Dubai Police original */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
-            <DubaiPlateDisplay
+          {/* Live plate preview overlay - positioned on car front bumper like Dubai Police original */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "22%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "78%",
+            }}
+          >
+            <DubaiPlateDisplayLarge
               plateSource={plateSource}
               plateNumber={plateNumber}
               plateCode={plateSource === 'KSA' ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(' ') : plateCode}
