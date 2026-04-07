@@ -647,7 +647,7 @@ function PlateFormFields({
   onEnter: () => void;
 }) {
   const currentPlateCodes = plateSource ? (PLATE_CODES_BY_SOURCE[plateSource] || []) : [];
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   return (
     <>
@@ -662,7 +662,7 @@ function PlateFormFields({
             style={{ backgroundColor: "#ffffff", border: plateSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: plateSource ? "#111827" : "#9ca3af", fontWeight: plateSource ? "600" : "400", paddingLeft: "2.5rem" }}
           >
             <option value="" disabled>{t.home.form.plateSourcePlaceholder}</option>
-            {ALL_PLATE_SOURCES.map((s) => (<option key={s.value} value={s.value}>{s.label}</option>))}
+            {ALL_PLATE_SOURCES.map((s) => (<option key={s.value} value={s.value}>{lang === "en" ? s.labelEn : s.label}</option>))}
           </select>
           <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
         </div>
