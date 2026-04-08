@@ -1358,11 +1358,9 @@ export default function Home() {
       </svg>
     );
 
-    // رمز الدرهم (مطابق للأصلي - dp-dirham icon)
+    // رمز الدرهم الإماراتي الرسمي (AED)
     const DirhamIcon = () => (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <text x="2" y="18" fontSize="18" fontFamily="Arial" fontWeight="bold" fill="currentColor">₿</text>
-      </svg>
+      <span style={{ fontWeight: 900, fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", fontSize: "inherit" }}>AED</span>
     );
 
     // الشعار الدائري للمصدر - مطابق للأصلي
@@ -1440,9 +1438,9 @@ export default function Home() {
               {statusConfig.label}
             </span>
           </div>
-          {/* Right: Amount - مطابق للأصلي: رمز الدرهم الإماراتي ₿ أسود كبير */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <span style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-1px", lineHeight: 1 }}>&#x20BF;</span>
+          {/* Right: Amount - رمز الدرهم الإماراتي الرسمي AED */}
+          <div className="flex items-center gap-1.5 flex-shrink-0" dir="ltr">
+            <span style={{ fontSize: "13px", fontWeight: 900, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "0px" }}>AED</span>
             <span style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-0.5px" }}>
               {isNaN(amt) ? fine.amount : amt.toLocaleString()}
             </span>
@@ -1682,7 +1680,7 @@ export default function Home() {
                   <div className="w-px bg-gray-200 self-stretch" />
                   <div className="text-center px-4">
                     <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</p>
-                    <p className="text-2xl font-black text-gray-900">&#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                    <p className="text-2xl font-black text-gray-900" dir="ltr"><span style={{fontSize:"14px"}}>AED</span> {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
                   </div>
                   <div className="flex-1" />
                   <div className="flex items-center gap-4">
@@ -1881,7 +1879,7 @@ export default function Home() {
               <div className="w-px bg-gray-200 self-stretch" />
               <div className="text-center flex-1 px-2">
                 <p className="text-[11px] text-gray-400 leading-tight mb-0.5">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</p>
-                <p className="text-xl font-black text-gray-900">&#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                <p className="text-xl font-black text-gray-900" dir="ltr"><span style={{fontSize:"12px"}}>AED</span> {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
               </div>
             </div>
 
