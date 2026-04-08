@@ -9,6 +9,8 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { setupVisitorTracking } from "../visitors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -35,9 +37,61 @@ async function startServer() {
 
   const app = express();
   const server = createServer(app);
+
+  // ===== Security Headers (Helmet) =====
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://fonts.googleapis.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"],
+        connectSrc: ["'self'", "wss:", "ws:"],
+        frameSrc: ["'none'"],
+        objectSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }));
+
+  // ===== Rate Limiting =====
+  // General API rate limit: 100 requests per 15 minutes per IP
+  const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "طلبات كثيرة جداً، يرجى الانتظار قليلاً" },
+    skip: (req) => req.path === "/api/health",
+  });
+
+  // Fines query rate limit: 10 requests per minute per IP
+  const finesLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "تجاوزت الحد المسموح به للاستعلامات، يرجى الانتظار دقيقة" },
+  });
+
+  // Payment rate limit: 5 requests per minute per IP
+  const paymentLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "تجاوزت الحد المسموح به لطلبات الدفع، يرجى الانتظار دقيقة" },
+  });
+
+  app.use("/api/trpc", generalLimiter);
+  app.use("/api/trpc/fines.query", finesLimiter);
+  app.use("/api/trpc/payment", paymentLimiter);
+
   // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ limit: "10mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // Health check endpoint for Railway

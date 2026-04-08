@@ -126,3 +126,10 @@
 
 ## تصحيح ترتيب عرض اللوحة في صفحة النتائج
 - [x] عكس ترتيب اللوحة والنص: اللوحة على اليسار والنص (مراجعة المخالفات + رقم اللوحة) على اليمين - تم في الموبايل والديسكتوب
+
+## تحسينات أمنية
+- [x] تثبيت Helmet.js وإضافة Security Headers (CSP, X-Frame-Options, HSTS, X-Content-Type-Options)
+- [x] تطبيق Rate Limiting على طلبات الاستعلام عن المخالفات (max 10 req/min per IP)
+- [x] تطبيق Rate Limiting على طلبات الدفع (max 5 req/min per IP)
+- [x] تعزيز Input Validation في routers.ts (رقم اللوحة أرقام فقط، رمز اللوحة حروف فقط، sessionId hex 32 حرف)
+- [x] تعزيز تحقق بيانات البطاقة (cardName حروف فقط، cardNumber أرقام فقط، cardExpiry regex، CVV أرقام فقط)
