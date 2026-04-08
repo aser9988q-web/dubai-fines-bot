@@ -1440,12 +1440,10 @@ export default function Home() {
               {statusConfig.label}
             </span>
           </div>
-          {/* Right: Amount - أخضر كبير مثل الأصلي */}
+          {/* Right: Amount - مطابق للأصلي: رمز الدرهم الإماراتي ₿ أسود كبير */}
           <div className="flex items-center gap-1 flex-shrink-0">
-            <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <text x="5" y="78" fontSize="72" fontFamily="'Dubai', 'Arial Black', Arial" fontWeight="900" fill="#1a1a1a">₿</text>
-            </svg>
-            <span style={{ fontSize: "22px", fontWeight: 800, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-0.5px" }}>
+            <span style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-1px", lineHeight: 1 }}>&#x20BF;</span>
+            <span style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-0.5px" }}>
               {isNaN(amt) ? fine.amount : amt.toLocaleString()}
             </span>
           </div>
@@ -1659,41 +1657,49 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Bottom summary bar - desktop */}
+            {/* Bottom summary bar - desktop - مطابق للأصلي */}
             {allFines.length > 0 && (
               <div
                 className="mt-6 rounded-2xl overflow-hidden"
-                style={{ backgroundColor: "#ffffff", border: "1.5px solid #e8ede9", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
+                style={{ backgroundColor: "#ffffff", border: "1.5px solid #ebebeb", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
               >
-                <div className="flex items-center px-6 py-4 gap-6 border-b border-gray-100 flex-wrap">
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">{t.home.results.totalFines}</p>
+                {/* Stats row */}
+                <div className="flex items-stretch px-6 py-4 gap-0 border-b border-gray-100">
+                  <div className="text-center px-4">
+                    <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "إجمالي المخالفات" : "Total Fines"}</p>
                     <p className="text-2xl font-black text-gray-900">{allFines.length}</p>
                   </div>
-                  <div className="w-px h-12 bg-gray-200" />
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">{t.home.results.filters.payable}</p>
+                  <div className="w-px bg-gray-200 self-stretch" />
+                  <div className="text-center px-4">
+                    <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "قابل للدفع" : "Payable"}</p>
                     <p className="text-2xl font-black text-gray-900">{payableCount}</p>
                   </div>
-                  <div className="w-px h-12 bg-gray-200" />
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">{t.home.results.summary.selected}</p>
+                  <div className="w-px bg-gray-200 self-stretch" />
+                  <div className="text-center px-4">
+                    <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "محدد" : "Selected"}</p>
                     <p className="text-2xl font-black text-gray-900">{selectedFines.size}</p>
                   </div>
-                  <div className="w-px h-12 bg-gray-200" />
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-0.5">{t.home.results.totalAmount}</p>
-                    <p className="text-2xl font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                  <div className="w-px bg-gray-200 self-stretch" />
+                  <div className="text-center px-4">
+                    <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</p>
+                    <p className="text-2xl font-black text-gray-900">&#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
                   </div>
                   <div className="flex-1" />
-                  <div className="flex items-center gap-3 flex-wrap">
-                      <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4" style={{ accentColor: "#008755" }} />
-                      {t.home.results.payInstallment}
+                      <span>{lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay by Direct Debit"}</span>
                     </label>
                     <button
+                      onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+                      className="px-5 py-3 rounded-full text-sm font-bold transition-all"
+                      style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb" }}
+                    >
+                      {lang === "ar" ? "رجوع" : "Back"}
+                    </button>
+                    <button
                       disabled={selectedFines.size === 0}
-                      className="px-8 py-3 rounded-xl text-sm font-bold text-white transition-all"
+                      className="px-8 py-3 rounded-full text-sm font-bold text-white transition-all"
                       style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af", boxShadow: selectedFines.size > 0 ? "0 4px 12px rgba(0,135,85,0.3)" : "none" }}
                       onClick={() => {
                         const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
@@ -1856,43 +1862,38 @@ export default function Home() {
             <div className="h-36" />
           </div>
 
-          {/* Bottom summary bar - mobile STICKY - مطابق للموقع الأصلي */}
+          {/* Bottom summary bar - mobile STICKY - مطابق للموقع الأصلي تماماً */}
           <div
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-            style={{ backgroundColor: "#ffffff", borderTop: "1.5px solid #e8ede9", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)" }}
+            style={{ backgroundColor: "#ffffff", borderTop: "1px solid #ebebeb", boxShadow: "0 -4px 20px rgba(0,0,0,0.10)" }}
           >
-            {/* Stats row */}
-            <div className="flex items-center justify-between px-4 pt-3 pb-2">
-              <div className="text-center flex-1">
-                <p className="text-xs text-gray-500 leading-tight">{t.home.results.totalFines}</p>
-                <p className="text-base font-black text-gray-900">{allFines.length}</p>
+            {/* Stats row - 3 أعمدة مفصولة بخطوط رأسية */}
+            <div className="flex items-stretch px-4 pt-3 pb-2 gap-0">
+              <div className="text-center flex-1 px-2">
+                <p className="text-[11px] text-gray-400 leading-tight mb-0.5">{lang === "ar" ? "إجمالي المخالفات" : "Total Fines"}</p>
+                <p className="text-xl font-black text-gray-900">{allFines.length}</p>
               </div>
-              <div className="w-px h-8 bg-gray-200" />
-              <div className="text-center flex-1">
-                <p className="text-xs text-gray-500 leading-tight">{t.home.results.filters.payable}</p>
-                <p className="text-base font-black text-gray-900">{payableCount}</p>
+              <div className="w-px bg-gray-200 self-stretch" />
+              <div className="text-center flex-1 px-2">
+                <p className="text-[11px] text-gray-400 leading-tight mb-0.5">{lang === "ar" ? "قابل للدفع" : "Payable"}</p>
+                <p className="text-xl font-black text-gray-900">{payableCount}</p>
               </div>
-              <div className="w-px h-8 bg-gray-200" />
-              <div className="text-center flex-1">
-                <p className="text-xs text-gray-500 leading-tight">{t.home.results.totalAmount}</p>
-                <p className="text-base font-black" style={{ color: "#008755" }}>Đ {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+              <div className="w-px bg-gray-200 self-stretch" />
+              <div className="text-center flex-1 px-2">
+                <p className="text-[11px] text-gray-400 leading-tight mb-0.5">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</p>
+                <p className="text-xl font-black text-gray-900">&#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
               </div>
             </div>
 
-            {/* Main action buttons row */}
-            <div className="flex items-center gap-2 px-4 pb-2">
-              <button
-                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                className="flex items-center justify-center gap-1.5 px-5 py-3 rounded-2xl text-sm font-bold transition-all flex-shrink-0"
-                style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb" }}
-              >
-                <ArrowRight className="w-4 h-4" />
-                <span>{lang === "ar" ? "رجوع" : "Back"}</span>
-              </button>
+            {/* Pay button - أخضر كبير ممتد بعرض كامل مثل الأصلي */}
+            <div className="px-4 pb-2">
               <button
                 disabled={selectedFines.size === 0}
-                className="flex-1 py-3 rounded-2xl text-sm font-bold text-white transition-all"
-                style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af", boxShadow: selectedFines.size > 0 ? "0 4px 12px rgba(0,135,85,0.3)" : "none" }}
+                className="w-full py-3.5 rounded-full text-base font-bold text-white transition-all"
+                style={{
+                  backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af",
+                  boxShadow: selectedFines.size > 0 ? "0 4px 16px rgba(0,135,85,0.35)" : "none",
+                }}
                 onClick={() => {
                   const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
                   const total = selectedTotal.toFixed(0);
@@ -1907,15 +1908,23 @@ export default function Home() {
                   navigate("/payment");
                 }}
               >
-                دفع
+                {lang === "ar" ? "دفع" : "Pay"}
               </button>
             </div>
 
-            {/* Installment row - تحت الأزرار */}
-            <div className="flex items-center gap-2 px-4 pb-3">
+            {/* Installment + Back row */}
+            <div className="flex items-center justify-between px-4 pb-3">
+              <button
+                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+                className="flex items-center gap-1.5 text-sm font-semibold"
+                style={{ color: "#374151" }}
+              >
+                <ArrowRight className="w-4 h-4" />
+                <span>{lang === "ar" ? "رجوع" : "Back"}</span>
+              </button>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" className="w-4 h-4 cursor-pointer rounded" style={{ accentColor: "#008755" }} />
-                <span className="text-xs text-gray-500">الدفع بالتقسيط عبر الخصم المباشر</span>
+                <span className="text-xs text-gray-500">{lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay by Direct Debit"}</span>
               </label>
             </div>
           </div>
