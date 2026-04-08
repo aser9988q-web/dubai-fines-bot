@@ -28,7 +28,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 // ===== ASSETS =====
-const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
+const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_37ef9678.mp4";
 const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
 // CDN logos for sources - الصور الحقيقية من موقع شرطة دبي الرسمي (FinePayment2025)
@@ -1427,7 +1427,7 @@ export default function Home() {
 
         {/* Row 2: Details grid - 2 columns on desktop, 1 on mobile */}
         <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-          {/* Source */}
+          {/* Source - مع شعار صغير مطابق للأصلي */}
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
               <PlateIcon />
@@ -1435,6 +1435,10 @@ export default function Home() {
             <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
               {lang === "ar" ? "المصدر" : "Source"}
             </span>
+            {/* شعار المصدر الصغير - مطابق للموقع الأصلي */}
+            <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: getSourceBgColor(fine.source) }}>
+              <SourceIcon source={fine.source} size={18} />
+            </div>
             <span className="text-sm font-medium text-gray-800 truncate" style={{ color: "#111827" }}>
               {getSourceLabel(fine.source)}
             </span>
@@ -1495,11 +1499,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Fine Details section - مطابق للأصلي */}
+        {/* Fine Details section - مطابق للأصلي تماماً */}
         {fine.description && (
           <div
-            className="mt-4 pt-4"
-            style={{ borderTop: "1px solid #f0f4f2" }}
+            className="mt-4 rounded-xl p-3"
+            style={{ backgroundColor: "#f0f8f4", border: "1px solid #d4ede3" }}
           >
             <div className="flex items-center gap-2 mb-2">
               <FineDetailsIcon />
@@ -1510,15 +1514,14 @@ export default function Home() {
             <div className="flex items-start gap-2">
               <div
                 className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb" }}
+                style={{ backgroundColor: "#008755" }}
               >
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                  <circle cx="5" cy="5" r="4" stroke="#6B7280" strokeWidth="1"/>
-                  <path d="M5 4.5V7" stroke="#6B7280" strokeWidth="1" strokeLinecap="round"/>
-                  <circle cx="5" cy="3" r="0.5" fill="#6B7280"/>
+                  <path d="M5 4.5V7" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                  <circle cx="5" cy="3" r="0.75" fill="white"/>
                 </svg>
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed">{fine.description}</p>
+              <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>{fine.description}</p>
             </div>
           </div>
         )}
@@ -1931,11 +1934,12 @@ export default function Home() {
         {/* Right: Video */}
         <div className="flex-1 relative overflow-hidden" style={{ backgroundColor: "#1a1a1a" }}>
           <video
-            src={CAR_VIDEO_URL}
             autoPlay muted playsInline
             style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "auto", height: "100%", minWidth: "100%", objectFit: "cover", objectPosition: "center 45%" }}
             onEnded={(e) => { e.currentTarget.pause(); }}
-          />
+          >
+            <source src={CAR_VIDEO_URL} type="video/mp4" />
+          </video>
           {/* Overlay gradient */}
           <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to left, rgba(240,244,242,0.15) 0%, transparent 40%)" }} />
           {/* Service title overlay */}
@@ -2056,11 +2060,12 @@ export default function Home() {
         <div className="w-full overflow-hidden" style={{ height: "300px", backgroundColor: "#e8e8e8", lineHeight: 0, position: "relative" }}>
           <video
             ref={videoRef}
-            src={CAR_VIDEO_URL}
             autoPlay muted playsInline
             style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "auto", minHeight: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
             onEnded={(e) => { e.currentTarget.pause(); }}
-          />
+          >
+            <source src={CAR_VIDEO_URL} type="video/mp4" />
+          </video>
         </div>
 
         {/* Form card */}
