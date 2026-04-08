@@ -604,15 +604,17 @@ function getSourceBgColor(source: string): string {
   return getSourceConfig(source)?.bgColor ?? "#f0f4f2";
 }
 
-function getSourceLabel(source: string): string {
-  return getSourceConfig(source)?.label ?? (source || "—");
+function getSourceLabel(source: string, lang?: string): string {
+  const config = getSourceConfig(source);
+  if (!config) return source || "—";
+  return lang === "en" ? (config.labelEn || config.label) : config.label;
 }
 
 // ===== SOURCE BADGE COMPONENT =====
-function SourceBadge({ source }: { source: string }) {
+function SourceBadge({ source, lang }: { source: string; lang?: string }) {
   const config = getSourceConfig(source);
   const bgColor = config?.bgColor ?? "#f0f4f2";
-  const label = config?.label ?? (source || "—");
+  const label = getSourceLabel(source, lang);
   return (
     <div className="flex items-center gap-2">
       <div
@@ -1302,21 +1304,24 @@ export default function Home() {
     const isSeized = fine.status === "seized";
 
     const statusConfig = fine.isPaid
-      ? { label: "Paid", bg: "#e7f6f1", color: "#006c44" }
+      ? { label: t.home.results.status.paid, bg: "#e7f6f1", color: "#006c44" }
       : isSeized
-      ? { label: "Impound", bg: "#fff0e8", color: "#c84800" }
+      ? { label: t.home.results.status.seized, bg: "#fff0e8", color: "#c84800" }
       : isBlackPoints
-      ? { label: "Black Points", bg: "rgba(158,158,158,0.16)", color: "rgba(0,0,0,0.6)" }
+      ? { label: t.home.results.status.blackPoints, bg: "rgba(158,158,158,0.16)", color: "rgba(0,0,0,0.6)" }
       : fine.status === "notpayable"
-      ? { label: "Un Payable", bg: "#fff0e8", color: "#c84800" }
-      : { label: "Payable", bg: "#e7f6f1", color: "#006c44" };
+      ? { label: t.home.results.filters.notPayable, bg: "#fff0e8", color: "#c84800" }
+      : { label: t.home.results.status.payable, bg: "#e7f6f1", color: "#006c44" };
 
-    // رمز الدرهم الإماراتي - حرف D مع خطين أفقيين
-    const DirhamIcon = () => (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "inline-block", verticalAlign: "middle", marginBottom: "2px" }}>
-        <path d="M5 4H13C17.4183 4 21 7.58172 21 12C21 16.4183 17.4183 20 13 20H5V4Z" stroke="#111" strokeWidth="2.2" fill="none"/>
-        <line x1="3" y1="9" x2="13" y2="9" stroke="#111" strokeWidth="2.2" strokeLinecap="round"/>
-        <line x1="3" y1="14" x2="13" y2="14" stroke="#111" strokeWidth="2.2" strokeLinecap="round"/>
+    // رمز الدرهم الإماراتي - حرف D مع خطين أفقيين (AED)
+    const DirhamIcon = ({ color = "#111", size = 20 }: { color?: string; size?: number }) => (
+      <svg width={size} height={size} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}>
+        {/* حرف D - الجزء الرئيسي */}
+        <path d="M4 3 L4 17 L10 17 C14.4 17 17.5 14.2 17.5 10 C17.5 5.8 14.4 3 10 3 Z" stroke={color} strokeWidth="1.8" fill="none" strokeLinejoin="round"/>
+        {/* الخط الأفقي الأول */}
+        <line x1="1.5" y1="7.5" x2="11" y2="7.5" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+        {/* الخط الأفقي الثاني */}
+        <line x1="1.5" y1="12" x2="11" y2="12" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
       </svg>
     );
 
@@ -1407,46 +1412,60 @@ export default function Home() {
             {statusConfig.label}
           </span>
           {/* المبلغ - على اليمين */}
-          <div className="flex-1 flex items-center justify-end gap-1">
+          <div className="flex-1 flex items-center justify-end gap-1.5">
             <span
-              className="text-xl font-black"
+              className="text-xl font-black flex items-center gap-1"
               style={{ color: "#111", fontFamily: "'Arial Black', Arial, sans-serif" }}
               dir="ltr"
             >
-              <DirhamIcon /> {isNaN(amt) ? fine.amount : amt.toLocaleString()}
+              <DirhamIcon color="#111" size={20} />
+              <span>{isNaN(amt) ? fine.amount : amt.toLocaleString()}</span>
             </span>
           </div>
         </div>
 
-        {/* ===== حقول المخالفة - مطابقة للصورة الأصلية تماماً - كل حقل في صف منفصل RTL ===== */}
-        <div className="px-4 pb-3" style={{ direction: "rtl" }}>
+        {/* ===== حقول المخالفة - كل حقل في صف منفصل ===== */}
+        <div className="px-4 pb-3" style={{ direction: isRTL ? "rtl" : "ltr" }}>
           {/* صف المصدر */}
           <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
             <div className="flex items-center gap-1.5">
               <PlateIcon />
-              <span className="text-sm text-gray-500">{lang === "ar" ? "المصدر" : "Source"}</span>
+              <span className="text-sm text-gray-500">{t.home.results.fineCard.source}</span>
             </div>
-            <span className="text-sm font-medium text-gray-800 text-left" dir="ltr">{getSourceLabel(fine.source) || "—"}</span>
+            <span className="text-sm font-medium text-gray-800" dir="ltr">{getSourceLabel(fine.source, lang) || "—"}</span>
           </div>
 
           {/* صف الموقع */}
           <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
             <div className="flex items-center gap-1.5">
               <LocationIcon />
-              <span className="text-sm text-gray-500">{lang === "ar" ? "الموقع" : "Location"}</span>
+              <span className="text-sm text-gray-500">{t.home.results.fineCard.location}</span>
             </div>
             {fine.location ? (
-              <span className="text-sm font-medium text-gray-800 text-left" dir="ltr">{fine.location}</span>
+              <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.location}</span>
             ) : (
               <span className="text-sm text-gray-400">—</span>
             )}
           </div>
 
+          {/* صف السرعة - يظهر فقط إذا كانت موجودة */}
+          {fine.speed && (
+            <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
+              <div className="flex items-center gap-1.5">
+                <svg width="14" height="14" viewBox="0 0 17 17" fill="none">
+                  <path d="M8.5 2C4.91 2 2 4.91 2 8.5S4.91 15 8.5 15 15 12.09 15 8.5 12.09 2 8.5 2zm0 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm.5-8.5H8v4.5l3.75 2.25.75-1.23-3-1.77V5z" fill="#4B4C4D"/>
+                </svg>
+                <span className="text-sm text-gray-500">{t.home.results.fineCard.speed}</span>
+              </div>
+              <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.speed}</span>
+            </div>
+          )}
+
           {/* صف رقم المخالفة */}
           <div className="flex items-center justify-between py-1.5" style={{ borderBottom: fine.dateTime ? "1px solid #f5f5f5" : "none" }}>
             <div className="flex items-center gap-1.5">
               <TicketIcon />
-              <span className="text-sm text-gray-500">{lang === "ar" ? "رقم المخالفة" : "Ticket Number"}</span>
+              <span className="text-sm text-gray-500">{t.home.results.fineCard.ticketNo}</span>
             </div>
             {fine.ticketNo ? (
               <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.ticketNo}</span>
@@ -1460,7 +1479,7 @@ export default function Home() {
             <div className="flex items-center justify-between py-1.5">
               <div className="flex items-center gap-1.5">
                 <DateIcon />
-                <span className="text-sm text-gray-500">{lang === "ar" ? "التاريخ والوقت" : "Date & Time"}</span>
+                <span className="text-sm text-gray-500">{t.home.results.fineCard.dateTime}</span>
               </div>
               <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.dateTime}</span>
             </div>
@@ -1481,7 +1500,7 @@ export default function Home() {
                 <path d="M16 19h6" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
                 <path d="M19 16v6" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
-              <span className="text-xs font-bold" style={{ color: "#008755" }}>Fine Details</span>
+              <span className="text-xs font-bold" style={{ color: "#008755" }}>{t.home.results.fineCard.details}</span>
             </div>
             <p className="text-xs text-gray-700 leading-relaxed" style={{ direction: "ltr" }}>{fine.description}</p>
           </div>
@@ -1500,7 +1519,7 @@ export default function Home() {
       <div
         className="min-h-screen"
         style={{ backgroundColor: "#f0f4f2", fontFamily: "'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif" }}
-        dir="rtl"
+        dir={isRTL ? "rtl" : "ltr"}
       >
         <SharedHeader transparent={false} />
 
@@ -1542,14 +1561,14 @@ export default function Home() {
                   style={{ backgroundColor: "#e8ede9", color: "#374151" }}
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <span>{lang === "ar" ? "رجوع" : "Back"}</span>
+                  <span>{t.home.results.backButton}</span>
                 </button>
-                <div dir="rtl">
+                <div dir={isRTL ? "rtl" : "ltr"}>
                   <h1 className="text-2xl font-black" style={{ color: "#111827", lineHeight: 1.2 }}>
-                    {lang === "ar" ? "مراجعة المخالفات" : "Review Fines"}
+                    {t.home.results.title}
                   </h1>
                   <p className="text-sm font-medium mt-0.5" style={{ color: "#6B7280" }}>
-                    {lang === "ar" ? "رقم اللوحة:" : "Plate Number:"} <span className="font-bold" style={{ color: "#111827" }} dir="ltr">{plateNumber}</span>
+                    {t.home.form.plateNumber}: <span className="font-bold" style={{ color: "#111827" }} dir="ltr">{plateNumber}</span>
                   </p>
                 </div>
               </div>
@@ -1627,27 +1646,32 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Bottom summary bar - desktop - مطابق للصورة الأصلية */}
+            {/* Bottom summary bar - desktop */}
             {allFines.length > 0 && (
               <div
                 className="mt-6 rounded-2xl overflow-hidden"
                 style={{ backgroundColor: "#ffffff", border: "1px solid #e8e8e8", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
               >
                 {/* Stats row + Buttons */}
-                <div className="flex items-center px-6 py-4" style={{ direction: "rtl" }}>
+                <div className="flex items-center px-6 py-4" style={{ direction: isRTL ? "rtl" : "ltr" }}>
                   {/* المخالفات */}
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-gray-900">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
-                    <span className="text-sm text-gray-500">{lang === "ar" ? "المخالفات" : "Fines"}</span>
+                    <span className="text-sm text-gray-500">{t.home.results.summary.fines}</span>
                   </div>
                   {/* Divider */}
                   <div className="w-px bg-gray-200 mx-6" style={{ height: "24px" }} />
                   {/* إجمالي المبلغ */}
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-900" dir="ltr">
-                      &#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}
+                    <span className="text-sm font-bold text-gray-900 flex items-center gap-1" dir="ltr">
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}>
+                        <path d="M4 3 L4 17 L10 17 C14.4 17 17.5 14.2 17.5 10 C17.5 5.8 14.4 3 10 3 Z" stroke="#111" strokeWidth="1.8" fill="none" strokeLinejoin="round"/>
+                        <line x1="1.5" y1="7.5" x2="11" y2="7.5" stroke="#111" strokeWidth="1.8" strokeLinecap="round"/>
+                        <line x1="1.5" y1="12" x2="11" y2="12" stroke="#111" strokeWidth="1.8" strokeLinecap="round"/>
+                      </svg>
+                      <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
                     </span>
-                    <span className="text-sm text-gray-500">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</span>
+                    <span className="text-sm text-gray-500">{t.home.results.totalAmount}</span>
                   </div>
                   <div className="flex-1" />
                   {/* أزرار */}
@@ -1658,7 +1682,7 @@ export default function Home() {
                       className="px-8 py-2.5 rounded-full text-sm font-semibold"
                       style={{ backgroundColor: "#f3f4f6", border: "1.5px solid #d1d5db", color: "#374151" }}
                     >
-                      {lang === "ar" ? "رجوع" : "Back"}
+                      {t.home.results.backButton}
                     </button>
                     {/* زر دفع */}
                     <button
@@ -1682,24 +1706,24 @@ export default function Home() {
                         navigate("/payment");
                       }}
                     >
-                      {lang === "ar" ? "دفع" : "Pay"}
+                      {t.home.results.payButton}
                     </button>
                   </div>
                 </div>
                 {/* الدفع بالتقسيط عبر الخصم المباشر */}
                 <div
-                  className="flex items-center gap-2 px-6 pb-4"
-                  style={{ direction: "rtl", borderTop: "1px solid #f0f0f0" }}
+                  className="flex items-center gap-2 px-6 pb-4 pt-2"
+                  style={{ direction: isRTL ? "rtl" : "ltr", borderTop: "1px solid #f0f0f0" }}
                 >
                   <input
                     type="checkbox"
-                    className="w-4 h-4 cursor-pointer flex-shrink-0 mt-3"
+                    className="w-4 h-4 cursor-pointer flex-shrink-0"
                     style={{ accentColor: "#008755" }}
                   />
-                  <span className="text-sm text-gray-600 mt-3">{lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay With DDA Instalments"}</span>
+                  <span className="text-sm text-gray-600">{t.home.results.payInstallment}</span>
                   <button
-                    onClick={() => toast.info("خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية.")}
-                    className="flex-shrink-0 mt-3"
+                    onClick={() => toast.info(lang === "ar" ? "خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية." : "DDA Instalments service allows you to pay fines in monthly installments.")}
+                    className="flex-shrink-0"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <circle cx="12" cy="12" r="10" stroke="#9ca3af" strokeWidth="1.5"/>
@@ -1723,9 +1747,9 @@ export default function Home() {
                 className="flex items-center justify-center w-8 h-8 rounded-full"
                 style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb" }}
               >
-                <ArrowRight className="w-4 h-4 text-gray-600" />
+                {isRTL ? <ArrowRight className="w-4 h-4 text-gray-600" /> : <ArrowLeft className="w-4 h-4 text-gray-600" />}
               </button>
-              <span className="text-sm font-semibold text-gray-700">الاستعلام والدفع</span>
+              <span className="text-sm font-semibold text-gray-700">{t.breadcrumb.finesLookup}</span>
             </div>
 
             {/* Action buttons */}
@@ -1733,7 +1757,7 @@ export default function Home() {
               <button className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info("سيتم تفعيله قريباً")}>...</button>
               <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info("سيتم تفعيله قريباً")}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
-                <span>طلب قائمة المخالفات</span>
+                <span>{t.home.results.requestList}</span>
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mr-auto"
@@ -1744,7 +1768,7 @@ export default function Home() {
                   else setSelectedFines(new Set(filteredFines.map((_, i) => i)));
                 }}
               >
-                <span>تحديد الكل</span>
+                <span>{selectedFines.size === filteredFines.length ? t.home.results.deselectAll : t.home.results.selectAll}</span>
               </button>
             </div>
 
@@ -1774,12 +1798,12 @@ export default function Home() {
                 </div>
               </div>
               {/* نص مراجعة المخالفات + رقم اللوحة على اليمين */}
-              <div dir="rtl" className="text-right">
+              <div dir={isRTL ? "rtl" : "ltr"} className={isRTL ? "text-right" : "text-left"}>
                 <h2 className="text-lg font-black" style={{ color: "#111827", lineHeight: 1.2 }}>
-                  {lang === "ar" ? "مراجعة المخالفات" : "Review Fines"}
+                  {t.home.results.title}
                 </h2>
                 <p className="text-xs font-medium" style={{ color: "#6B7280" }}>
-                  {lang === "ar" ? "رقم اللوحة" : "Plate Number"}
+                  {t.home.form.plateNumber}
                 </p>
               </div>
             </div>
@@ -1851,28 +1875,33 @@ export default function Home() {
             <div className="h-36" />
           </div>
 
-          {/* Bottom summary bar - mobile STICKY - مطابق للصورة الأصلية تماماً */}
+          {/* Bottom summary bar - mobile STICKY */}
           <div
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
             style={{ backgroundColor: "#ffffff", borderTop: "1px solid #e8e8e8", boxShadow: "0 -2px 12px rgba(0,0,0,0.08)" }}
           >
-            {/* Stats row: المخالفات [0] | إجمالي المبلغ D [0] - مطابق للصورة الأصلية */}
-            <div className="flex items-center px-4 pt-3 pb-2" style={{ direction: "rtl" }}>
+            {/* Stats row: المخالفات | إجمالي المبلغ */}
+            <div className="flex items-center px-4 pt-3 pb-2" style={{ direction: isRTL ? "rtl" : "ltr" }}>
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-bold text-gray-900">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
-                <span className="text-sm text-gray-500">{lang === "ar" ? "المخالفات" : "Fines"}</span>
+                <span className="text-sm text-gray-500">{t.home.results.summary.fines}</span>
               </div>
               <div className="w-px bg-gray-300 mx-4" style={{ height: "20px" }} />
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-gray-900" dir="ltr">
-                  &#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}
+                <span className="text-sm font-bold text-gray-900 flex items-center gap-1" dir="ltr">
+                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}>
+                    <path d="M4 3 L4 17 L10 17 C14.4 17 17.5 14.2 17.5 10 C17.5 5.8 14.4 3 10 3 Z" stroke="#111" strokeWidth="1.8" fill="none" strokeLinejoin="round"/>
+                    <line x1="1.5" y1="7.5" x2="11" y2="7.5" stroke="#111" strokeWidth="1.8" strokeLinecap="round"/>
+                    <line x1="1.5" y1="12" x2="11" y2="12" stroke="#111" strokeWidth="1.8" strokeLinecap="round"/>
+                  </svg>
+                  <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
                 </span>
-                <span className="text-sm text-gray-500">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</span>
+                <span className="text-sm text-gray-500">{t.home.results.totalAmount}</span>
               </div>
             </div>
 
-            {/* دفع + رجوع - مطابق للصورة الأصلية */}
-            <div className="flex items-center gap-3 px-4 pb-2" style={{ direction: "rtl" }}>
+            {/* دفع + رجوع */}
+            <div className="flex items-center gap-3 px-4 pb-2" style={{ direction: isRTL ? "rtl" : "ltr" }}>
               {/* زر دفع - أخضر أو رمادي */}
               <button
                 disabled={selectedFines.size === 0}
@@ -1895,7 +1924,7 @@ export default function Home() {
                   navigate("/payment");
                 }}
               >
-                {lang === "ar" ? "دفع" : "Pay"}
+                {t.home.results.payButton}
               </button>
               {/* زر رجوع - أبيض بإطار رمادي */}
               <button
@@ -1907,14 +1936,20 @@ export default function Home() {
                   color: "#374151",
                 }}
               >
-                {lang === "ar" ? "رجوع" : "Back"}
+                {t.home.results.backButton}
               </button>
             </div>
 
-            {/* الدفع بالتقسيط عبر الخصم المباشر - مطابق للصورة الأصلية */}
-            <div className="flex items-center gap-2 px-4 pb-3" style={{ direction: "rtl" }}>
+            {/* الدفع بالتقسيط عبر الخصم المباشر */}
+            <div className="flex items-center gap-2 px-4 pb-3" style={{ direction: isRTL ? "rtl" : "ltr" }}>
+              <input
+                type="checkbox"
+                className="w-4 h-4 cursor-pointer flex-shrink-0"
+                style={{ accentColor: "#008755" }}
+              />
+              <span className="text-xs text-gray-600">{t.home.results.payInstallment}</span>
               <button
-                onClick={() => toast.info("خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية.")}
+                onClick={() => toast.info(lang === "ar" ? "خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية." : "DDA Instalments service allows you to pay fines in monthly installments.")}
                 className="flex-shrink-0"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -1923,12 +1958,6 @@ export default function Home() {
                   <circle cx="12" cy="7.5" r="0.75" fill="#9ca3af"/>
                 </svg>
               </button>
-              <span className="text-xs text-gray-600">{lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay With DDA Instalments"}</span>
-              <input
-                type="checkbox"
-                className="w-4 h-4 cursor-pointer flex-shrink-0 mr-auto"
-                style={{ accentColor: "#008755" }}
-              />
             </div>
           </div>
         </div>
