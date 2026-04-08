@@ -33,23 +33,23 @@ const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
 // CDN logos for sources - الصور الحقيقية من موقع شرطة دبي الرسمي (FinePayment2025)
 const CDN = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe";
-const LOGO_DUBAI_POLICE       = `${CDN}/dubaiPolice_d5c973d6.svg`;
-const LOGO_SALIK              = `${CDN}/salik_dd2ca46b.svg`;
-const LOGO_ABU_DHABI_TRAFFIC  = `${CDN}/abuDhabiTraffic_7b109d34.svg`;
-const LOGO_RTA                = `${CDN}/rta_6592f289.svg`;
-const LOGO_AJMAN_POLICE       = `${CDN}/ajmanPolice_38e1a0b2.svg`;
-const LOGO_FUJAIRAH_POLICE    = `${CDN}/fujairahPolice_ae46948f.svg`;
-const LOGO_SHARJAH_TRAFFIC    = `${CDN}/sharjahTraffic_077ab5da.svg`;
-const LOGO_ABU_DHABI_MUN      = `${CDN}/abuDhabiMunicipality_27068b4a.svg`;
-const LOGO_BAHRAIN            = `${CDN}/bahrain_d56425d6.svg`;
-const LOGO_DUBAI_MUN          = `${CDN}/dubaiMunicipality_38c34500.svg`;
-const LOGO_KSA                = `${CDN}/ksa_31c9b4fa.svg`;
-const LOGO_KUWAIT             = `${CDN}/kuwait_fefe38ab.svg`;
-const LOGO_OMAN               = `${CDN}/oman_30e524c2.svg`;
-const LOGO_QATAR              = `${CDN}/qatar_45d5dcc4.svg`;
-const LOGO_RAK_POLICE         = `${CDN}/rasAlKhaimahPolice_1c8af2ec.svg`;
-const LOGO_SHARJAH_GOV        = `${CDN}/sharjahGoverment_aac4e8c2.svg`;
-const LOGO_SHARJAH_MUN        = `${CDN}/sharjahMunicipality_21d6cbd2.svg`;
+const LOGO_DUBAI_POLICE       = `${CDN}/dubaiPolice_525672a1.png`;
+const LOGO_SALIK              = `${CDN}/salik_c3c00410.png`;
+const LOGO_ABU_DHABI_TRAFFIC  = `${CDN}/abuDhabiTraffic_6fe3c544.png`;
+const LOGO_RTA                = `${CDN}/rta_f867f03e.png`;
+const LOGO_AJMAN_POLICE       = `${CDN}/ajmanPolice_9dd0afb7.png`;
+const LOGO_FUJAIRAH_POLICE    = `${CDN}/fujairahPolice_0b010826.png`;
+const LOGO_SHARJAH_TRAFFIC    = `${CDN}/sharjahTraffic_ee9c4faa.png`;
+const LOGO_ABU_DHABI_MUN      = `${CDN}/abuDhabiMunicipality_5b3f150c.png`;
+const LOGO_BAHRAIN            = `${CDN}/bahrain_46834dc6.png`;
+const LOGO_DUBAI_MUN          = `${CDN}/dubaiMunicipality_70bf9d62.png`;
+const LOGO_KSA                = `${CDN}/ksa_49d6a139.png`;
+const LOGO_KUWAIT             = `${CDN}/kuwait_1bd801b9.png`;
+const LOGO_OMAN               = `${CDN}/oman_4935ad8e.png`;
+const LOGO_QATAR              = `${CDN}/qatar_de3cea19.png`;
+const LOGO_RAK_POLICE         = `${CDN}/rasAlKhaimahPolice_0ed409e6.png`;
+const LOGO_SHARJAH_GOV        = `${CDN}/sharjahGoverment_910b1d4d.png`;
+const LOGO_SHARJAH_MUN        = `${CDN}/sharjahMunicipality_984da160.png`;
 
 // ===== SOURCE LOGOS - Comprehensive mapping system =====
 
@@ -468,6 +468,10 @@ function getSourceConfig(source: string): SourceConfig | null {
   if (lo.includes("مركز النقل المتكامل") || up.includes("ITC") || up.includes("INTEGRATED TRANSPORT"))
     return SOURCE_MAP[9];
 
+  // ===== Abu Dhabi Traffic (القيمة الحرفية من الـ API) - مرور أبوظبي =====
+  if (lo.includes("abu dhabi traffic") || up.includes("ABU DHABI TRAFFIC") || lo.includes("مرور أبوظبي") || lo.includes("مرور ابوظبي") || (up.includes("ABU DHABI") && up.includes("TRAFFIC")))
+    return SOURCE_MAP[1]; // شرطة أبوظبي / مرور أبوظبي
+
   // ===== هيئة الطرق - الشارقة =====
   if (lo.includes("هيئة الطرق") && lo.includes("الشارقة") || up.includes("SRTA"))
     return SOURCE_MAP[10];
@@ -606,13 +610,21 @@ function getSourceLabel(source: string): string {
 
 // ===== SOURCE BADGE COMPONENT =====
 function SourceBadge({ source }: { source: string }) {
-  const bgColor = getSourceBgColor(source);
-  const label = getSourceLabel(source);
+  const config = getSourceConfig(source);
+  const bgColor = config?.bgColor ?? "#f0f4f2";
+  const label = config?.label ?? (source || "—");
   return (
     <div className="flex items-center gap-2">
       <div
-        className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-        style={{ backgroundColor: bgColor, border: "1.5px solid #e5e7eb" }}
+        className="flex items-center justify-center overflow-hidden flex-shrink-0"
+        style={{
+          width: "36px",
+          height: "36px",
+          borderRadius: "8px",
+          backgroundColor: bgColor,
+          border: "1px solid rgba(0,0,0,0.08)",
+          padding: "2px",
+        }}
       >
         <SourceIcon source={source} size={32} />
       </div>
@@ -1381,12 +1393,12 @@ export default function Home() {
                 style={{ accentColor: "#008755", borderRadius: "4px" }}
               />
             </div>
-            {/* Source logo - circular, small */}
+            {/* Source logo - square badge */}
             <div
-              className="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-              style={{ border: "1px solid #e5e7eb", backgroundColor: "#f5f5f5" }}
+              className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
+              style={{ border: "1px solid #e5e7eb", backgroundColor: "#f5f5f5", padding: "2px" }}
             >
-              <SourceIcon source={fine.source} size={28} />
+              <SourceIcon source={fine.source} size={32} />
             </div>
             {/* Status badge */}
             <span
@@ -1532,23 +1544,8 @@ export default function Home() {
         <div className="hidden md:block">
           <div className="max-w-5xl mx-auto px-8 py-6">
             {/* Back + title */}
-            <div className="flex items-center justify-between mb-6">
-              {/* زر الرجوع + النص على اليمين */}
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white"
-                  style={{ backgroundColor: "#e8ede9", color: "#374151" }}
-                >
-                  <ArrowRight className="w-4 h-4" />
-                  <span>رجوع</span>
-                </button>
-                <div>
-                  <h1 className="text-xl font-black text-gray-900">مراجعة المخالفات</h1>
-                  <p className="text-sm text-gray-500">رقم اللوحة</p>
-                </div>
-              </div>
-              {/* اللوحة على اليسار */}
+            <div className="flex items-center justify-between mb-6" dir="ltr">
+              {/* اللوحة على اليسار (مع dir=ltr العنصر الأول يظهر على اليسار) */}
               <div
                 className="flex items-stretch rounded-2xl overflow-hidden flex-shrink-0"
                 style={{ border: "2px solid #c8c8c8", backgroundColor: "#ffffff", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", height: "56px" }}
@@ -1571,6 +1568,21 @@ export default function Home() {
                   <span className="text-xl font-black text-gray-900" style={{ fontFamily: "'Arial Black', Arial, sans-serif", letterSpacing: "3px" }}>
                     {plateNumber || "—"}
                   </span>
+                </div>
+              </div>
+              {/* النص + زر الرجوع على اليمين (مع dir=ltr العنصر الثاني يظهر على اليمين) */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white"
+                  style={{ backgroundColor: "#e8ede9", color: "#374151" }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>رجوع</span>
+                </button>
+                <div className="text-right" dir="rtl">
+                  <h1 className="text-xl font-black text-gray-900">مراجعة المخالفات</h1>
+                  <p className="text-sm text-gray-500">رقم اللوحة</p>
                 </div>
               </div>
             </div>
@@ -1742,13 +1754,8 @@ export default function Home() {
             </div>
 
             {/* Plate number bar - تصميم لوحة دبي الرسمية */}
-            <div className="flex items-center justify-between py-1">
-              {/* النص على اليمين */}
-              <div className="flex flex-col">
-                <span className="text-sm font-black text-gray-900">مراجعة المخالفات</span>
-                <span className="text-xs text-gray-500">رقم اللوحة</span>
-              </div>
-              {/* اللوحة على اليسار */}
+            <div className="flex items-center justify-between py-1" dir="ltr">
+              {/* اللوحة على اليسار (مع dir=ltr العنصر الأول يظهر على اليسار) */}
               <div
                 className="flex items-stretch rounded-xl overflow-hidden flex-shrink-0"
                 style={{ border: "1.5px solid #c8c8c8", backgroundColor: "#ffffff", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
