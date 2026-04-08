@@ -1286,7 +1286,7 @@ export default function Home() {
   );
 
   // ===== FINE CARD COMPONENT =====
-  const FineCard = ({ fine, idx, isMobile = false }: { fine: FineResult; idx: number; isMobile?: boolean }) => {
+  const FineCard = ({ fine, idx }: { fine: FineResult; idx: number; isMobile?: boolean }) => {
     const isSelected = selectedFines.has(idx);
     const amt = parseFloat((fine.amount || "0").replace(/[^0-9.]/g, ""));
 
@@ -1296,223 +1296,229 @@ export default function Home() {
       setSelectedFines(next);
     };
 
-    // Status badge config - مطابق للموقع الأصلي
+    // Status badge config - مطابق للموقع الأصلي تماماً
     const isPayable = !fine.isPaid && fine.status !== "seized" && fine.status !== "blackpoints" && fine.status !== "notpayable";
     const isBlackPoints = fine.status === "blackpoints";
     const isSeized = fine.status === "seized";
-    const isNotPayable = fine.status === "notpayable";
 
     const statusConfig = fine.isPaid
-      ? { label: lang === "ar" ? "مدفوع" : "Paid", bg: "#e7f6f1", color: "#006c44", borderRadius: "8px" }
+      ? { label: "Paid", bg: "#e7f6f1", color: "#006c44" }
       : isSeized
-      ? { label: lang === "ar" ? "حجز" : "Impound", bg: "#fff0e8", color: "#c84800", borderRadius: "8px" }
+      ? { label: "Impound", bg: "#fff0e8", color: "#c84800" }
       : isBlackPoints
-      ? { label: lang === "ar" ? "نقاط سوداء" : "Black Points", bg: "rgba(158,158,158,0.16)", color: "rgba(0,0,0,0.6)", borderRadius: "8px" }
-      : isNotPayable
-      ? { label: lang === "ar" ? "غير قابل للدفع" : "Un Payable", bg: "#fff0e8", color: "#c84800", borderRadius: "8px" }
-      : { label: lang === "ar" ? "قابل للدفع" : "Payable", bg: "#e7f6f1", color: "#006c44", borderRadius: "8px" };
+      ? { label: "Black Points", bg: "rgba(158,158,158,0.16)", color: "rgba(0,0,0,0.6)" }
+      : fine.status === "notpayable"
+      ? { label: "Un Payable", bg: "#fff0e8", color: "#c84800" }
+      : { label: "Payable", bg: "#e7f6f1", color: "#006c44" };
 
-    // أيقونة لوحة السيارة (مطابقة للأصلي - viewBox 0 0 28 23)
+    // أيقونة لوحة السيارة - مطابقة للأصلي
     const PlateIcon = () => (
-      <svg width="16" height="16" viewBox="0 0 28 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="16" height="13" viewBox="0 0 28 23" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="2" y="1.5" width="7" height="19" fill="#ECECEC"/>
         <rect x="1" y="1" width="26" height="20" rx="3" stroke="#6B6C6E" strokeWidth="2"/>
         <line x1="10" y1="1" x2="10" y2="20" stroke="#6B6C6E" strokeWidth="2"/>
       </svg>
     );
 
-    // أيقونة الموقع (مطابقة للأصلي - viewBox 0 0 17 17 - house/location)
+    // أيقونة الموقع - مطابقة للأصلي
     const LocationIcon = () => (
-      <svg width="16" height="16" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M4.36708 14.1781C3.89615 14.1781 3.50109 14.0222 3.1819 13.7102C2.86272 13.3983 2.70312 13.0122 2.70312 12.552V7.07528C2.70312 6.8196 2.76068 6.5767 2.8758 6.34659C2.99092 6.11648 3.15313 5.92472 3.36243 5.77131L7.09847 3.02528C7.24499 2.91278 7.40458 2.83097 7.57725 2.77983C7.74993 2.72869 7.92522 2.70312 8.10313 2.70312C8.28103 2.70312 8.45632 2.72869 8.629 2.77983C8.80167 2.83097 8.96126 2.91278 9.10778 3.02528L12.8438 5.77131C13.0531 5.92472 13.2153 6.11648 13.3305 6.34659C13.4456 6.5767 13.5031 6.8196 13.5031 7.07528V12.552C13.5031 13.0122 13.3435 13.3983 13.0243 13.7102C12.7052 14.0222 12.3101 14.1781 11.8392 14.1781H9.79063V9.48381H6.41563V14.1781H4.36708Z" fill="#EBEBEC" stroke="#89898B" strokeWidth="1.35"/>
       </svg>
     );
 
-    // أيقونة السرعة (مطابقة للأصلي - speedometer)
+    // أيقونة السرعة - مطابقة للأصلي
     const SpeedIcon = () => (
-      <svg width="16" height="16" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M6.78063 10.2247C7.05063 10.4947 7.405 10.6325 7.84375 10.6381C8.2825 10.6438 8.61438 10.4834 8.83938 10.1572L11.6406 6.03969C11.7756 5.83719 11.7588 5.65156 11.59 5.48281C11.4213 5.31406 11.2356 5.29719 11.0331 5.43219L6.88188 8.23344C6.55563 8.45844 6.38969 8.77906 6.38406 9.19531C6.37844 9.61156 6.51063 9.95469 6.78063 10.2247ZM3.10188 13.6334C2.80938 13.6334 2.52813 13.5631 2.25813 13.4225C1.98813 13.2819 1.78563 13.0822 1.65063 12.8234C1.34688 12.2947 1.10781 11.7266 0.933438 11.1191C0.759063 10.5116 0.671875 9.87594 0.671875 9.21219C0.671875 7.28281 1.36344 5.63 2.74656 4.25375C4.12969 2.8775 5.79375 2.18937 7.73875 2.18937C9.68375 2.18937 11.3478 2.8775 12.7309 4.25375C14.1141 5.63 14.8056 7.28281 14.8056 9.21219C14.8056 9.87594 14.7184 10.5116 14.5441 11.1191C14.3697 11.7266 14.1306 12.2947 13.8269 12.8234C13.6919 13.0822 13.4894 13.2819 13.2194 13.4225C12.9494 13.5631 12.6681 13.6334 12.3756 13.6334H3.10188Z" fill="#4B4C4D"/>
       </svg>
     );
 
-    // أيقونة رقم التذكرة (مطابقة للأصلي - ticket/hash)
+    // أيقونة رقم التذكرة - مطابقة للأصلي
     const TicketIcon = () => (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M9.31803 7.03719L8.99772 8.96297H7.09017L7.41048 7.03719H9.31803Z" fill="#4B4C4D"/>
         <path fillRule="evenodd" clipRule="evenodd" d="M8.00033 0.666748C3.95024 0.666748 0.666992 3.94999 0.666992 8.00008C0.666992 12.0502 3.95024 15.3334 8.00033 15.3334C12.0504 15.3334 15.3337 12.0502 15.3337 8.00008C15.3337 3.94999 12.0504 0.666748 8.00033 0.666748ZM6.08691 5.77008L5.76661 7.03719H4.66699V8.96297H5.44319L5.12288 10.2301H4.66699V11.4972H4.80033C4.80033 11.4972 4.80033 11.4972 4.80033 11.4972H6.44699L6.44699 11.4972H6.76729L7.08759 10.2301H8.99514L8.67484 11.4972H10.0015L10.3218 10.2301H11.3337V8.96297H10.6437L10.964 7.03719H11.3337V5.77008H11.2003C11.2003 5.77008 11.2003 5.77008 11.2003 5.77008H9.55366L9.55366 5.77008H9.23335L8.91305 7.03719H7.00549L7.3258 5.77008H6.08691Z" fill="#4B4C4D"/>
       </svg>
     );
 
-    // أيقونة التاريخ (مطابقة للأصلي - calendar)
+    // أيقونة التاريخ - مطابقة للأصلي
     const DateIcon = () => (
-      <svg width="16" height="16" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3.29941 13.7333C2.98275 13.7333 2.71275 13.6239 2.48941 13.4052C2.26608 13.1865 2.15441 12.9219 2.15441 12.6113V4.38875C2.15441 4.07812 2.26608 3.81354 2.48941 3.595C2.71275 3.37646 2.98275 3.26719 3.29941 3.26719H4.21816V2.125H5.35566V3.26719H11.6432V2.125H12.7807V3.26719H13.6994C14.0161 3.26719 14.2861 3.37646 14.5094 3.595C14.7327 3.81354 14.8444 4.07812 14.8444 4.38875V12.6113C14.8444 12.9219 14.7327 13.1865 14.5094 13.4052C14.2861 13.6239 14.0161 13.7333 13.6994 13.7333H3.29941ZM3.29941 12.6113H13.6994V6.67167H3.29941V12.6113ZM3.29941 5.54958H13.6994V4.38875H3.29941V5.54958Z" fill="#4B4C4D"/>
       </svg>
     );
 
-    // أيقونة Fine Details (مطابقة للأصلي - info circle)
-    const FineDetailsIcon = () => (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="10" cy="10" r="9" stroke="#008755" strokeWidth="1.5" fill="none"/>
-        <path d="M10 9V14" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
-        <circle cx="10" cy="6.5" r="0.75" fill="#008755"/>
-      </svg>
-    );
-
-    // الشعار الدائري للمصدر
+    // شعار المصدر
     const sourceConfig = getSourceConfig(fine.source);
     const sourceBgColor = sourceConfig?.bgColor ?? "#e8f5ee";
-
-    // رمز الدرهم الإماراتي الرسمي ₿ (مطابق للأصلي - هذا هو الرمز المستخدم في الموقع الأصلي)
-    const dirhamSymbol = "\u20BF"; // هذا هو رمز الدرهم المستخدم في الموقع الأصلي لشرطة دبي
+    const sourceBorderColor = sourceConfig?.borderColor ?? "#008755";
 
     return (
       <div
         style={{
           backgroundColor: "#ffffff",
-          borderRadius: "20px",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-          border: "1px solid #ebebeb",
+          borderRadius: "16px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          border: "1px solid #e8e8e8",
           overflow: "hidden",
+          marginBottom: "12px",
         }}
       >
-        {/* ===== HEADER ROW: شعار شرطة دبي + Badge الحالة + التاريخ ===== */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-3">
-          {/* يسار: شعار شرطة دبي الدائري + badge الحالة */}
-          <div className="flex items-center gap-2">
-            {/* شعار شرطة دبي الدائري - مطابق للأصلي */}
-            <div
-              className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-              style={{ backgroundColor: "#e8f5ee", border: "1px solid rgba(0,135,85,0.15)" }}
-            >
-              {/* شعار شرطة دبي الأصلي */}
-              <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="48" fill="#008755" stroke="#006c44" strokeWidth="2"/>
-                <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
-                <path d="M50 18 C50 18 30 28 30 45 C30 58 38 65 50 72 C62 65 70 58 70 45 C70 28 50 18 50 18Z" fill="rgba(255,255,255,0.15)"/>
+        {/* ===== HEADER ROW: checkbox + شعار المصدر + badge + المبلغ ===== */}
+        <div
+          className="flex items-center gap-3 px-4 py-3"
+          style={{ direction: "ltr" }}
+        >
+          {/* Checkbox */}
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={toggleSelect}
+            className="w-4 h-4 flex-shrink-0 cursor-pointer"
+            style={{ accentColor: "#008755" }}
+          />
+          {/* شعار المصدر الدائري */}
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+            style={{ backgroundColor: sourceBgColor, border: `1.5px solid ${sourceBorderColor}30` }}
+          >
+            {sourceConfig ? sourceConfig.logo(22) : (
+              <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="48" fill="#008755"/>
                 <text x="50" y="58" textAnchor="middle" fill="white" fontSize="28" fontWeight="bold" fontFamily="Arial">D</text>
               </svg>
-            </div>
-            {/* Status badge - أصفر لـ Payable with License / أخضر لـ Payable / برتقالي لـ Impound */}
+            )}
+          </div>
+          {/* badge الحالة */}
+          <span
+            className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
+            style={{ backgroundColor: statusConfig.bg, color: statusConfig.color }}
+          >
+            {statusConfig.label}
+          </span>
+          {/* المبلغ - على اليمين */}
+          <div className="flex-1 flex items-center justify-end gap-1">
             <span
-              className="text-xs font-semibold px-3 py-1.5 rounded-full"
-              style={{
-                backgroundColor: statusConfig.bg,
-                color: statusConfig.color,
-              }}
+              className="text-xl font-black"
+              style={{ color: "#111", fontFamily: "'Arial Black', Arial, sans-serif" }}
+              dir="ltr"
             >
-              {statusConfig.label}
+              &#x20BF; {isNaN(amt) ? fine.amount : amt.toLocaleString()}
             </span>
           </div>
-          {/* يمين: التاريخ والوقت */}
-          {fine.dateTime && (
-            <span className="text-xs text-gray-400" dir="ltr">{fine.dateTime}</span>
-          )}
         </div>
 
-        {/* ===== محتوى البطاقة ===== */}
-        <div className="px-4 pb-3 flex flex-col gap-3">
-
-          {/* Source - مع أيقونة شرطي رمادي + زر Edit */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {/* أيقونة شرطي رمادي - مطابقة للأصلي */}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#9ca3af"/>
-                <path d="M18 8h-1V6h-2v2h-6V6H7v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z" fill="none"/>
-              </svg>
-              <span className="text-sm font-semibold text-gray-900">{getSourceLabel(fine.source)}</span>
+        {/* ===== شبكة الحقول 2x2 - مطابقة للأصلي تماماً ===== */}
+        <div className="px-4 pb-3" style={{ direction: "ltr" }}>
+          {/* صف 1: Source | Location */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-2">
+            {/* Source */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <PlateIcon />
+              <span className="text-xs text-gray-500 flex-shrink-0">Source</span>
+              <a
+                href="#"
+                className="text-xs font-medium truncate"
+                style={{ color: "#008755", textDecoration: "underline" }}
+                onClick={(e) => e.preventDefault()}
+              >
+                {getSourceLabel(fine.source)}
+              </a>
             </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); toast.info(lang === "ar" ? "سيتم تفعيل المراجعة قريباً" : "Review feature coming soon"); }}
-              className="text-sm font-bold px-5 py-1.5"
-              style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", backgroundColor: "transparent", borderRadius: "50px" }}
-            >
-              Edit
-            </button>
+            {/* Location */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <LocationIcon />
+              <span className="text-xs text-gray-500 flex-shrink-0">Location</span>
+              {fine.location ? (
+                <a
+                  href="#"
+                  className="text-xs font-medium truncate"
+                  style={{ color: "#008755", textDecoration: "underline" }}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {fine.location}
+                </a>
+              ) : (
+                <span className="text-xs text-gray-400">—</span>
+              )}
+            </div>
           </div>
 
-          {/* Location - مع أيقونة pin أخضر */}
-          {fine.location && (
-            <div className="flex items-start gap-2">
-              <div className="flex-shrink-0 mt-0.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#008755"/>
-                </svg>
-              </div>
-              <span className="text-sm font-medium" style={{ color: "#008755", textDecoration: "underline" }}>{fine.location}</span>
+          {/* صف 2: Speed | Ticket Number (يظهر Speed فقط إذا كان موجوداً) */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-2">
+            {/* Speed */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <SpeedIcon />
+              <span className="text-xs text-gray-500 flex-shrink-0">Speed</span>
+              {fine.speed ? (
+                <a
+                  href="#"
+                  className="text-xs font-medium"
+                  style={{ color: "#008755", textDecoration: "underline" }}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {fine.speed}
+                </a>
+              ) : (
+                <span className="text-xs text-gray-400">—</span>
+              )}
             </div>
-          )}
-
-          {/* Description - مع أيقونة تذكرة رمادية - مطابقة للأصلي */}
-          {fine.description && (
-            <div className="flex items-start gap-2">
-              <div className="flex-shrink-0 mt-0.5">
-                {/* أيقونة تذكرة/كوبون رمادية - مطابقة للأصلي */}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22 10V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-2-1.46c-1.19.69-2 1.99-2 3.46s.81 2.77 2 3.46V18H4v-2.54c1.19-.69 2-1.99 2-3.46 0-1.48-.8-2.77-2-3.46V6h16v2.54z" fill="#9ca3af"/>
-                  <path d="M11 15h2v2h-2zm0-4h2v2h-2zm0-4h2v2h-2z" fill="#9ca3af"/>
-                </svg>
-              </div>
-              <span className="text-sm text-gray-700">{fine.description}</span>
+            {/* Ticket Number */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <TicketIcon />
+              <span className="text-xs text-gray-500 flex-shrink-0">Ticket Number</span>
+              {fine.ticketNo ? (
+                <a
+                  href="#"
+                  className="text-xs font-medium truncate"
+                  style={{ color: "#008755", textDecoration: "underline" }}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {fine.ticketNo}
+                </a>
+              ) : (
+                <span className="text-xs text-gray-400">—</span>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* ===== خط فاصل ===== */}
-        <div style={{ height: "1px", backgroundColor: "#ebebeb" }} />
-
-        {/* ===== صف الإحصائيات: Ticket Number | Black Points | Total Amount ===== */}
-        <div className="flex items-stretch">
-          {/* Ticket Number */}
-          <div className="flex-1 flex flex-col items-center justify-center py-3 px-2">
-            {fine.ticketNo ? (
-              <span className="text-sm font-bold text-gray-900 truncate max-w-full" dir="ltr">{fine.ticketNo}</span>
+          {/* صف 3: Date & Time - كامل العرض */}
+          <div className="flex items-center gap-1.5">
+            <DateIcon />
+            <span className="text-xs text-gray-500">Date & Time</span>
+            {fine.dateTime ? (
+              <a
+                href="#"
+                className="text-xs font-medium"
+                style={{ color: "#008755", textDecoration: "underline" }}
+                onClick={(e) => e.preventDefault()}
+              >
+                {fine.dateTime}
+              </a>
             ) : (
-              <span className="text-sm font-bold text-gray-400">—</span>
+              <span className="text-xs text-gray-400">—</span>
             )}
-            <span className="text-[11px] text-gray-400 mt-0.5">{lang === "ar" ? "رقم التذكرة" : "Ticket Number"}</span>
-          </div>
-          <div style={{ width: "1px", backgroundColor: "#ebebeb", alignSelf: "stretch" }} />
-          {/* Black Points */}
-          <div className="flex-1 flex flex-col items-center justify-center py-3 px-2">
-            <span className="text-sm font-bold text-gray-900">{fine.blackPoints ?? "—"}</span>
-            <span className="text-[11px] text-gray-400 mt-0.5">{lang === "ar" ? "النقاط السوداء" : "Black Point(s)"}</span>
-          </div>
-          <div style={{ width: "1px", backgroundColor: "#ebebeb", alignSelf: "stretch" }} />
-          {/* Total Amount */}
-          <div className="flex-1 flex flex-col items-center justify-center py-3 px-2">
-            <span className="text-sm font-bold text-gray-900" dir="ltr">{dirhamSymbol} {isNaN(amt) ? fine.amount : amt.toLocaleString()}</span>
-            <span className="text-[11px] text-gray-400 mt-0.5">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</span>
           </div>
         </div>
 
-        {/* ===== زر Pay الأخضر الكبير ===== */}
-        {!fine.isPaid && isPayable && (
-          <div className="px-4 pb-4 pt-2">
-            <button
-              className="w-full py-3.5 rounded-full text-base font-bold text-white transition-all"
-              style={{ backgroundColor: "#008755", boxShadow: "0 4px 16px rgba(0,135,85,0.3)" }}
-              onClick={(e) => {
-                e.stopPropagation();
-                const next = new Set(selectedFines);
-                next.add(idx);
-                setSelectedFines(next);
-                const selectedFinesData = [fine];
-                const total = amt.toFixed(0);
-                sessionStorage.setItem("paymentData", JSON.stringify({
-                  selectedFines: selectedFinesData,
-                  totalAmount: total,
-                  plateNumber,
-                  plateSource,
-                  queryId: (result as any)?.queryId,
-                }));
-                sessionStorage.removeItem("paymentSessionId");
-                navigate("/payment");
-              }}
-            >
-              {lang === "ar" ? "دفع" : "Pay"}
-            </button>
+        {/* ===== قسم Fine Details - خلفية خضراء فاتحة ===== */}
+        {fine.description && (
+          <div
+            className="mx-3 mb-3 px-3 py-2.5 rounded-xl"
+            style={{ backgroundColor: "#f0faf5", border: "1px solid #d0eed8" }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              {/* أيقونة Fine Details الخضراء */}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M3 10h18" stroke="#008755" strokeWidth="1.5"/>
+                <path d="M16 19h6" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M19 16v6" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              <span className="text-xs font-bold" style={{ color: "#008755" }}>Fine Details</span>
+            </div>
+            <p className="text-xs text-gray-700 leading-relaxed" style={{ direction: "ltr" }}>{fine.description}</p>
           </div>
         )}
       </div>
@@ -1660,46 +1666,41 @@ export default function Home() {
             {allFines.length > 0 && (
               <div
                 className="mt-6 rounded-2xl overflow-hidden"
-                style={{ backgroundColor: "#ffffff", border: "1.5px solid #ebebeb", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
+                style={{ backgroundColor: "#ffffff", border: "1px solid #e8e8e8", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
               >
-                {/* Stats row */}
-                <div className="flex items-stretch px-6 py-4 gap-0 border-b border-gray-100">
-                  <div className="text-center px-4">
-                    <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "إجمالي المخالفات" : "Total Fines"}</p>
-                    <p className="text-2xl font-black text-gray-900">{allFines.length}</p>
+                {/* Stats row + Buttons - مطابق للأصلي */}
+                <div className="flex items-center px-6 py-4" style={{ direction: "ltr" }}>
+                  {/* Fines count */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">Fines</span>
+                    <span className="text-sm font-bold text-gray-900">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
                   </div>
-                  <div className="w-px bg-gray-200 self-stretch" />
-                  <div className="text-center px-4">
-                    <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "قابل للدفع" : "Payable"}</p>
-                    <p className="text-2xl font-black text-gray-900">{payableCount}</p>
-                  </div>
-                  <div className="w-px bg-gray-200 self-stretch" />
-                  <div className="text-center px-4">
-                    <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "محدد" : "Selected"}</p>
-                    <p className="text-2xl font-black text-gray-900">{selectedFines.size}</p>
-                  </div>
-                  <div className="w-px bg-gray-200 self-stretch" />
-                  <div className="text-center px-4">
-                    <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</p>
-                    <p className="text-2xl font-black text-gray-900" dir="ltr"><span style={{fontSize:"18px", fontWeight: 900}}>₿</span> {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                  {/* Divider */}
+                  <div className="w-px bg-gray-200 mx-6" style={{ height: "24px" }} />
+                  {/* Total Amount */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">Total Amount</span>
+                    <span className="text-sm font-bold text-gray-900">&#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
                   </div>
                   <div className="flex-1" />
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
-                      <input type="checkbox" className="w-4 h-4" style={{ accentColor: "#008755" }} />
-                      <span>{lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay by Direct Debit"}</span>
-                    </label>
+                  {/* Buttons */}
+                  <div className="flex items-center gap-3">
+                    {/* Back button */}
                     <button
                       onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                      className="px-5 py-3 rounded-full text-sm font-bold transition-all"
-                      style={{ backgroundColor: "#f0f4f2", color: "#374151", border: "1px solid #e5e7eb" }}
+                      className="px-8 py-2.5 rounded-full text-sm font-semibold"
+                      style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: "#374151" }}
                     >
-                      {lang === "ar" ? "رجوع" : "Back"}
+                      Back
                     </button>
+                    {/* Pay button */}
                     <button
                       disabled={selectedFines.size === 0}
-                      className="px-8 py-3 rounded-full text-sm font-bold text-white transition-all"
-                      style={{ backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af", boxShadow: selectedFines.size > 0 ? "0 4px 12px rgba(0,135,85,0.3)" : "none" }}
+                      className="px-8 py-2.5 rounded-full text-sm font-bold text-white transition-all"
+                      style={{
+                        backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
+                        color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
+                      }}
                       onClick={() => {
                         const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
                         const total = selectedTotal.toFixed(0);
@@ -1714,9 +1715,31 @@ export default function Home() {
                         navigate("/payment");
                       }}
                     >
-                      {t.home.results.paySelected}
+                      Pay
                     </button>
                   </div>
+                </div>
+                {/* Pay With DDA Instalments row */}
+                <div
+                  className="flex items-center gap-2 px-6 pb-4"
+                  style={{ direction: "ltr", borderTop: "1px solid #f0f0f0" }}
+                >
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 cursor-pointer flex-shrink-0 mt-3"
+                    style={{ accentColor: "#008755" }}
+                  />
+                  <span className="text-sm text-gray-600 mt-3">Pay With DDA Instalments</span>
+                  <button
+                    onClick={() => toast.info("Pay With DDA Instalments: This service allows payment in monthly instalments via direct debit.")}
+                    className="flex-shrink-0 mt-3"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="#9ca3af" strokeWidth="1.5"/>
+                      <path d="M12 11v6" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/>
+                      <circle cx="12" cy="7.5" r="0.75" fill="#9ca3af"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
             )}
@@ -1864,34 +1887,42 @@ export default function Home() {
           {/* Bottom summary bar - mobile STICKY - مطابق للموقع الأصلي تماماً */}
           <div
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-            style={{ backgroundColor: "#ffffff", borderTop: "1px solid #ebebeb", boxShadow: "0 -4px 20px rgba(0,0,0,0.10)" }}
+            style={{ backgroundColor: "#ffffff", borderTop: "1px solid #e8e8e8", boxShadow: "0 -2px 12px rgba(0,0,0,0.08)" }}
           >
-            {/* Stats row - 3 أعمدة مفصولة بخطوط رأسية */}
-            <div className="flex items-stretch px-4 pt-3 pb-2 gap-0">
-              <div className="text-center flex-1 px-2">
-                <p className="text-[11px] text-gray-400 leading-tight mb-0.5">{lang === "ar" ? "إجمالي المخالفات" : "Total Fines"}</p>
-                <p className="text-xl font-black text-gray-900">{allFines.length}</p>
+            {/* Stats row: Fines [عدد] | Total Amount ₿ [مبلغ] - مطابق للأصلي */}
+            <div className="flex items-center px-4 pt-3 pb-2" style={{ direction: "ltr" }}>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-gray-500">Fines</span>
+                <span className="text-sm font-bold text-gray-900">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
               </div>
-              <div className="w-px bg-gray-200 self-stretch" />
-              <div className="text-center flex-1 px-2">
-                <p className="text-[11px] text-gray-400 leading-tight mb-0.5">{lang === "ar" ? "قابل للدفع" : "Payable"}</p>
-                <p className="text-xl font-black text-gray-900">{payableCount}</p>
-              </div>
-              <div className="w-px bg-gray-200 self-stretch" />
-              <div className="text-center flex-1 px-2">
-                <p className="text-[11px] text-gray-400 leading-tight mb-0.5">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</p>
-                <p className="text-xl font-black text-gray-900" dir="ltr"><span style={{fontSize:"16px", fontWeight: 900}}>₿</span> {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+              <div className="w-px bg-gray-200 mx-4 self-stretch" style={{ height: "20px", alignSelf: "center" }} />
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-gray-500">Total Amount</span>
+                <span className="text-sm font-bold text-gray-900">&#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
               </div>
             </div>
 
-            {/* Pay button - أخضر كبير ممتد بعرض كامل مثل الأصلي */}
-            <div className="px-4 pb-2">
+            {/* Back + Pay buttons row - مطابق للأصلي */}
+            <div className="flex items-center gap-3 px-4 pb-2" style={{ direction: "ltr" }}>
+              {/* Back button - أبيض بإطار رمادي */}
+              <button
+                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+                className="flex-1 py-3 rounded-full text-sm font-semibold"
+                style={{
+                  backgroundColor: "#ffffff",
+                  border: "1.5px solid #d1d5db",
+                  color: "#374151",
+                }}
+              >
+                Back
+              </button>
+              {/* Pay button - أخضر أو رمادي */}
               <button
                 disabled={selectedFines.size === 0}
-                className="w-full py-3.5 rounded-full text-base font-bold text-white transition-all"
+                className="flex-1 py-3 rounded-full text-sm font-bold text-white transition-all"
                 style={{
-                  backgroundColor: selectedFines.size > 0 ? "#008755" : "#9ca3af",
-                  boxShadow: selectedFines.size > 0 ? "0 4px 16px rgba(0,135,85,0.35)" : "none",
+                  backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
+                  color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
                 }}
                 onClick={() => {
                   const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
@@ -1907,24 +1938,28 @@ export default function Home() {
                   navigate("/payment");
                 }}
               >
-                {lang === "ar" ? "دفع" : "Pay"}
+                Pay
               </button>
             </div>
 
-            {/* Installment + Back row */}
-            <div className="flex items-center justify-between px-4 pb-3">
+            {/* Pay With DDA Instalments - مطابق للأصلي */}
+            <div className="flex items-center gap-2 px-4 pb-3" style={{ direction: "ltr" }}>
+              <input
+                type="checkbox"
+                className="w-4 h-4 cursor-pointer flex-shrink-0"
+                style={{ accentColor: "#008755" }}
+              />
+              <span className="text-xs text-gray-600">Pay With DDA Instalments</span>
               <button
-                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                className="flex items-center gap-1.5 text-sm font-semibold"
-                style={{ color: "#374151" }}
+                onClick={() => toast.info("Pay With DDA Instalments: This service allows payment in monthly instalments via direct debit.")}
+                className="flex-shrink-0 ml-1"
               >
-                <ArrowRight className="w-4 h-4" />
-                <span>{lang === "ar" ? "رجوع" : "Back"}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="#9ca3af" strokeWidth="1.5"/>
+                  <path d="M12 11v6" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/>
+                  <circle cx="12" cy="7.5" r="0.75" fill="#9ca3af"/>
+                </svg>
               </button>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 cursor-pointer rounded" style={{ accentColor: "#008755" }} />
-                <span className="text-xs text-gray-500">{lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay by Direct Debit"}</span>
-              </label>
             </div>
           </div>
         </div>
