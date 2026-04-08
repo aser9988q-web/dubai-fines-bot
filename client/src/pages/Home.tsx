@@ -1373,18 +1373,18 @@ export default function Home() {
       <div
         style={{
           backgroundColor: "#ffffff",
-          borderRadius: "16px",
-          boxShadow: isSelected ? "0 2px 12px rgba(0,135,85,0.25)" : "0 2px 8px rgba(0,0,0,0.08)",
-          padding: "16px",
-          border: isSelected ? "2px solid #008755" : "1px solid #e5e7eb",
+          borderRadius: "20px",
+          boxShadow: isSelected ? "0 4px 20px rgba(0,135,85,0.2)" : "0 2px 12px rgba(0,0,0,0.08)",
+          padding: "20px",
+          border: isSelected ? "2px solid #008755" : "1.5px solid #e8e8e8",
           transition: "box-shadow 0.2s, border 0.2s",
           cursor: "pointer",
         }}
         onClick={toggleSelect}
       >
-        {/* Row 1: Checkbox + Source circle + Badge | Amount */}
-        <div className="flex items-center justify-between mb-3">
-          {/* Left: Checkbox + Source logo circle + Status badge */}
+        {/* Row 1: Checkbox + Check circle + Source logo + Badge | Amount */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Left: Checkbox + Green check circle + Source logo + Status badge */}
           <div className="flex items-center gap-2">
             {/* Checkbox */}
             <input
@@ -1395,12 +1395,35 @@ export default function Home() {
               className="w-4 h-4 cursor-pointer flex-shrink-0"
               style={{ accentColor: "#008755" }}
             />
-            {/* Source logo - دائرة خضراء مثل الأصلي */}
+            {/* Green check circle - مطابق للأصلي */}
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-              style={{ backgroundColor: sourceBgColor }}
+              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: statusConfig.bg }}
             >
-              {sourceConfig ? sourceConfig.logo(26) : (
+              {fine.isPaid ? (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 5" stroke={statusConfig.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              ) : isSeized ? (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 4V8M8 11h.01" stroke={statusConfig.color} strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              ) : isBlackPoints ? (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="3" fill={statusConfig.color}/>
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8L6.5 11.5L13 5" stroke={statusConfig.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </div>
+            {/* Source logo circle - مطابق للأصلي */}
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+              style={{ backgroundColor: sourceBgColor, border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              {sourceConfig ? sourceConfig.logo(28) : (
                 <span className="text-xs font-bold" style={{ color: "#008755" }}>
                   {(fine.source || "?").charAt(0).toUpperCase()}
                 </span>
@@ -1408,7 +1431,7 @@ export default function Home() {
             </div>
             {/* Status badge */}
             <span
-              className="text-xs font-semibold px-2 py-0.5 rounded-md"
+              className="text-xs font-semibold px-2.5 py-1 rounded-full"
               style={{
                 backgroundColor: statusConfig.bg,
                 color: statusConfig.color,
@@ -1420,89 +1443,79 @@ export default function Home() {
           {/* Right: Amount - أخضر كبير مثل الأصلي */}
           <div className="flex items-center gap-1 flex-shrink-0">
             <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <text x="5" y="78" fontSize="72" fontFamily="'Dubai', 'Arial Black', Arial" fontWeight="900" fill="#008755">₿</text>
+              <text x="5" y="78" fontSize="72" fontFamily="'Dubai', 'Arial Black', Arial" fontWeight="900" fill="#1a1a1a">₿</text>
             </svg>
-            <span style={{ fontSize: "20px", fontWeight: 900, color: "#008755", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-0.5px" }}>
+            <span style={{ fontSize: "22px", fontWeight: 800, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-0.5px" }}>
               {isNaN(amt) ? fine.amount : amt.toLocaleString()}
             </span>
           </div>
         </div>
 
-        {/* Row 2: حقول المخالفة - مطابقة للأصلي: صفان من عمودين + التاريخ بعرض كامل */}
-        <div className="flex flex-col gap-2">
+        {/* Divider - خط فاصل مثل الأصلي */}
+        <div style={{ height: "1px", backgroundColor: "#f0f0f0", marginBottom: "16px" }} />
 
-          {/* الصف الأول: Source + Location */}
-          <div className="grid grid-cols-2 gap-x-3">
-            {/* Source */}
-            <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-              <PlateIcon />
-              <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "المصدر" : "Source"}</span>
-              <span className="text-xs font-semibold text-gray-900 truncate">{getSourceLabel(fine.source)}</span>
+        {/* حقول المخالفة - مطابقة للأصلي: Label على اليسار | القيمة على اليمين */}
+        <div className="flex flex-col gap-3">
+
+          {/* Source */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">{lang === "ar" ? "المصدر" : "Source"}</span>
+            <span className="text-sm font-semibold text-gray-900 text-right">{getSourceLabel(fine.source)}</span>
+          </div>
+
+          {/* Location */}
+          {fine.location && (
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-sm text-gray-500 flex-shrink-0">{lang === "ar" ? "الموقع" : "Location"}</span>
+              <span className="text-sm font-semibold text-gray-900 text-right">{fine.location}</span>
             </div>
-            {/* Location */}
-            {fine.location && (
-              <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-                <LocationIcon />
-                <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "الموقع" : "Location"}</span>
-                <span className="text-xs font-semibold text-gray-900 truncate">{fine.location}</span>
-              </div>
-            )}
-          </div>
+          )}
 
-          {/* الصف الثاني: Speed + Ticket Number */}
-          <div className="grid grid-cols-2 gap-x-3">
-            {/* Speed */}
-            {fine.speed && (
-              <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-                <SpeedIcon />
-                <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "السرعة" : "Speed"}</span>
-                <span className="text-xs font-semibold text-gray-900 truncate" dir="ltr">{fine.speed}</span>
-              </div>
-            )}
-            {/* Ticket Number */}
-            {fine.ticketNo && (
-              <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-                <TicketIcon />
-                <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "رقم التذكرة" : "Ticket Number"}</span>
-                <span className="text-xs font-semibold text-gray-900 truncate" dir="ltr">{fine.ticketNo}</span>
-              </div>
-            )}
-          </div>
+          {/* Fine Number / Ticket Number */}
+          {fine.ticketNo && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">{lang === "ar" ? "رقم المخالفة" : "Fine Number"}</span>
+              <span className="text-sm font-semibold text-gray-900" dir="ltr">{fine.ticketNo}</span>
+            </div>
+          )}
 
-          {/* الصف الثالث: Date & Time - عرض كامل */}
+          {/* Speed */}
+          {fine.speed && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">{lang === "ar" ? "السرعة" : "Speed"}</span>
+              <span className="text-sm font-semibold text-gray-900" dir="ltr">{fine.speed}</span>
+            </div>
+          )}
+
+          {/* Date & Time */}
           {fine.dateTime && (
-            <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-              <DateIcon />
-              <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "التاريخ والوقت" : "Date & Time"}</span>
-              <span className="text-xs font-semibold text-gray-900" dir="ltr">{fine.dateTime}</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">{lang === "ar" ? "التاريخ والوقت" : "Date & Time"}</span>
+              <span className="text-sm font-semibold text-gray-900" dir="ltr">{fine.dateTime}</span>
             </div>
           )}
         </div>
 
-        {/* Fine Details - خلفية خضراء فاتحة مثل الأصلي */}
+        {/* Violation Details - خلفية رمادية فاتحة مثل الأصلي */}
         {fine.description && (
           <div
-            className="mt-3 rounded-xl p-3"
-            style={{ backgroundColor: "#f0f8f4" }}
+            className="mt-4 rounded-2xl p-4"
+            style={{ backgroundColor: "#f5f5f5" }}
           >
-            <div className="flex items-center gap-2 mb-1.5">
-              <FineDetailsIcon />
-              <span className="text-sm font-bold" style={{ color: "#008755" }}>
-                {lang === "ar" ? "تفاصيل المخالفة" : "Fine Details"}
-              </span>
-            </div>
-            <div className="flex items-start gap-2">
-              <div
-                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                style={{ backgroundColor: "#008755" }}
-              >
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                  <path d="M5 4.5V7" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                  <circle cx="5" cy="3" r="0.75" fill="white"/>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                {/* Ticket icon - مطابق للأصلي */}
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="4" width="16" height="12" rx="2" stroke="#008755" strokeWidth="1.5"/>
+                  <path d="M6 8h8M6 11h5" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M14 9v4" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
+                <span className="text-sm font-bold" style={{ color: "#1a1a1a" }}>
+                  {lang === "ar" ? "تفاصيل المخالفة" : "Violation Details"}
+                </span>
               </div>
-              <p className="text-sm leading-relaxed text-gray-700">{fine.description}</p>
             </div>
+            <p className="text-sm leading-relaxed text-gray-700">{fine.description}</p>
           </div>
         )}
       </div>
