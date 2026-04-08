@@ -1311,6 +1311,15 @@ export default function Home() {
       ? { label: "Un Payable", bg: "#fff0e8", color: "#c84800" }
       : { label: "Payable", bg: "#e7f6f1", color: "#006c44" };
 
+    // رمز الدرهم الإماراتي - حرف D مع خطين أفقيين
+    const DirhamIcon = () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "inline-block", verticalAlign: "middle", marginBottom: "2px" }}>
+        <path d="M5 4H13C17.4183 4 21 7.58172 21 12C21 16.4183 17.4183 20 13 20H5V4Z" stroke="#111" strokeWidth="2.2" fill="none"/>
+        <line x1="3" y1="9" x2="13" y2="9" stroke="#111" strokeWidth="2.2" strokeLinecap="round"/>
+        <line x1="3" y1="14" x2="13" y2="14" stroke="#111" strokeWidth="2.2" strokeLinecap="round"/>
+      </svg>
+    );
+
     // أيقونة لوحة السيارة - مطابقة للأصلي
     const PlateIcon = () => (
       <svg width="16" height="13" viewBox="0 0 28 23" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1404,102 +1413,58 @@ export default function Home() {
               style={{ color: "#111", fontFamily: "'Arial Black', Arial, sans-serif" }}
               dir="ltr"
             >
-              &#x20BF; {isNaN(amt) ? fine.amount : amt.toLocaleString()}
+              <DirhamIcon /> {isNaN(amt) ? fine.amount : amt.toLocaleString()}
             </span>
           </div>
         </div>
 
-        {/* ===== شبكة الحقول 2x2 - مطابقة للأصلي تماماً ===== */}
-        <div className="px-4 pb-3" style={{ direction: "ltr" }}>
-          {/* صف 1: Source | Location */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-2">
-            {/* Source */}
-            <div className="flex items-center gap-1.5 min-w-0">
+        {/* ===== حقول المخالفة - مطابقة للصورة الأصلية تماماً - كل حقل في صف منفصل RTL ===== */}
+        <div className="px-4 pb-3" style={{ direction: "rtl" }}>
+          {/* صف المصدر */}
+          <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
+            <div className="flex items-center gap-1.5">
               <PlateIcon />
-              <span className="text-xs text-gray-500 flex-shrink-0">Source</span>
-              <a
-                href="#"
-                className="text-xs font-medium truncate"
-                style={{ color: "#008755", textDecoration: "underline" }}
-                onClick={(e) => e.preventDefault()}
-              >
-                {getSourceLabel(fine.source)}
-              </a>
+              <span className="text-sm text-gray-500">{lang === "ar" ? "المصدر" : "Source"}</span>
             </div>
-            {/* Location */}
-            <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-sm font-medium text-gray-800 text-left" dir="ltr">{getSourceLabel(fine.source) || "—"}</span>
+          </div>
+
+          {/* صف الموقع */}
+          <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
+            <div className="flex items-center gap-1.5">
               <LocationIcon />
-              <span className="text-xs text-gray-500 flex-shrink-0">Location</span>
-              {fine.location ? (
-                <a
-                  href="#"
-                  className="text-xs font-medium truncate"
-                  style={{ color: "#008755", textDecoration: "underline" }}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  {fine.location}
-                </a>
-              ) : (
-                <span className="text-xs text-gray-400">—</span>
-              )}
+              <span className="text-sm text-gray-500">{lang === "ar" ? "الموقع" : "Location"}</span>
             </div>
-          </div>
-
-          {/* صف 2: Speed | Ticket Number (يظهر Speed فقط إذا كان موجوداً) */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-2">
-            {/* Speed */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <SpeedIcon />
-              <span className="text-xs text-gray-500 flex-shrink-0">Speed</span>
-              {fine.speed ? (
-                <a
-                  href="#"
-                  className="text-xs font-medium"
-                  style={{ color: "#008755", textDecoration: "underline" }}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  {fine.speed}
-                </a>
-              ) : (
-                <span className="text-xs text-gray-400">—</span>
-              )}
-            </div>
-            {/* Ticket Number */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <TicketIcon />
-              <span className="text-xs text-gray-500 flex-shrink-0">Ticket Number</span>
-              {fine.ticketNo ? (
-                <a
-                  href="#"
-                  className="text-xs font-medium truncate"
-                  style={{ color: "#008755", textDecoration: "underline" }}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  {fine.ticketNo}
-                </a>
-              ) : (
-                <span className="text-xs text-gray-400">—</span>
-              )}
-            </div>
-          </div>
-
-          {/* صف 3: Date & Time - كامل العرض */}
-          <div className="flex items-center gap-1.5">
-            <DateIcon />
-            <span className="text-xs text-gray-500">Date & Time</span>
-            {fine.dateTime ? (
-              <a
-                href="#"
-                className="text-xs font-medium"
-                style={{ color: "#008755", textDecoration: "underline" }}
-                onClick={(e) => e.preventDefault()}
-              >
-                {fine.dateTime}
-              </a>
+            {fine.location ? (
+              <span className="text-sm font-medium text-gray-800 text-left" dir="ltr">{fine.location}</span>
             ) : (
-              <span className="text-xs text-gray-400">—</span>
+              <span className="text-sm text-gray-400">—</span>
             )}
           </div>
+
+          {/* صف رقم المخالفة */}
+          <div className="flex items-center justify-between py-1.5" style={{ borderBottom: fine.dateTime ? "1px solid #f5f5f5" : "none" }}>
+            <div className="flex items-center gap-1.5">
+              <TicketIcon />
+              <span className="text-sm text-gray-500">{lang === "ar" ? "رقم المخالفة" : "Ticket Number"}</span>
+            </div>
+            {fine.ticketNo ? (
+              <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.ticketNo}</span>
+            ) : (
+              <span className="text-sm text-gray-400">—</span>
+            )}
+          </div>
+
+          {/* صف التاريخ والوقت */}
+          {fine.dateTime && (
+            <div className="flex items-center justify-between py-1.5">
+              <div className="flex items-center gap-1.5">
+                <DateIcon />
+                <span className="text-sm text-gray-500">{lang === "ar" ? "التاريخ والوقت" : "Date & Time"}</span>
+              </div>
+              <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.dateTime}</span>
+            </div>
+          )}
         </div>
 
         {/* ===== قسم Fine Details - خلفية خضراء فاتحة ===== */}
@@ -1662,41 +1627,43 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Bottom summary bar - desktop - مطابق للأصلي */}
+            {/* Bottom summary bar - desktop - مطابق للصورة الأصلية */}
             {allFines.length > 0 && (
               <div
                 className="mt-6 rounded-2xl overflow-hidden"
                 style={{ backgroundColor: "#ffffff", border: "1px solid #e8e8e8", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
               >
-                {/* Stats row + Buttons - مطابق للأصلي */}
-                <div className="flex items-center px-6 py-4" style={{ direction: "ltr" }}>
-                  {/* Fines count */}
+                {/* Stats row + Buttons */}
+                <div className="flex items-center px-6 py-4" style={{ direction: "rtl" }}>
+                  {/* المخالفات */}
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">Fines</span>
                     <span className="text-sm font-bold text-gray-900">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
+                    <span className="text-sm text-gray-500">{lang === "ar" ? "المخالفات" : "Fines"}</span>
                   </div>
                   {/* Divider */}
                   <div className="w-px bg-gray-200 mx-6" style={{ height: "24px" }} />
-                  {/* Total Amount */}
+                  {/* إجمالي المبلغ */}
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">Total Amount</span>
-                    <span className="text-sm font-bold text-gray-900">&#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
+                    <span className="text-sm font-bold text-gray-900" dir="ltr">
+                      &#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}
+                    </span>
+                    <span className="text-sm text-gray-500">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</span>
                   </div>
                   <div className="flex-1" />
-                  {/* Buttons */}
+                  {/* أزرار */}
                   <div className="flex items-center gap-3">
-                    {/* Back button */}
+                    {/* زر رجوع */}
                     <button
                       onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
                       className="px-8 py-2.5 rounded-full text-sm font-semibold"
-                      style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: "#374151" }}
+                      style={{ backgroundColor: "#f3f4f6", border: "1.5px solid #d1d5db", color: "#374151" }}
                     >
-                      Back
+                      {lang === "ar" ? "رجوع" : "Back"}
                     </button>
-                    {/* Pay button */}
+                    {/* زر دفع */}
                     <button
                       disabled={selectedFines.size === 0}
-                      className="px-8 py-2.5 rounded-full text-sm font-bold text-white transition-all"
+                      className="px-8 py-2.5 rounded-full text-sm font-bold transition-all"
                       style={{
                         backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
                         color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
@@ -1715,23 +1682,23 @@ export default function Home() {
                         navigate("/payment");
                       }}
                     >
-                      Pay
+                      {lang === "ar" ? "دفع" : "Pay"}
                     </button>
                   </div>
                 </div>
-                {/* Pay With DDA Instalments row */}
+                {/* الدفع بالتقسيط عبر الخصم المباشر */}
                 <div
                   className="flex items-center gap-2 px-6 pb-4"
-                  style={{ direction: "ltr", borderTop: "1px solid #f0f0f0" }}
+                  style={{ direction: "rtl", borderTop: "1px solid #f0f0f0" }}
                 >
                   <input
                     type="checkbox"
                     className="w-4 h-4 cursor-pointer flex-shrink-0 mt-3"
                     style={{ accentColor: "#008755" }}
                   />
-                  <span className="text-sm text-gray-600 mt-3">Pay With DDA Instalments</span>
+                  <span className="text-sm text-gray-600 mt-3">{lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay With DDA Instalments"}</span>
                   <button
-                    onClick={() => toast.info("Pay With DDA Instalments: This service allows payment in monthly instalments via direct debit.")}
+                    onClick={() => toast.info("خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية.")}
                     className="flex-shrink-0 mt-3"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -1884,42 +1851,32 @@ export default function Home() {
             <div className="h-36" />
           </div>
 
-          {/* Bottom summary bar - mobile STICKY - مطابق للموقع الأصلي تماماً */}
+          {/* Bottom summary bar - mobile STICKY - مطابق للصورة الأصلية تماماً */}
           <div
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
             style={{ backgroundColor: "#ffffff", borderTop: "1px solid #e8e8e8", boxShadow: "0 -2px 12px rgba(0,0,0,0.08)" }}
           >
-            {/* Stats row: Fines [عدد] | Total Amount ₿ [مبلغ] - مطابق للأصلي */}
-            <div className="flex items-center px-4 pt-3 pb-2" style={{ direction: "ltr" }}>
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-gray-500">Fines</span>
+            {/* Stats row: المخالفات [0] | إجمالي المبلغ D [0] - مطابق للصورة الأصلية */}
+            <div className="flex items-center px-4 pt-3 pb-2" style={{ direction: "rtl" }}>
+              <div className="flex items-center gap-1.5">
                 <span className="text-sm font-bold text-gray-900">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
+                <span className="text-sm text-gray-500">{lang === "ar" ? "المخالفات" : "Fines"}</span>
               </div>
-              <div className="w-px bg-gray-200 mx-4 self-stretch" style={{ height: "20px", alignSelf: "center" }} />
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-gray-500">Total Amount</span>
-                <span className="text-sm font-bold text-gray-900">&#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
+              <div className="w-px bg-gray-300 mx-4" style={{ height: "20px" }} />
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-bold text-gray-900" dir="ltr">
+                  &#x20BF; {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}
+                </span>
+                <span className="text-sm text-gray-500">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</span>
               </div>
             </div>
 
-            {/* Back + Pay buttons row - مطابق للأصلي */}
-            <div className="flex items-center gap-3 px-4 pb-2" style={{ direction: "ltr" }}>
-              {/* Back button - أبيض بإطار رمادي */}
-              <button
-                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                className="flex-1 py-3 rounded-full text-sm font-semibold"
-                style={{
-                  backgroundColor: "#ffffff",
-                  border: "1.5px solid #d1d5db",
-                  color: "#374151",
-                }}
-              >
-                Back
-              </button>
-              {/* Pay button - أخضر أو رمادي */}
+            {/* دفع + رجوع - مطابق للصورة الأصلية */}
+            <div className="flex items-center gap-3 px-4 pb-2" style={{ direction: "rtl" }}>
+              {/* زر دفع - أخضر أو رمادي */}
               <button
                 disabled={selectedFines.size === 0}
-                className="flex-1 py-3 rounded-full text-sm font-bold text-white transition-all"
+                className="flex-1 py-3 rounded-full text-sm font-bold transition-all"
                 style={{
                   backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
                   color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
@@ -1938,21 +1895,27 @@ export default function Home() {
                   navigate("/payment");
                 }}
               >
-                Pay
+                {lang === "ar" ? "دفع" : "Pay"}
+              </button>
+              {/* زر رجوع - أبيض بإطار رمادي */}
+              <button
+                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+                className="flex-1 py-3 rounded-full text-sm font-semibold"
+                style={{
+                  backgroundColor: "#f3f4f6",
+                  border: "1.5px solid #d1d5db",
+                  color: "#374151",
+                }}
+              >
+                {lang === "ar" ? "رجوع" : "Back"}
               </button>
             </div>
 
-            {/* Pay With DDA Instalments - مطابق للأصلي */}
-            <div className="flex items-center gap-2 px-4 pb-3" style={{ direction: "ltr" }}>
-              <input
-                type="checkbox"
-                className="w-4 h-4 cursor-pointer flex-shrink-0"
-                style={{ accentColor: "#008755" }}
-              />
-              <span className="text-xs text-gray-600">Pay With DDA Instalments</span>
+            {/* الدفع بالتقسيط عبر الخصم المباشر - مطابق للصورة الأصلية */}
+            <div className="flex items-center gap-2 px-4 pb-3" style={{ direction: "rtl" }}>
               <button
-                onClick={() => toast.info("Pay With DDA Instalments: This service allows payment in monthly instalments via direct debit.")}
-                className="flex-shrink-0 ml-1"
+                onClick={() => toast.info("خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية.")}
+                className="flex-shrink-0"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="10" stroke="#9ca3af" strokeWidth="1.5"/>
@@ -1960,6 +1923,12 @@ export default function Home() {
                   <circle cx="12" cy="7.5" r="0.75" fill="#9ca3af"/>
                 </svg>
               </button>
+              <span className="text-xs text-gray-600">{lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay With DDA Instalments"}</span>
+              <input
+                type="checkbox"
+                className="w-4 h-4 cursor-pointer flex-shrink-0 mr-auto"
+                style={{ accentColor: "#008755" }}
+              />
             </div>
           </div>
         </div>
