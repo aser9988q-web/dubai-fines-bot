@@ -1425,77 +1425,48 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Row 2: Details grid - 2 columns on desktop, 1 on mobile */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-          {/* Source - مع شعار صغير مطابق للأصلي */}
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-              <PlateIcon />
-            </div>
-            <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
-              {lang === "ar" ? "المصدر" : "Source"}
-            </span>
-            {/* شعار المصدر الصغير - مطابق للموقع الأصلي */}
-            <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: getSourceBgColor(fine.source) }}>
-              <SourceIcon source={fine.source} size={18} />
-            </div>
-            <span className="text-sm font-medium text-gray-800 truncate" style={{ color: "#111827" }}>
-              {getSourceLabel(fine.source)}
-            </span>
-          </div>
-
-          {/* Location */}
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-              <LocationIcon />
-            </div>
-            <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
-              {lang === "ar" ? "الموقع" : "Location"}
-            </span>
-            <span className="text-sm font-medium truncate" style={{ color: "#111827", maxWidth: "100px" }}>
-              {fine.location || "—"}
-            </span>
-          </div>
-
-          {/* Speed (if available) */}
-          {fine.speed && (
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                <SpeedIcon />
+        {/* Row 2: Details - مطابق للأصلي تماماً: صفوف واضحة بدون overflow */}
+        <div className="flex flex-col gap-2" style={{ width: "100%" }}>
+          {/* Row: Source + Location */}
+          <div className="grid gap-x-4" style={{ gridTemplateColumns: "1fr 1fr", width: "100%" }}>
+            {/* Source */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="flex-shrink-0"><PlateIcon /></div>
+              <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "المصدر" : "Source"}</span>
+              <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: getSourceBgColor(fine.source) }}>
+                <SourceIcon source={fine.source} size={14} />
               </div>
-              <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
-                {lang === "ar" ? "السرعة" : "Speed"}
-              </span>
-              <span className="text-sm font-medium" style={{ color: "#111827" }} dir="ltr">
-                {fine.speed}
-              </span>
+              <span className="text-xs font-semibold truncate" style={{ color: "#111827" }}>{getSourceLabel(fine.source)}</span>
             </div>
-          )}
-
-          {/* Ticket Number */}
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-              <TicketIcon />
+            {/* Location */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="flex-shrink-0"><LocationIcon /></div>
+              <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "الموقع" : "Location"}</span>
+              <span className="text-xs font-semibold truncate" style={{ color: "#111827" }}>{fine.location || "—"}</span>
             </div>
-            <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
-              {lang === "ar" ? "رقم التذكرة" : "Ticket Number"}
-            </span>
-            <span className="text-sm font-medium" style={{ color: "#111827" }} dir="ltr">
-              {fine.ticketNo || "—"}
-            </span>
           </div>
 
-          {/* Date & Time */}
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-              <DateIcon />
+          {/* Row: Speed + Ticket Number */}
+          <div className="grid gap-x-4" style={{ gridTemplateColumns: "1fr 1fr", width: "100%" }}>
+            {/* Speed */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="flex-shrink-0"><SpeedIcon /></div>
+              <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "السرعة" : "Speed"}</span>
+              <span className="text-xs font-semibold truncate" style={{ color: "#111827" }} dir="ltr">{fine.speed || "—"}</span>
             </div>
-            <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
-              {lang === "ar" ? "التاريخ والوقت" : "Date & Time"}
-            </span>
-            <span className="text-sm font-medium" style={{ color: "#111827" }} dir="ltr">
-              {fine.dateTime || "—"}
-            </span>
+            {/* Ticket Number */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="flex-shrink-0"><TicketIcon /></div>
+              <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "رقم التذكرة" : "Ticket Number"}</span>
+              <span className="text-xs font-semibold truncate" style={{ color: "#111827" }} dir="ltr">{fine.ticketNo || "—"}</span>
+            </div>
+          </div>
+
+          {/* Row: Date & Time - full width */}
+          <div className="flex items-center gap-1.5 min-w-0">
+            <div className="flex-shrink-0"><DateIcon /></div>
+            <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "التاريخ والوقت" : "Date & Time"}</span>
+            <span className="text-xs font-semibold truncate" style={{ color: "#111827" }} dir="ltr">{fine.dateTime || "—"}</span>
           </div>
         </div>
 
@@ -1573,19 +1544,23 @@ export default function Home() {
                   </span>
                 </div>
               </div>
-              {/* النص + زر الرجوع على اليمين (مع dir=ltr العنصر الثاني يظهر على اليمين) */}
-              <div className="flex items-center gap-3">
+              {/* النص + زر الرجوع على اليمين - مطابق للأصلي */}
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white"
                   style={{ backgroundColor: "#e8ede9", color: "#374151" }}
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <span>رجوع</span>
+                  <span>{lang === "ar" ? "رجوع" : "Back"}</span>
                 </button>
-                <div className="text-right" dir="rtl">
-                  <h1 className="text-xl font-black text-gray-900">مراجعة المخالفات</h1>
-                  <p className="text-sm text-gray-500">رقم اللوحة</p>
+                <div dir="rtl">
+                  <h1 className="text-2xl font-black" style={{ color: "#111827", lineHeight: 1.2 }}>
+                    {lang === "ar" ? "مراجعة المخالفات" : "Review Fines"}
+                  </h1>
+                  <p className="text-sm font-medium mt-0.5" style={{ color: "#6B7280" }}>
+                    {lang === "ar" ? "رقم اللوحة:" : "Plate Number:"} <span className="font-bold" style={{ color: "#111827" }} dir="ltr">{plateNumber}</span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -1756,15 +1731,14 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Plate number bar - تصميم لوحة دبي الرسمية */}
+            {/* Plate + مراجعة المخالفات - مطابق للأصلي: اللوحة على اليسار والنص على اليمين */}
             <div className="flex items-center justify-between py-1" dir="ltr">
-              {/* اللوحة على اليسار (مع dir=ltr العنصر الأول يظهر على اليسار) */}
+              {/* اللوحة على اليسار */}
               <div
                 className="flex items-stretch rounded-xl overflow-hidden flex-shrink-0"
                 style={{ border: "1.5px solid #c8c8c8", backgroundColor: "#ffffff", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
                 dir="ltr"
               >
-                {/* Left section: code + source */}
                 <div
                   className="flex flex-col items-center justify-center px-2 py-1"
                   style={{ backgroundColor: "#f5f5f5", borderRight: "1.5px solid #c8c8c8", minWidth: "44px" }}
@@ -1776,12 +1750,20 @@ export default function Home() {
                     {plateSource === "DXB" ? "DUBAI" : plateSource === "AUH" ? "ABU DHABI" : plateSource === "SHJ" ? "SHARJAH" : plateSource || "UAE"}
                   </span>
                 </div>
-                {/* Right section: plate number */}
                 <div className="flex items-center justify-center px-3 py-1">
                   <span className="text-base font-black text-gray-900" style={{ fontFamily: "'Arial Black', Arial, sans-serif", letterSpacing: "2px" }}>
                     {plateNumber || "—"}
                   </span>
                 </div>
+              </div>
+              {/* نص مراجعة المخالفات + رقم اللوحة على اليمين */}
+              <div dir="rtl" className="text-right">
+                <h2 className="text-lg font-black" style={{ color: "#111827", lineHeight: 1.2 }}>
+                  {lang === "ar" ? "مراجعة المخالفات" : "Review Fines"}
+                </h2>
+                <p className="text-xs font-medium" style={{ color: "#6B7280" }}>
+                  {lang === "ar" ? "رقم اللوحة" : "Plate Number"}
+                </p>
               </div>
             </div>
 
