@@ -31,14 +31,25 @@ import { Badge } from "@/components/ui/badge";
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
 const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
-// CDN logos for sources - الصور الحقيقية من موقع شرطة دبي الرسمي
-const LOGO_DUBAI_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/dubaiPolice_d5c973d6.svg";
-const LOGO_SALIK = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/salik_dd2ca46b.svg";
-const LOGO_ABU_DHABI_TRAFFIC = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/abuDhabiTraffic_7b109d34.svg";
-const LOGO_RTA = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/rta_6592f289.svg";
-const LOGO_AJMAN_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/ajmanPolice_38e1a0b2.svg";
-const LOGO_FUJAIRAH_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/fujairahPolice_ae46948f.svg";
-const LOGO_SHARJAH_TRAFFIC = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/sharjahTraffic_077ab5da.svg";
+// CDN logos for sources - الصور الحقيقية من موقع شرطة دبي الرسمي (FinePayment2025)
+const CDN = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe";
+const LOGO_DUBAI_POLICE       = `${CDN}/dubaiPolice_d5c973d6.svg`;
+const LOGO_SALIK              = `${CDN}/salik_dd2ca46b.svg`;
+const LOGO_ABU_DHABI_TRAFFIC  = `${CDN}/abuDhabiTraffic_7b109d34.svg`;
+const LOGO_RTA                = `${CDN}/rta_6592f289.svg`;
+const LOGO_AJMAN_POLICE       = `${CDN}/ajmanPolice_38e1a0b2.svg`;
+const LOGO_FUJAIRAH_POLICE    = `${CDN}/fujairahPolice_ae46948f.svg`;
+const LOGO_SHARJAH_TRAFFIC    = `${CDN}/sharjahTraffic_077ab5da.svg`;
+const LOGO_ABU_DHABI_MUN      = `${CDN}/abuDhabiMunicipality_27068b4a.svg`;
+const LOGO_BAHRAIN            = `${CDN}/bahrain_d56425d6.svg`;
+const LOGO_DUBAI_MUN          = `${CDN}/dubaiMunicipality_38c34500.svg`;
+const LOGO_KSA                = `${CDN}/ksa_31c9b4fa.svg`;
+const LOGO_KUWAIT             = `${CDN}/kuwait_fefe38ab.svg`;
+const LOGO_OMAN               = `${CDN}/oman_30e524c2.svg`;
+const LOGO_QATAR              = `${CDN}/qatar_45d5dcc4.svg`;
+const LOGO_RAK_POLICE         = `${CDN}/rasAlKhaimahPolice_1c8af2ec.svg`;
+const LOGO_SHARJAH_GOV        = `${CDN}/sharjahGoverment_aac4e8c2.svg`;
+const LOGO_SHARJAH_MUN        = `${CDN}/sharjahMunicipality_21d6cbd2.svg`;
 
 // ===== SOURCE LOGOS - Comprehensive mapping system =====
 
@@ -140,7 +151,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "RAK Police",
     bgColor: "#fff0f8",
     borderColor: "#8c1a4a",
-    logo: (size) => <PoliceShieldLogo size={size} bg="#7c0a3a" accent="#8c1a4a" text="RAK POLICE" />,
+    logo: (size) => <img src={LOGO_RAK_POLICE} alt="RAK Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== شرطة الفجيرة =====
   {
@@ -239,7 +250,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Dubai Municipality",
     bgColor: "#e8f5ee",
     borderColor: "#006633",
-    logo: (size) => <MunicipalityLogo size={size} bg="#006633" abbr="DM" city="Dubai" />,
+    logo: (size) => <img src={LOGO_DUBAI_MUN} alt="Dubai Municipality" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== بلدية مدينة أبوظبي =====
   {
@@ -247,7 +258,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Abu Dhabi City Municipality",
     bgColor: "#fff5e8",
     borderColor: "#8B4500",
-    logo: (size) => <MunicipalityLogo size={size} bg="#8B4500" abbr="ADM" city="Abu Dhabi" />,
+    logo: (size) => <img src={LOGO_ABU_DHABI_MUN} alt="Abu Dhabi Municipality" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== بلدية مدينة العين =====
   {
@@ -271,7 +282,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Sharjah City Municipality",
     bgColor: "#e8ecff",
     borderColor: "#2a3a9c",
-    logo: (size) => <MunicipalityLogo size={size} bg="#2a3a9c" abbr="SHM" city="Sharjah" />,
+    logo: (size) => <img src={LOGO_SHARJAH_MUN} alt="Sharjah Municipality" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== بلدية منطقة عجمان =====
   {
@@ -336,6 +347,54 @@ const SOURCE_MAP: SourceConfig[] = [
     bgColor: "#f5f0e8",
     borderColor: "#7a5a00",
     logo: (size) => <AgencyLogo size={size} bg="#7a5a00" text1="ICP" text2="UAE" />,
+  },
+  // ===== حكومة الشارقة =====
+  {
+    label: "حكومة الشارقة",
+    labelEn: "Sharjah Government",
+    bgColor: "#e8ecff",
+    borderColor: "#2a3a9c",
+    logo: (size) => <img src={LOGO_SHARJAH_GOV} alt="Sharjah Government" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
+  },
+  // ===== الكويت =====
+  {
+    label: "الكويت",
+    labelEn: "Kuwait",
+    bgColor: "#f0f8e8",
+    borderColor: "#2d7a2d",
+    logo: (size) => <img src={LOGO_KUWAIT} alt="Kuwait" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
+  },
+  // ===== قطر =====
+  {
+    label: "قطر",
+    labelEn: "Qatar",
+    bgColor: "#f8e8f0",
+    borderColor: "#8B0000",
+    logo: (size) => <img src={LOGO_QATAR} alt="Qatar" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
+  },
+  // ===== عمان =====
+  {
+    label: "عُمان",
+    labelEn: "Oman",
+    bgColor: "#fff0e8",
+    borderColor: "#c83a00",
+    logo: (size) => <img src={LOGO_OMAN} alt="Oman" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
+  },
+  // ===== البحرين =====
+  {
+    label: "البحرين",
+    labelEn: "Bahrain",
+    bgColor: "#f8e8e8",
+    borderColor: "#cc0000",
+    logo: (size) => <img src={LOGO_BAHRAIN} alt="Bahrain" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
+  },
+  // ===== المملكة العربية السعودية =====
+  {
+    label: "المملكة العربية السعودية",
+    labelEn: "Saudi Arabia",
+    bgColor: "#e8f5ee",
+    borderColor: "#006633",
+    logo: (size) => <img src={LOGO_KSA} alt="Saudi Arabia" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== النيابة العامة =====
   {
@@ -492,6 +551,30 @@ function getSourceConfig(source: string): SourceConfig | null {
   // ===== محاكم دبي =====
   if (lo.includes("محاكم دبي") || up.includes("DUBAI COURTS"))
     return SOURCE_MAP[30];
+
+  // ===== حكومة الشارقة =====
+  if (lo.includes("حكومة الشارقة") || up.includes("SHARJAH GOVERNMENT") || up.includes("SHARJAH GOV"))
+    return SOURCE_MAP[31];
+
+  // ===== الكويت =====
+  if (lo.includes("الكويت") || up.includes("KUWAIT") || up === "KWT")
+    return SOURCE_MAP[32];
+
+  // ===== قطر =====
+  if (lo.includes("قطر") || up.includes("QATAR") || up === "QAT")
+    return SOURCE_MAP[33];
+
+  // ===== عمان =====
+  if (lo.includes("عُمان") || lo.includes("عمان") || up.includes("OMAN") || up === "OMN")
+    return SOURCE_MAP[34];
+
+  // ===== البحرين =====
+  if (lo.includes("البحرين") || up.includes("BAHRAIN") || up === "BAH")
+    return SOURCE_MAP[35];
+
+  // ===== السعودية =====
+  if (lo.includes("السعودية") || lo.includes("سعودية") || up.includes("SAUDI") || up.includes("KSA") || up === "KSA")
+    return SOURCE_MAP[36];
 
   return null;
 }
