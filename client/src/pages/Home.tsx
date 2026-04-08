@@ -1532,18 +1532,46 @@ export default function Home() {
         <div className="hidden md:block">
           <div className="max-w-5xl mx-auto px-8 py-6">
             {/* Back + title */}
-            <div className="flex items-center gap-3 mb-6">
-              <button
-                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white"
-                style={{ backgroundColor: "#e8ede9", color: "#374151" }}
+            <div className="flex items-center justify-between mb-6">
+              {/* زر الرجوع + النص على اليمين */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-white"
+                  style={{ backgroundColor: "#e8ede9", color: "#374151" }}
+                >
+                  <ArrowRight className="w-4 h-4" />
+                  <span>رجوع</span>
+                </button>
+                <div>
+                  <h1 className="text-xl font-black text-gray-900">مراجعة المخالفات</h1>
+                  <p className="text-sm text-gray-500">رقم اللوحة</p>
+                </div>
+              </div>
+              {/* اللوحة على اليسار */}
+              <div
+                className="flex items-stretch rounded-2xl overflow-hidden flex-shrink-0"
+                style={{ border: "2px solid #c8c8c8", backgroundColor: "#ffffff", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", height: "56px" }}
+                dir="ltr"
               >
-                <ArrowRight className="w-4 h-4" />
-                <span>رجوع</span>
-              </button>
-              <div>
-                <h1 className="text-xl font-black text-gray-900">مراجعة المخالفات</h1>
-                <p className="text-sm text-gray-500">رقم اللوحة: <span className="font-bold" style={{ color: "#008755" }} dir="ltr">{plateDisplay}</span></p>
+                {/* Left section: code + source */}
+                <div
+                  className="flex flex-col items-center justify-center px-3 py-1"
+                  style={{ backgroundColor: "#f5f5f5", borderRight: "2px solid #c8c8c8", minWidth: "56px" }}
+                >
+                  <span className="text-base font-black text-gray-900 leading-none" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
+                    {finalPlateCodeDisplay || plateCode || "—"}
+                  </span>
+                  <span className="text-[9px] font-black text-gray-600 tracking-widest mt-0.5" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
+                    {plateSource === "DXB" ? "DUBAI" : plateSource === "AUH" ? "ABU DHABI" : plateSource === "SHJ" ? "SHARJAH" : plateSource === "AJM" ? "AJMAN" : plateSource === "RAK" ? "RAS AL KHAIMAH" : plateSource === "FUJ" ? "FUJAIRAH" : plateSource === "UMQ" ? "UMM AL QUWAIN" : plateSource || "UAE"}
+                  </span>
+                </div>
+                {/* Right section: plate number */}
+                <div className="flex items-center justify-center px-4 py-1">
+                  <span className="text-xl font-black text-gray-900" style={{ fontFamily: "'Arial Black', Arial, sans-serif", letterSpacing: "3px" }}>
+                    {plateNumber || "—"}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -1715,7 +1743,12 @@ export default function Home() {
 
             {/* Plate number bar - تصميم لوحة دبي الرسمية */}
             <div className="flex items-center justify-between py-1">
-              {/* Dubai plate design */}
+              {/* النص على اليمين */}
+              <div className="flex flex-col">
+                <span className="text-sm font-black text-gray-900">مراجعة المخالفات</span>
+                <span className="text-xs text-gray-500">رقم اللوحة</span>
+              </div>
+              {/* اللوحة على اليسار */}
               <div
                 className="flex items-stretch rounded-xl overflow-hidden flex-shrink-0"
                 style={{ border: "1.5px solid #c8c8c8", backgroundColor: "#ffffff", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
@@ -1740,7 +1773,6 @@ export default function Home() {
                   </span>
                 </div>
               </div>
-              <span className="text-sm font-bold text-gray-700 mr-2">مراجعة المخالفات رقم اللوحة:</span>
             </div>
 
             {/* Filter tabs - mobile: scroll horizontally, compact with icons only + count */}
