@@ -1365,118 +1365,127 @@ export default function Home() {
       </svg>
     );
 
+    // الشعار الدائري للمصدر - مطابق للأصلي
+    const sourceConfig = getSourceConfig(fine.source);
+    const sourceBgColor = sourceConfig?.bgColor ?? "#e8f5ee";
+
     return (
       <div
         style={{
           backgroundColor: "#ffffff",
-          borderRadius: "24px",
-          boxShadow: isSelected ? "rgb(0,135,85) -2px 3px 9px 0px" : "rgb(230,239,235) -2px 3px 9px 0px",
-          padding: "24px",
-          border: isSelected ? "2px solid #008755" : "none",
+          borderRadius: "16px",
+          boxShadow: isSelected ? "0 2px 12px rgba(0,135,85,0.25)" : "0 2px 8px rgba(0,0,0,0.08)",
+          padding: "16px",
+          border: isSelected ? "2px solid #008755" : "1px solid #e5e7eb",
           transition: "box-shadow 0.2s, border 0.2s",
+          cursor: "pointer",
         }}
+        onClick={toggleSelect}
       >
-        {/* Row 1: Checkbox + Source logo + Badge + Amount */}
-        <div className="flex items-center justify-between mb-4">
-          {/* Left: Checkbox + Source logo + Badge */}
+        {/* Row 1: Checkbox + Source circle + Badge | Amount */}
+        <div className="flex items-center justify-between mb-3">
+          {/* Left: Checkbox + Source logo circle + Status badge */}
           <div className="flex items-center gap-2">
             {/* Checkbox */}
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => {}}
+              onClick={(e) => e.stopPropagation()}
+              className="w-4 h-4 cursor-pointer flex-shrink-0"
+              style={{ accentColor: "#008755" }}
+            />
+            {/* Source logo - دائرة خضراء مثل الأصلي */}
             <div
-              className="flex items-center justify-center flex-shrink-0 cursor-pointer"
-              onClick={(e) => { e.stopPropagation(); toggleSelect(); }}
+              className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+              style={{ backgroundColor: sourceBgColor }}
             >
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => {}}
-                className="w-5 h-5 cursor-pointer"
-                style={{ accentColor: "#008755", borderRadius: "4px" }}
-              />
-            </div>
-            {/* Source logo - square badge */}
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
-              style={{ border: "1px solid #e5e7eb", backgroundColor: "#f5f5f5", padding: "2px" }}
-            >
-              <SourceIcon source={fine.source} size={32} />
+              {sourceConfig ? sourceConfig.logo(26) : (
+                <span className="text-xs font-bold" style={{ color: "#008755" }}>
+                  {(fine.source || "?").charAt(0).toUpperCase()}
+                </span>
+              )}
             </div>
             {/* Status badge */}
             <span
-              className="text-xs font-medium px-1.5 py-0.5"
+              className="text-xs font-semibold px-2 py-0.5 rounded-md"
               style={{
                 backgroundColor: statusConfig.bg,
                 color: statusConfig.color,
-                borderRadius: statusConfig.borderRadius,
-                fontSize: "12px",
               }}
             >
               {statusConfig.label}
             </span>
           </div>
-          {/* Right: Amount with Dirham symbol */}
-          <div className="flex items-center gap-1">
-            <span style={{ fontSize: "22px", fontWeight: 900, color: "#111827", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif" }}>
+          {/* Right: Amount - أخضر كبير مثل الأصلي */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <text x="5" y="78" fontSize="72" fontFamily="'Dubai', 'Arial Black', Arial" fontWeight="900" fill="#008755">₿</text>
+            </svg>
+            <span style={{ fontSize: "20px", fontWeight: 900, color: "#008755", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-0.5px" }}>
               {isNaN(amt) ? fine.amount : amt.toLocaleString()}
             </span>
-            {/* Dirham symbol - مطابق للأصلي */}
-            <svg width="22" height="22" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-              <text x="5" y="75" fontSize="70" fontFamily="'Dubai', 'Arial Black', Arial" fontWeight="900" fill="#111827">₿</text>
-            </svg>
           </div>
         </div>
 
-        {/* Row 2: Details - مطابق للأصلي تماماً: صفوف واضحة بدون overflow */}
-        <div className="flex flex-col gap-2" style={{ width: "100%" }}>
-          {/* Row: Source + Location */}
-          <div className="grid gap-x-4" style={{ gridTemplateColumns: "1fr 1fr", width: "100%" }}>
+        {/* Row 2: حقول المخالفة - مطابقة للأصلي: صفان من عمودين + التاريخ بعرض كامل */}
+        <div className="flex flex-col gap-2">
+
+          {/* الصف الأول: Source + Location */}
+          <div className="grid grid-cols-2 gap-x-3">
             {/* Source */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <div className="flex-shrink-0"><PlateIcon /></div>
-              <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "المصدر" : "Source"}</span>
-              <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: getSourceBgColor(fine.source) }}>
-                <SourceIcon source={fine.source} size={14} />
-              </div>
-              <span className="text-xs font-semibold truncate" style={{ color: "#111827" }}>{getSourceLabel(fine.source)}</span>
+            <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+              <PlateIcon />
+              <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "المصدر" : "Source"}</span>
+              <span className="text-xs font-semibold text-gray-900 truncate">{getSourceLabel(fine.source)}</span>
             </div>
             {/* Location */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <div className="flex-shrink-0"><LocationIcon /></div>
-              <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "الموقع" : "Location"}</span>
-              <span className="text-xs font-semibold truncate" style={{ color: "#111827" }}>{fine.location || "—"}</span>
-            </div>
+            {fine.location && (
+              <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+                <LocationIcon />
+                <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "الموقع" : "Location"}</span>
+                <span className="text-xs font-semibold text-gray-900 truncate">{fine.location}</span>
+              </div>
+            )}
           </div>
 
-          {/* Row: Speed + Ticket Number */}
-          <div className="grid gap-x-4" style={{ gridTemplateColumns: "1fr 1fr", width: "100%" }}>
+          {/* الصف الثاني: Speed + Ticket Number */}
+          <div className="grid grid-cols-2 gap-x-3">
             {/* Speed */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <div className="flex-shrink-0"><SpeedIcon /></div>
-              <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "السرعة" : "Speed"}</span>
-              <span className="text-xs font-semibold truncate" style={{ color: "#111827" }} dir="ltr">{fine.speed || "—"}</span>
-            </div>
+            {fine.speed && (
+              <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+                <SpeedIcon />
+                <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "السرعة" : "Speed"}</span>
+                <span className="text-xs font-semibold text-gray-900 truncate" dir="ltr">{fine.speed}</span>
+              </div>
+            )}
             {/* Ticket Number */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <div className="flex-shrink-0"><TicketIcon /></div>
-              <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "رقم التذكرة" : "Ticket Number"}</span>
-              <span className="text-xs font-semibold truncate" style={{ color: "#111827" }} dir="ltr">{fine.ticketNo || "—"}</span>
-            </div>
+            {fine.ticketNo && (
+              <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+                <TicketIcon />
+                <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "رقم التذكرة" : "Ticket Number"}</span>
+                <span className="text-xs font-semibold text-gray-900 truncate" dir="ltr">{fine.ticketNo}</span>
+              </div>
+            )}
           </div>
 
-          {/* Row: Date & Time - full width */}
-          <div className="flex items-center gap-1.5 min-w-0">
-            <div className="flex-shrink-0"><DateIcon /></div>
-            <span className="text-xs flex-shrink-0" style={{ color: "#6B7280" }}>{lang === "ar" ? "التاريخ والوقت" : "Date & Time"}</span>
-            <span className="text-xs font-semibold truncate" style={{ color: "#111827" }} dir="ltr">{fine.dateTime || "—"}</span>
-          </div>
+          {/* الصف الثالث: Date & Time - عرض كامل */}
+          {fine.dateTime && (
+            <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+              <DateIcon />
+              <span className="text-xs text-gray-500 flex-shrink-0">{lang === "ar" ? "التاريخ والوقت" : "Date & Time"}</span>
+              <span className="text-xs font-semibold text-gray-900" dir="ltr">{fine.dateTime}</span>
+            </div>
+          )}
         </div>
 
-        {/* Fine Details section - مطابق للأصلي تماماً */}
+        {/* Fine Details - خلفية خضراء فاتحة مثل الأصلي */}
         {fine.description && (
           <div
-            className="mt-4 rounded-xl p-3"
-            style={{ backgroundColor: "#f0f8f4", border: "1px solid #d4ede3" }}
+            className="mt-3 rounded-xl p-3"
+            style={{ backgroundColor: "#f0f8f4" }}
           >
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-1.5">
               <FineDetailsIcon />
               <span className="text-sm font-bold" style={{ color: "#008755" }}>
                 {lang === "ar" ? "تفاصيل المخالفة" : "Fine Details"}
@@ -1492,7 +1501,7 @@ export default function Home() {
                   <circle cx="5" cy="3" r="0.75" fill="white"/>
                 </svg>
               </div>
-              <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>{fine.description}</p>
+              <p className="text-sm leading-relaxed text-gray-700">{fine.description}</p>
             </div>
           </div>
         )}
