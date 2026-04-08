@@ -31,11 +31,14 @@ import { Badge } from "@/components/ui/badge";
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_2512fc32.mp4";
 const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
-// CDN logos for sources
-const LOGO_DUBAI_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/dubai-police_60714e67.png";
-const LOGO_ABU_DHABI_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/abu-dhabi-police2_34b796f0.png";
-const LOGO_RTA = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/rta_89e6fc51.jpg";
-const LOGO_SHARJAH_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/sharjah-police2_28f5d5aa.png";
+// CDN logos for sources - الصور الحقيقية من موقع شرطة دبي الرسمي
+const LOGO_DUBAI_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/dubaiPolice_d5c973d6.svg";
+const LOGO_SALIK = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/salik_dd2ca46b.svg";
+const LOGO_ABU_DHABI_TRAFFIC = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/abuDhabiTraffic_7b109d34.svg";
+const LOGO_RTA = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/rta_6592f289.svg";
+const LOGO_AJMAN_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/ajmanPolice_38e1a0b2.svg";
+const LOGO_FUJAIRAH_POLICE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/fujairahPolice_ae46948f.svg";
+const LOGO_SHARJAH_TRAFFIC = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/sharjahTraffic_077ab5da.svg";
 
 // ===== SOURCE LOGOS - Comprehensive mapping system =====
 
@@ -97,7 +100,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Dubai Police",
     bgColor: "#e8f5ee",
     borderColor: "#008755",
-    logo: (size) => <img src={LOGO_DUBAI_POLICE} alt="Dubai Police" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />,
+    logo: (size) => <img src={LOGO_DUBAI_POLICE} alt="Dubai Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />,
   },
   // ===== شرطة أبوظبي =====
   {
@@ -105,7 +108,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Abu Dhabi Police",
     bgColor: "#fff5e8",
     borderColor: "#8B0000",
-    logo: (size) => <img src={LOGO_ABU_DHABI_POLICE} alt="Abu Dhabi Police" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />,
+    logo: (size) => <img src={LOGO_ABU_DHABI_TRAFFIC} alt="Abu Dhabi Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== شرطة الشارقة =====
   {
@@ -113,7 +116,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Sharjah Police",
     bgColor: "#e8f0ff",
     borderColor: "#1a3a8c",
-    logo: (size) => <img src={LOGO_SHARJAH_POLICE} alt="Sharjah Police" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />,
+    logo: (size) => <img src={LOGO_SHARJAH_TRAFFIC} alt="Sharjah Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== شرطة عجمان =====
   {
@@ -121,7 +124,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Ajman Police",
     bgColor: "#e8f4ff",
     borderColor: "#0a5a8c",
-    logo: (size) => <PoliceShieldLogo size={size} bg="#0a4a7c" accent="#0a5a8c" text="AJMAN POLICE" />,
+    logo: (size) => <img src={LOGO_AJMAN_POLICE} alt="Ajman Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== شرطة أم القيوين =====
   {
@@ -145,7 +148,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Fujairah Police",
     bgColor: "#f8f0ff",
     borderColor: "#5a1a8c",
-    logo: (size) => <PoliceShieldLogo size={size} bg="#4a0a7c" accent="#5a1a8c" text="FUJAIRAH POLICE" />,
+    logo: (size) => <img src={LOGO_FUJAIRAH_POLICE} alt="Fujairah Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
   // ===== وزارة الداخلية =====
   {
@@ -173,7 +176,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "RTA Dubai",
     bgColor: "#fff0f0",
     borderColor: "#CC0000",
-    logo: (size) => <img src={LOGO_RTA} alt="RTA Dubai" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", display: "block" }} />,
+    logo: (size) => <img src={LOGO_RTA} alt="RTA Dubai" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />,
   },
   // ===== مركز النقل المتكامل - أبوظبي =====
   {
@@ -213,15 +216,7 @@ const SOURCE_MAP: SourceConfig[] = [
     labelEn: "Salik",
     bgColor: "#f0f0f8",
     borderColor: "#4A4A6A",
-    logo: (size) => (
-      <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100" height="100" fill="white" rx="8" />
-        <polygon points="5,82 5,18 48,50" fill="#4A4A6A" />
-        <polygon points="20,82 20,28 55,55" fill="#8080A0" opacity="0.6" />
-        <text x="73" y="44" textAnchor="middle" fill="#4A4A6A" fontSize="15" fontFamily="Arial" fontWeight="bold">سالك</text>
-        <text x="73" y="62" textAnchor="middle" fill="#6A6A8A" fontSize="14" fontFamily="Arial" fontWeight="600">Salik</text>
-      </svg>
-    ),
+    logo: (size) => <img src={LOGO_SALIK} alt="Salik" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />,
   },
   // ===== درب =====
   {
