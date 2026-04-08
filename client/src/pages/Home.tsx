@@ -1198,7 +1198,6 @@ export default function Home() {
   const FineCard = ({ fine, idx, isMobile = false }: { fine: FineResult; idx: number; isMobile?: boolean }) => {
     const isSelected = selectedFines.has(idx);
     const amt = parseFloat((fine.amount || "0").replace(/[^0-9.]/g, ""));
-    const sourceBgColor = getSourceBgColor(fine.source);
 
     const toggleSelect = () => {
       const next = new Set(selectedFines);
@@ -1206,126 +1205,237 @@ export default function Home() {
       setSelectedFines(next);
     };
 
-    // Status badge config
+    // Status badge config - مطابق للموقع الأصلي
+    const isPayable = !fine.isPaid && fine.status !== "seized" && fine.status !== "blackpoints" && fine.status !== "notpayable";
+    const isBlackPoints = fine.status === "blackpoints";
+    const isSeized = fine.status === "seized";
+    const isNotPayable = fine.status === "notpayable";
+
     const statusConfig = fine.isPaid
-      ? { label: t.home.results.status.paid, bg: "#e8f5ee", color: "#008755", icon: "✓" }
-      : fine.status === "seized"
-      ? { label: t.home.results.status.seized, bg: "#fff0f0", color: "#dc2626", icon: "🔒" }
-      : fine.status === "blackpoints"
-      ? { label: t.home.results.status.blackPoints, bg: "#fef3c7", color: "#d97706", icon: "⚠" }
-      : { label: t.home.results.filters.payable, bg: "#fff3e0", color: "#f57c00", icon: "●" };
+      ? { label: lang === "ar" ? "مدفوع" : "Paid", bg: "#e7f6f1", color: "#006c44", borderRadius: "8px" }
+      : isSeized
+      ? { label: lang === "ar" ? "حجز" : "Impound", bg: "#fff0e8", color: "#c84800", borderRadius: "8px" }
+      : isBlackPoints
+      ? { label: lang === "ar" ? "نقاط سوداء" : "Black Points", bg: "rgba(158,158,158,0.16)", color: "rgba(0,0,0,0.6)", borderRadius: "8px" }
+      : isNotPayable
+      ? { label: lang === "ar" ? "غير قابل للدفع" : "Un Payable", bg: "#fff0e8", color: "#c84800", borderRadius: "8px" }
+      : { label: lang === "ar" ? "قابل للدفع" : "Payable", bg: "#e7f6f1", color: "#006c44", borderRadius: "8px" };
+
+    // أيقونة لوحة السيارة (مطابقة للأصلي - viewBox 0 0 28 23)
+    const PlateIcon = () => (
+      <svg width="16" height="16" viewBox="0 0 28 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="1.5" width="7" height="19" fill="#ECECEC"/>
+        <rect x="1" y="1" width="26" height="20" rx="3" stroke="#6B6C6E" strokeWidth="2"/>
+        <line x1="10" y1="1" x2="10" y2="20" stroke="#6B6C6E" strokeWidth="2"/>
+      </svg>
+    );
+
+    // أيقونة الموقع (مطابقة للأصلي - viewBox 0 0 17 17 - house/location)
+    const LocationIcon = () => (
+      <svg width="16" height="16" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4.36708 14.1781C3.89615 14.1781 3.50109 14.0222 3.1819 13.7102C2.86272 13.3983 2.70312 13.0122 2.70312 12.552V7.07528C2.70312 6.8196 2.76068 6.5767 2.8758 6.34659C2.99092 6.11648 3.15313 5.92472 3.36243 5.77131L7.09847 3.02528C7.24499 2.91278 7.40458 2.83097 7.57725 2.77983C7.74993 2.72869 7.92522 2.70312 8.10313 2.70312C8.28103 2.70312 8.45632 2.72869 8.629 2.77983C8.80167 2.83097 8.96126 2.91278 9.10778 3.02528L12.8438 5.77131C13.0531 5.92472 13.2153 6.11648 13.3305 6.34659C13.4456 6.5767 13.5031 6.8196 13.5031 7.07528V12.552C13.5031 13.0122 13.3435 13.3983 13.0243 13.7102C12.7052 14.0222 12.3101 14.1781 11.8392 14.1781H9.79063V9.48381H6.41563V14.1781H4.36708Z" fill="#EBEBEC" stroke="#89898B" strokeWidth="1.35"/>
+      </svg>
+    );
+
+    // أيقونة السرعة (مطابقة للأصلي - speedometer)
+    const SpeedIcon = () => (
+      <svg width="16" height="16" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6.78063 10.2247C7.05063 10.4947 7.405 10.6325 7.84375 10.6381C8.2825 10.6438 8.61438 10.4834 8.83938 10.1572L11.6406 6.03969C11.7756 5.83719 11.7588 5.65156 11.59 5.48281C11.4213 5.31406 11.2356 5.29719 11.0331 5.43219L6.88188 8.23344C6.55563 8.45844 6.38969 8.77906 6.38406 9.19531C6.37844 9.61156 6.51063 9.95469 6.78063 10.2247ZM3.10188 13.6334C2.80938 13.6334 2.52813 13.5631 2.25813 13.4225C1.98813 13.2819 1.78563 13.0822 1.65063 12.8234C1.34688 12.2947 1.10781 11.7266 0.933438 11.1191C0.759063 10.5116 0.671875 9.87594 0.671875 9.21219C0.671875 7.28281 1.36344 5.63 2.74656 4.25375C4.12969 2.8775 5.79375 2.18937 7.73875 2.18937C9.68375 2.18937 11.3478 2.8775 12.7309 4.25375C14.1141 5.63 14.8056 7.28281 14.8056 9.21219C14.8056 9.87594 14.7184 10.5116 14.5441 11.1191C14.3697 11.7266 14.1306 12.2947 13.8269 12.8234C13.6919 13.0822 13.4894 13.2819 13.2194 13.4225C12.9494 13.5631 12.6681 13.6334 12.3756 13.6334H3.10188Z" fill="#4B4C4D"/>
+      </svg>
+    );
+
+    // أيقونة رقم التذكرة (مطابقة للأصلي - ticket/hash)
+    const TicketIcon = () => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9.31803 7.03719L8.99772 8.96297H7.09017L7.41048 7.03719H9.31803Z" fill="#4B4C4D"/>
+        <path fillRule="evenodd" clipRule="evenodd" d="M8.00033 0.666748C3.95024 0.666748 0.666992 3.94999 0.666992 8.00008C0.666992 12.0502 3.95024 15.3334 8.00033 15.3334C12.0504 15.3334 15.3337 12.0502 15.3337 8.00008C15.3337 3.94999 12.0504 0.666748 8.00033 0.666748ZM6.08691 5.77008L5.76661 7.03719H4.66699V8.96297H5.44319L5.12288 10.2301H4.66699V11.4972H4.80033C4.80033 11.4972 4.80033 11.4972 4.80033 11.4972H6.44699L6.44699 11.4972H6.76729L7.08759 10.2301H8.99514L8.67484 11.4972H10.0015L10.3218 10.2301H11.3337V8.96297H10.6437L10.964 7.03719H11.3337V5.77008H11.2003C11.2003 5.77008 11.2003 5.77008 11.2003 5.77008H9.55366L9.55366 5.77008H9.23335L8.91305 7.03719H7.00549L7.3258 5.77008H6.08691Z" fill="#4B4C4D"/>
+      </svg>
+    );
+
+    // أيقونة التاريخ (مطابقة للأصلي - calendar)
+    const DateIcon = () => (
+      <svg width="16" height="16" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.29941 13.7333C2.98275 13.7333 2.71275 13.6239 2.48941 13.4052C2.26608 13.1865 2.15441 12.9219 2.15441 12.6113V4.38875C2.15441 4.07812 2.26608 3.81354 2.48941 3.595C2.71275 3.37646 2.98275 3.26719 3.29941 3.26719H4.21816V2.125H5.35566V3.26719H11.6432V2.125H12.7807V3.26719H13.6994C14.0161 3.26719 14.2861 3.37646 14.5094 3.595C14.7327 3.81354 14.8444 4.07812 14.8444 4.38875V12.6113C14.8444 12.9219 14.7327 13.1865 14.5094 13.4052C14.2861 13.6239 14.0161 13.7333 13.6994 13.7333H3.29941ZM3.29941 12.6113H13.6994V6.67167H3.29941V12.6113ZM3.29941 5.54958H13.6994V4.38875H3.29941V5.54958Z" fill="#4B4C4D"/>
+      </svg>
+    );
+
+    // أيقونة Fine Details (مطابقة للأصلي - info circle)
+    const FineDetailsIcon = () => (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="9" stroke="#008755" strokeWidth="1.5" fill="none"/>
+        <path d="M10 9V14" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="10" cy="6.5" r="0.75" fill="#008755"/>
+      </svg>
+    );
+
+    // رمز الدرهم (مطابق للأصلي - dp-dirham icon)
+    const DirhamIcon = () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="18" fontSize="18" fontFamily="Arial" fontWeight="bold" fill="currentColor">₿</text>
+      </svg>
+    );
 
     return (
       <div
-        className="rounded-2xl overflow-hidden"
-        style={{ backgroundColor: "#ffffff", border: isSelected ? "2px solid #008755" : "1.5px solid #e8ede9",
-          boxShadow: isSelected ? "0 4px 16px rgba(0,135,85,0.15)" : "0 2px 8px rgba(0,0,0,0.06)",
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: "24px",
+          boxShadow: isSelected ? "rgb(0,135,85) -2px 3px 9px 0px" : "rgb(230,239,235) -2px 3px 9px 0px",
+          padding: "24px",
+          border: isSelected ? "2px solid #008755" : "none",
+          transition: "box-shadow 0.2s, border 0.2s",
         }}
       >
-        {/* Card header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-3">
-          <div className="flex items-baseline gap-1">
-            <span className={`font-black text-gray-900 ${isMobile ? "text-2xl" : "text-3xl"}`}>
-              Đ {isNaN(amt) ? fine.amount : amt.toFixed(0)}
-            </span>
-          </div>
+        {/* Row 1: Checkbox + Source logo + Badge + Amount */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Left: Checkbox + Source logo + Badge */}
           <div className="flex items-center gap-2">
-            <span
-              className="text-xs font-bold px-3 py-1.5 rounded-full"
-              style={{ backgroundColor: statusConfig.bg, color: statusConfig.color }}
-            >
-              {statusConfig.icon} {statusConfig.label}
-            </span>
-            {/* Source logo in header - real CDN logo, circular */}
+            {/* Checkbox */}
             <div
-              className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-              style={{ backgroundColor: sourceBgColor, border: "1.5px solid #e5e7eb" }}
-            >
-              <SourceIcon source={fine.source} size={36} />
-            </div>
-            {/* Checkbox - click only on checkbox, not entire card */}
-            <div
-              className="w-6 h-6 flex items-center justify-center flex-shrink-0"
+              className="flex items-center justify-center flex-shrink-0 cursor-pointer"
               onClick={(e) => { e.stopPropagation(); toggleSelect(); }}
             >
               <input
                 type="checkbox"
                 checked={isSelected}
                 onChange={() => {}}
-                className="w-5 h-5 rounded cursor-pointer"
-                style={{ accentColor: "#008755" }}
+                className="w-5 h-5 cursor-pointer"
+                style={{ accentColor: "#008755", borderRadius: "4px" }}
               />
             </div>
+            {/* Source logo - circular, small */}
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+              style={{ border: "1px solid #e5e7eb", backgroundColor: "#f5f5f5" }}
+            >
+              <SourceIcon source={fine.source} size={28} />
+            </div>
+            {/* Status badge */}
+            <span
+              className="text-xs font-medium px-1.5 py-0.5"
+              style={{
+                backgroundColor: statusConfig.bg,
+                color: statusConfig.color,
+                borderRadius: statusConfig.borderRadius,
+                fontSize: "12px",
+              }}
+            >
+              {statusConfig.label}
+            </span>
+          </div>
+          {/* Right: Amount with Dirham symbol */}
+          <div className="flex items-center gap-1">
+            <span style={{ fontSize: "22px", fontWeight: 900, color: "#111827", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif" }}>
+              {isNaN(amt) ? fine.amount : amt.toLocaleString()}
+            </span>
+            {/* Dirham symbol - مطابق للأصلي */}
+            <svg width="22" height="22" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+              <text x="5" y="75" fontSize="70" fontFamily="'Dubai', 'Arial Black', Arial" fontWeight="900" fill="#111827">₿</text>
+            </svg>
           </div>
         </div>
 
-        <div style={{ borderTop: "1px solid #f0f4f2" }} className="mx-4" />
-
-        {/* Details */}
-        <div className="px-4 py-3 space-y-2.5">
+        {/* Row 2: Details grid - 2 columns on desktop, 1 on mobile */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
           {/* Source */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-gray-500">
-              <Building2 className="w-4 h-4" style={{ color: "#008755" }} />
-              <span className="text-sm">{t.home.results.fineCard.source}</span>
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+              <PlateIcon />
             </div>
-            <SourceBadge source={fine.source} />
+            <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
+              {lang === "ar" ? "المصدر" : "Source"}
+            </span>
+            <span className="text-sm font-medium text-gray-800 truncate" style={{ color: "#111827" }}>
+              {getSourceLabel(fine.source)}
+            </span>
           </div>
+
           {/* Location */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-gray-500">
-              <MapPin className="w-4 h-4" style={{ color: "#008755" }} />
-              <span className="text-sm">{t.home.results.fineCard.location}</span>
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+              <LocationIcon />
             </div>
-            <span className="text-sm font-semibold text-gray-800 text-left max-w-[55%] truncate" dir="rtl">{fine.location || "—"}</span>
+            <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
+              {lang === "ar" ? "الموقع" : "Location"}
+            </span>
+            <span className="text-sm font-medium truncate" style={{ color: "#111827", maxWidth: "100px" }}>
+              {fine.location || "—"}
+            </span>
           </div>
-          {/* Speed */}
+
+          {/* Speed (if available) */}
           {fine.speed && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-gray-500">
-                <Gauge className="w-4 h-4" style={{ color: "#008755" }} />
-                <span className="text-sm">{t.home.results.fineCard.speed}</span>
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                <SpeedIcon />
               </div>
-              <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.speed}</span>
+              <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
+                {lang === "ar" ? "السرعة" : "Speed"}
+              </span>
+              <span className="text-sm font-medium" style={{ color: "#111827" }} dir="ltr">
+                {fine.speed}
+              </span>
             </div>
           )}
-          {/* Ticket No */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-gray-500">
-              <Hash className="w-4 h-4" style={{ color: "#008755" }} />
-              <span className="text-sm">{t.home.results.fineCard.ticketNo}</span>
+
+          {/* Ticket Number */}
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+              <TicketIcon />
             </div>
-            <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.ticketNo || "—"}</span>
+            <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
+              {lang === "ar" ? "رقم التذكرة" : "Ticket Number"}
+            </span>
+            <span className="text-sm font-medium" style={{ color: "#111827" }} dir="ltr">
+              {fine.ticketNo || "—"}
+            </span>
           </div>
-          {/* Date */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-gray-500">
-              <Calendar className="w-4 h-4" style={{ color: "#008755" }} />
-              <span className="text-sm">{t.home.results.fineCard.dateTime}</span>
+
+          {/* Date & Time */}
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+              <DateIcon />
             </div>
-            <span className="text-sm font-semibold text-gray-800" dir="ltr">{fine.dateTime || "—"}</span>
+            <span className="text-sm whitespace-nowrap" style={{ color: "#6B7280" }}>
+              {lang === "ar" ? "التاريخ والوقت" : "Date & Time"}
+            </span>
+            <span className="text-sm font-medium" style={{ color: "#111827" }} dir="ltr">
+              {fine.dateTime || "—"}
+            </span>
           </div>
         </div>
 
-        {/* Description */}
+        {/* Fine Details section - مطابق للأصلي */}
         {fine.description && (
-          <>
-            <div style={{ borderTop: "1px solid #f0f0f0" }} className="mx-4" />
-            <div className="px-4 py-3">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Ticket className="w-4 h-4" style={{ color: "#008755" }} />
-                <span className="text-sm font-bold" style={{ color: "#008755" }}>{t.home.results.fineCard.details}</span>
-              </div>
-              <div className="flex items-start gap-2 justify-center">
-                <p className="text-sm text-gray-700 text-center">{fine.description}</p>
-                <Info className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-              </div>
+          <div
+            className="mt-4 pt-4"
+            style={{ borderTop: "1px solid #f0f4f2" }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <FineDetailsIcon />
+              <span className="text-sm font-bold" style={{ color: "#008755" }}>
+                {lang === "ar" ? "تفاصيل المخالفة" : "Fine Details"}
+              </span>
             </div>
-          </>
+            <div className="flex items-start gap-2">
+              <div
+                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb" }}
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <circle cx="5" cy="5" r="4" stroke="#6B7280" strokeWidth="1"/>
+                  <path d="M5 4.5V7" stroke="#6B7280" strokeWidth="1" strokeLinecap="round"/>
+                  <circle cx="5" cy="3" r="0.5" fill="#6B7280"/>
+                </svg>
+              </div>
+              <p className="text-sm text-gray-700 leading-relaxed">{fine.description}</p>
+            </div>
+          </div>
         )}
       </div>
     );
   };
+
 
   // ===== RESULTS VIEW =====
   if (view === "results" && result) {
