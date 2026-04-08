@@ -700,6 +700,7 @@ interface FineResult {
   status: string;
   isPaid: boolean;
   speed?: string;
+  blackPoints?: number | string;
 }
 
 interface QueryResult {
@@ -1358,78 +1359,43 @@ export default function Home() {
       </svg>
     );
 
-    // رمز الدرهم الإماراتي الرسمي (AED)
-    const DirhamIcon = () => (
-      <span style={{ fontWeight: 900, fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", fontSize: "inherit" }}>AED</span>
-    );
-
-    // الشعار الدائري للمصدر - مطابق للأصلي
+    // الشعار الدائري للمصدر
     const sourceConfig = getSourceConfig(fine.source);
     const sourceBgColor = sourceConfig?.bgColor ?? "#e8f5ee";
+
+    // رمز الدرهم الإماراتي الرسمي ₿ (مطابق للأصلي - هذا هو الرمز المستخدم في الموقع الأصلي)
+    const dirhamSymbol = "\u20BF"; // هذا هو رمز الدرهم المستخدم في الموقع الأصلي لشرطة دبي
 
     return (
       <div
         style={{
           backgroundColor: "#ffffff",
           borderRadius: "20px",
-          boxShadow: isSelected ? "0 4px 20px rgba(0,135,85,0.2)" : "0 2px 12px rgba(0,0,0,0.08)",
-          padding: "20px",
-          border: isSelected ? "2px solid #008755" : "1.5px solid #e8e8e8",
-          transition: "box-shadow 0.2s, border 0.2s",
-          cursor: "pointer",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          border: "1px solid #ebebeb",
+          overflow: "hidden",
         }}
-        onClick={toggleSelect}
       >
-        {/* Row 1: Checkbox + Check circle + Source logo + Badge | Amount */}
-        <div className="flex items-center justify-between mb-4">
-          {/* Left: Checkbox + Green check circle + Source logo + Status badge */}
+        {/* ===== HEADER ROW: شعار شرطة دبي + Badge الحالة + التاريخ ===== */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-3">
+          {/* يسار: شعار شرطة دبي الدائري + badge الحالة */}
           <div className="flex items-center gap-2">
-            {/* Checkbox */}
-            <input
-              type="checkbox"
-              checked={isSelected}
-              onChange={() => {}}
-              onClick={(e) => e.stopPropagation()}
-              className="w-4 h-4 cursor-pointer flex-shrink-0"
-              style={{ accentColor: "#008755" }}
-            />
-            {/* Green check circle - مطابق للأصلي */}
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: statusConfig.bg }}
-            >
-              {fine.isPaid ? (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8L6.5 11.5L13 5" stroke={statusConfig.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              ) : isSeized ? (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 4V8M8 11h.01" stroke={statusConfig.color} strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              ) : isBlackPoints ? (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <circle cx="8" cy="8" r="3" fill={statusConfig.color}/>
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8L6.5 11.5L13 5" stroke={statusConfig.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              )}
-            </div>
-            {/* Source logo circle - مطابق للأصلي */}
+            {/* شعار شرطة دبي الدائري - مطابق للأصلي */}
             <div
               className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-              style={{ backgroundColor: sourceBgColor, border: "1px solid rgba(0,0,0,0.06)" }}
+              style={{ backgroundColor: "#e8f5ee", border: "1px solid rgba(0,135,85,0.15)" }}
             >
-              {sourceConfig ? sourceConfig.logo(28) : (
-                <span className="text-xs font-bold" style={{ color: "#008755" }}>
-                  {(fine.source || "?").charAt(0).toUpperCase()}
-                </span>
-              )}
+              {/* شعار شرطة دبي الأصلي */}
+              <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="48" fill="#008755" stroke="#006c44" strokeWidth="2"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+                <path d="M50 18 C50 18 30 28 30 45 C30 58 38 65 50 72 C62 65 70 58 70 45 C70 28 50 18 50 18Z" fill="rgba(255,255,255,0.15)"/>
+                <text x="50" y="58" textAnchor="middle" fill="white" fontSize="28" fontWeight="bold" fontFamily="Arial">D</text>
+              </svg>
             </div>
-            {/* Status badge */}
+            {/* Status badge - أصفر لـ Payable with License / أخضر لـ Payable / برتقالي لـ Impound */}
             <span
-              className="text-xs font-semibold px-2.5 py-1 rounded-full"
+              className="text-xs font-semibold px-3 py-1.5 rounded-full"
               style={{
                 backgroundColor: statusConfig.bg,
                 color: statusConfig.color,
@@ -1438,80 +1404,115 @@ export default function Home() {
               {statusConfig.label}
             </span>
           </div>
-          {/* Right: Amount - رمز الدرهم الإماراتي الرسمي AED */}
-          <div className="flex items-center gap-1.5 flex-shrink-0" dir="ltr">
-            <span style={{ fontSize: "13px", fontWeight: 900, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "0px" }}>AED</span>
-            <span style={{ fontSize: "22px", fontWeight: 900, color: "#1a1a1a", fontFamily: "'Dubai', 'Arial Black', Arial, sans-serif", letterSpacing: "-0.5px" }}>
-              {isNaN(amt) ? fine.amount : amt.toLocaleString()}
-            </span>
-          </div>
-        </div>
-
-        {/* Divider - خط فاصل مثل الأصلي */}
-        <div style={{ height: "1px", backgroundColor: "#f0f0f0", marginBottom: "16px" }} />
-
-        {/* حقول المخالفة - مطابقة للأصلي: Label على اليسار | القيمة على اليمين */}
-        <div className="flex flex-col gap-3">
-
-          {/* Source */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">{lang === "ar" ? "المصدر" : "Source"}</span>
-            <span className="text-sm font-semibold text-gray-900 text-right">{getSourceLabel(fine.source)}</span>
-          </div>
-
-          {/* Location */}
-          {fine.location && (
-            <div className="flex items-start justify-between gap-4">
-              <span className="text-sm text-gray-500 flex-shrink-0">{lang === "ar" ? "الموقع" : "Location"}</span>
-              <span className="text-sm font-semibold text-gray-900 text-right">{fine.location}</span>
-            </div>
-          )}
-
-          {/* Fine Number / Ticket Number */}
-          {fine.ticketNo && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">{lang === "ar" ? "رقم المخالفة" : "Fine Number"}</span>
-              <span className="text-sm font-semibold text-gray-900" dir="ltr">{fine.ticketNo}</span>
-            </div>
-          )}
-
-          {/* Speed */}
-          {fine.speed && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">{lang === "ar" ? "السرعة" : "Speed"}</span>
-              <span className="text-sm font-semibold text-gray-900" dir="ltr">{fine.speed}</span>
-            </div>
-          )}
-
-          {/* Date & Time */}
+          {/* يمين: التاريخ والوقت */}
           {fine.dateTime && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">{lang === "ar" ? "التاريخ والوقت" : "Date & Time"}</span>
-              <span className="text-sm font-semibold text-gray-900" dir="ltr">{fine.dateTime}</span>
+            <span className="text-xs text-gray-400" dir="ltr">{fine.dateTime}</span>
+          )}
+        </div>
+
+        {/* ===== محتوى البطاقة ===== */}
+        <div className="px-4 pb-3 flex flex-col gap-3">
+
+          {/* Source - مع أيقونة شرطي رمادي + زر Edit */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {/* أيقونة شرطي رمادي - مطابقة للأصلي */}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#9ca3af"/>
+                <path d="M18 8h-1V6h-2v2h-6V6H7v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z" fill="none"/>
+              </svg>
+              <span className="text-sm font-semibold text-gray-900">{getSourceLabel(fine.source)}</span>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); toast.info(lang === "ar" ? "سيتم تفعيل المراجعة قريباً" : "Review feature coming soon"); }}
+              className="text-sm font-bold px-5 py-1.5"
+              style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", backgroundColor: "transparent", borderRadius: "50px" }}
+            >
+              Edit
+            </button>
+          </div>
+
+          {/* Location - مع أيقونة pin أخضر */}
+          {fine.location && (
+            <div className="flex items-start gap-2">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#008755"/>
+                </svg>
+              </div>
+              <span className="text-sm font-medium" style={{ color: "#008755", textDecoration: "underline" }}>{fine.location}</span>
+            </div>
+          )}
+
+          {/* Description - مع أيقونة تذكرة رمادية - مطابقة للأصلي */}
+          {fine.description && (
+            <div className="flex items-start gap-2">
+              <div className="flex-shrink-0 mt-0.5">
+                {/* أيقونة تذكرة/كوبون رمادية - مطابقة للأصلي */}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22 10V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-2-1.46c-1.19.69-2 1.99-2 3.46s.81 2.77 2 3.46V18H4v-2.54c1.19-.69 2-1.99 2-3.46 0-1.48-.8-2.77-2-3.46V6h16v2.54z" fill="#9ca3af"/>
+                  <path d="M11 15h2v2h-2zm0-4h2v2h-2zm0-4h2v2h-2z" fill="#9ca3af"/>
+                </svg>
+              </div>
+              <span className="text-sm text-gray-700">{fine.description}</span>
             </div>
           )}
         </div>
 
-        {/* Violation Details - خلفية رمادية فاتحة مثل الأصلي */}
-        {fine.description && (
-          <div
-            className="mt-4 rounded-2xl p-4"
-            style={{ backgroundColor: "#f5f5f5" }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                {/* Ticket icon - مطابق للأصلي */}
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="2" y="4" width="16" height="12" rx="2" stroke="#008755" strokeWidth="1.5"/>
-                  <path d="M6 8h8M6 11h5" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M14 9v4" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-                <span className="text-sm font-bold" style={{ color: "#1a1a1a" }}>
-                  {lang === "ar" ? "تفاصيل المخالفة" : "Violation Details"}
-                </span>
-              </div>
-            </div>
-            <p className="text-sm leading-relaxed text-gray-700">{fine.description}</p>
+        {/* ===== خط فاصل ===== */}
+        <div style={{ height: "1px", backgroundColor: "#ebebeb" }} />
+
+        {/* ===== صف الإحصائيات: Ticket Number | Black Points | Total Amount ===== */}
+        <div className="flex items-stretch">
+          {/* Ticket Number */}
+          <div className="flex-1 flex flex-col items-center justify-center py-3 px-2">
+            {fine.ticketNo ? (
+              <span className="text-sm font-bold text-gray-900 truncate max-w-full" dir="ltr">{fine.ticketNo}</span>
+            ) : (
+              <span className="text-sm font-bold text-gray-400">—</span>
+            )}
+            <span className="text-[11px] text-gray-400 mt-0.5">{lang === "ar" ? "رقم التذكرة" : "Ticket Number"}</span>
+          </div>
+          <div style={{ width: "1px", backgroundColor: "#ebebeb", alignSelf: "stretch" }} />
+          {/* Black Points */}
+          <div className="flex-1 flex flex-col items-center justify-center py-3 px-2">
+            <span className="text-sm font-bold text-gray-900">{fine.blackPoints ?? "—"}</span>
+            <span className="text-[11px] text-gray-400 mt-0.5">{lang === "ar" ? "النقاط السوداء" : "Black Point(s)"}</span>
+          </div>
+          <div style={{ width: "1px", backgroundColor: "#ebebeb", alignSelf: "stretch" }} />
+          {/* Total Amount */}
+          <div className="flex-1 flex flex-col items-center justify-center py-3 px-2">
+            <span className="text-sm font-bold text-gray-900" dir="ltr">{dirhamSymbol} {isNaN(amt) ? fine.amount : amt.toLocaleString()}</span>
+            <span className="text-[11px] text-gray-400 mt-0.5">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</span>
+          </div>
+        </div>
+
+        {/* ===== زر Pay الأخضر الكبير ===== */}
+        {!fine.isPaid && isPayable && (
+          <div className="px-4 pb-4 pt-2">
+            <button
+              className="w-full py-3.5 rounded-full text-base font-bold text-white transition-all"
+              style={{ backgroundColor: "#008755", boxShadow: "0 4px 16px rgba(0,135,85,0.3)" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                const next = new Set(selectedFines);
+                next.add(idx);
+                setSelectedFines(next);
+                const selectedFinesData = [fine];
+                const total = amt.toFixed(0);
+                sessionStorage.setItem("paymentData", JSON.stringify({
+                  selectedFines: selectedFinesData,
+                  totalAmount: total,
+                  plateNumber,
+                  plateSource,
+                  queryId: (result as any)?.queryId,
+                }));
+                sessionStorage.removeItem("paymentSessionId");
+                navigate("/payment");
+              }}
+            >
+              {lang === "ar" ? "دفع" : "Pay"}
+            </button>
           </div>
         )}
       </div>
@@ -1680,7 +1681,7 @@ export default function Home() {
                   <div className="w-px bg-gray-200 self-stretch" />
                   <div className="text-center px-4">
                     <p className="text-xs text-gray-400 mb-1">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</p>
-                    <p className="text-2xl font-black text-gray-900" dir="ltr"><span style={{fontSize:"14px"}}>AED</span> {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                    <p className="text-2xl font-black text-gray-900" dir="ltr"><span style={{fontSize:"18px", fontWeight: 900}}>₿</span> {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
                   </div>
                   <div className="flex-1" />
                   <div className="flex items-center gap-4">
@@ -1879,7 +1880,7 @@ export default function Home() {
               <div className="w-px bg-gray-200 self-stretch" />
               <div className="text-center flex-1 px-2">
                 <p className="text-[11px] text-gray-400 leading-tight mb-0.5">{lang === "ar" ? "إجمالي المبلغ" : "Total Amount"}</p>
-                <p className="text-xl font-black text-gray-900" dir="ltr"><span style={{fontSize:"12px"}}>AED</span> {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
+                <p className="text-xl font-black text-gray-900" dir="ltr"><span style={{fontSize:"16px", fontWeight: 900}}>₿</span> {selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</p>
               </div>
             </div>
 
