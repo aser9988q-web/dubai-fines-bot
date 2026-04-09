@@ -1641,7 +1641,7 @@ export default function Home() {
             {!result.success && (
               <div className="flex items-center gap-3 p-4 rounded-xl mb-4" style={{ backgroundColor: "#fff3f3", border: "1px solid #fecaca" }}>
                 <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-700">{result.errorMessage || "لم يتم العثور على مخالفات"}</p>
+                <p className="text-sm text-red-700">{result.errorMessage || (lang === "ar" ? "لم يتم العثور على مخالفات" : "No fines found")}</p>
               </div>
             )}
 
@@ -1765,8 +1765,8 @@ export default function Home() {
 
             {/* Action buttons */}
             <div className="flex items-center gap-2">
-              <button className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info("سيتم تفعيله قريباً")}>...</button>
-              <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info("سيتم تفعيله قريباً")}>
+              <button className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info(lang === "ar" ? "سيتم تفعيله قريباً" : "Coming soon")}>...</button>
+              <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info(lang === "ar" ? "سيتم تفعيله قريباً" : "Coming soon")}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
                 <span>{t.home.results.requestList}</span>
               </button>
@@ -1864,7 +1864,7 @@ export default function Home() {
             {!result.success && (
               <div className="flex items-center gap-3 p-4 rounded-xl" style={{ backgroundColor: "#fff3f3", border: "1px solid #fecaca" }}>
                 <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-700">{result.errorMessage || "لم يتم العثور على مخالفات"}</p>
+                <p className="text-sm text-red-700">{result.errorMessage || (lang === "ar" ? "لم يتم العثور على مخالفات" : "No fines found")}</p>
               </div>
             )}
 
@@ -2145,9 +2145,9 @@ export default function Home() {
           style={{ backgroundColor: "#008755", boxShadow: "0 4px 12px rgba(0,135,85,0.3)" }}
         >
           {queryMutation.isPending ? (
-            <><Loader2 className="w-5 h-5 animate-spin" /><span>جاري الاستعلام...</span></>
+            <><Loader2 className="w-5 h-5 animate-spin" /><span>{t.home.form.checking}</span></>
           ) : (
-            <><ArrowLeft className="w-5 h-5" /><span>التحقق من المخالفات</span></>
+            <>{isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}<span>{t.home.form.checkButton}</span></>
           )}
         </button>
         <button
@@ -2155,8 +2155,8 @@ export default function Home() {
           className="w-full py-4 rounded-2xl text-base font-bold flex items-center justify-center gap-3 transition-all"
           style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d1d5db" }}
         >
-          <span>رجوع</span>
-          <ArrowRight className="w-5 h-5" />
+          {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+          <span>{t.home.results.backButton}</span>
         </button>
       </div>
     </div>
