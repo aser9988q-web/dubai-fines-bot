@@ -1288,7 +1288,7 @@ export default function Home() {
   );
 
   // ===== FINE CARD COMPONENT =====
-  const FineCard = ({ fine, idx }: { fine: FineResult; idx: number; isMobile?: boolean }) => {
+  const FineCard = ({ fine, idx, isMobile = false }: { fine: FineResult; idx: number; isMobile?: boolean }) => {
     const isSelected = selectedFines.has(idx);
     const amt = parseFloat((fine.amount || "0").replace(/[^0-9.]/g, ""));
 
@@ -1298,8 +1298,7 @@ export default function Home() {
       setSelectedFines(next);
     };
 
-    // Status badge config - مطابق للموقع الأصلي تماماً
-    const isPayable = !fine.isPaid && fine.status !== "seized" && fine.status !== "blackpoints" && fine.status !== "notpayable";
+    // Status badge config
     const isBlackPoints = fine.status === "blackpoints";
     const isSeized = fine.status === "seized";
 
@@ -1313,16 +1312,21 @@ export default function Home() {
       ? { label: t.home.results.filters.notPayable, bg: "#fff0e8", color: "#c84800" }
       : { label: t.home.results.status.payable, bg: "#e7f6f1", color: "#006c44" };
 
-    // رمز الدرهم الإماراتي - حرف D مع خطين أفقيين (AED)
+    // رمز الدرهم الإماراتي - نص AED واضح
     const DirhamIcon = ({ color = "#111", size = 20 }: { color?: string; size?: number }) => (
-      <svg width={size} height={size} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}>
-        {/* حرف D - الجزء الرئيسي */}
-        <path d="M4 3 L4 17 L10 17 C14.4 17 17.5 14.2 17.5 10 C17.5 5.8 14.4 3 10 3 Z" stroke={color} strokeWidth="1.8" fill="none" strokeLinejoin="round"/>
-        {/* الخط الأفقي الأول */}
-        <line x1="1.5" y1="7.5" x2="11" y2="7.5" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
-        {/* الخط الأفقي الثاني */}
-        <line x1="1.5" y1="12" x2="11" y2="12" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
-      </svg>
+      <span
+        style={{
+          display: "inline-block",
+          verticalAlign: "middle",
+          flexShrink: 0,
+          fontSize: size * 0.65,
+          fontWeight: 900,
+          fontFamily: "'Arial Black', Arial, sans-serif",
+          color: color,
+          letterSpacing: "-0.5px",
+          lineHeight: 1,
+        }}
+      >AED</span>
     );
 
     // أيقونة لوحة السيارة - مطابقة للأصلي
@@ -1368,6 +1372,65 @@ export default function Home() {
     const sourceBgColor = sourceConfig?.bgColor ?? "#e8f5ee";
     const sourceBorderColor = sourceConfig?.borderColor ?? "#008755";
 
+    // الحقول المشتركة بين الموبايل والديسكتوب
+    const FieldRow = ({ icon, label, value, noBorder = false }: { icon: React.ReactNode; label: string; value: React.ReactNode; noBorder?: boolean }) => (
+      <div className="flex items-center justify-between py-1.5" style={{ borderBottom: noBorder ? "none" : "1px solid #f5f5f5" }}>
+        <div className="flex items-center gap-1.5">
+          {icon}
+          <span className={isMobile ? "text-xs text-gray-500" : "text-sm text-gray-500"}>{label}</span>
+        </div>
+        <div className={isMobile ? "text-xs font-medium text-gray-800 max-w-[55%] text-right" : "text-sm font-medium text-gray-800 max-w-[60%] text-right"} dir="ltr">{value || <span className="text-gray-400">—</span>}</div>
+      </div>
+    );
+
+    if (isMobile) {
+      // ===== تصميم الموبايل - مضغوط وأصغر =====
+      return (
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "12px",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+            border: "1px solid #e8e8e8",
+            overflow: "hidden",
+            marginBottom: "10px",
+          }}
+        >
+          {/* هيدر: checkbox + شعار + badge + مبلغ */}
+          <div className="flex items-center gap-2 px-3 py-2.5" style={{ direction: "ltr", borderBottom: "1px solid #f0f0f0" }}>
+            <input type="checkbox" checked={isSelected} onChange={toggleSelect} className="w-4 h-4 flex-shrink-0 cursor-pointer" style={{ accentColor: "#008755" }} />
+            <div className="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0" style={{ backgroundColor: sourceBgColor, border: `1.5px solid ${sourceBorderColor}30` }}>
+              {sourceConfig ? sourceConfig.logo(18) : <svg width="18" height="18" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" fill="#008755"/><text x="50" y="58" textAnchor="middle" fill="white" fontSize="28" fontWeight="bold" fontFamily="Arial">D</text></svg>}
+            </div>
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: statusConfig.bg, color: statusConfig.color }}>{statusConfig.label}</span>
+            <div className="flex-1 flex items-center justify-end gap-1">
+              <span className="text-base font-black flex items-center gap-1" style={{ color: "#111", fontFamily: "'Arial Black', Arial, sans-serif" }} dir="ltr">
+                <DirhamIcon color="#111" size={16} />
+                <span>{isNaN(amt) ? fine.amount : amt.toLocaleString()}</span>
+              </span>
+            </div>
+          </div>
+
+          {/* حقول مضغوطة */}
+          <div className="px-3 pb-2 pt-1" style={{ direction: isRTL ? "rtl" : "ltr" }}>
+            <FieldRow icon={<PlateIcon />} label={t.home.results.fineCard.source} value={getSourceLabel(fine.source, lang)} />
+            <FieldRow icon={<LocationIcon />} label={t.home.results.fineCard.location} value={fine.location} />
+            {fine.speed && <FieldRow icon={<svg width="12" height="12" viewBox="0 0 17 17" fill="none"><path d="M8.5 2C4.91 2 2 4.91 2 8.5S4.91 15 8.5 15 15 12.09 15 8.5 12.09 2 8.5 2zm0 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm.5-8.5H8v4.5l3.75 2.25.75-1.23-3-1.77V5z" fill="#4B4C4D"/></svg>} label={t.home.results.fineCard.speed} value={fine.speed} />}
+            <FieldRow icon={<TicketIcon />} label={t.home.results.fineCard.ticketNo} value={fine.ticketNo} noBorder={!fine.dateTime} />
+            {fine.dateTime && <FieldRow icon={<DateIcon />} label={t.home.results.fineCard.dateTime} value={fine.dateTime} noBorder />}
+          </div>
+
+          {fine.description && (
+            <div className="mx-2 mb-2 px-2.5 py-2 rounded-lg" style={{ backgroundColor: "#f0faf5", border: "1px solid #d0eed8" }}>
+              <span className="text-[10px] font-bold block mb-0.5" style={{ color: "#008755" }}>{t.home.results.fineCard.details}</span>
+              <p className="text-[10px] text-gray-700 leading-relaxed" style={{ direction: "ltr" }}>{fine.description}</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ===== تصميم الديسكتوب =====
     return (
       <div
         style={{
@@ -1426,64 +1489,17 @@ export default function Home() {
 
         {/* ===== حقول المخالفة - كل حقل في صف منفصل ===== */}
         <div className="px-4 pb-3" style={{ direction: isRTL ? "rtl" : "ltr" }}>
-          {/* صف المصدر */}
-          <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
-            <div className="flex items-center gap-1.5">
-              <PlateIcon />
-              <span className="text-sm text-gray-500">{t.home.results.fineCard.source}</span>
-            </div>
-            <span className="text-sm font-medium text-gray-800" dir="ltr">{getSourceLabel(fine.source, lang) || "—"}</span>
-          </div>
-
-          {/* صف الموقع */}
-          <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
-            <div className="flex items-center gap-1.5">
-              <LocationIcon />
-              <span className="text-sm text-gray-500">{t.home.results.fineCard.location}</span>
-            </div>
-            {fine.location ? (
-              <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.location}</span>
-            ) : (
-              <span className="text-sm text-gray-400">—</span>
-            )}
-          </div>
-
-          {/* صف السرعة - يظهر فقط إذا كانت موجودة */}
+          <FieldRow icon={<PlateIcon />} label={t.home.results.fineCard.source} value={getSourceLabel(fine.source, lang)} />
+          <FieldRow icon={<LocationIcon />} label={t.home.results.fineCard.location} value={fine.location} />
           {fine.speed && (
-            <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
-              <div className="flex items-center gap-1.5">
-                <svg width="14" height="14" viewBox="0 0 17 17" fill="none">
-                  <path d="M8.5 2C4.91 2 2 4.91 2 8.5S4.91 15 8.5 15 15 12.09 15 8.5 12.09 2 8.5 2zm0 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm.5-8.5H8v4.5l3.75 2.25.75-1.23-3-1.77V5z" fill="#4B4C4D"/>
-                </svg>
-                <span className="text-sm text-gray-500">{t.home.results.fineCard.speed}</span>
-              </div>
-              <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.speed}</span>
-            </div>
+            <FieldRow
+              icon={<svg width="14" height="14" viewBox="0 0 17 17" fill="none"><path d="M8.5 2C4.91 2 2 4.91 2 8.5S4.91 15 8.5 15 15 12.09 15 8.5 12.09 2 8.5 2zm0 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm.5-8.5H8v4.5l3.75 2.25.75-1.23-3-1.77V5z" fill="#4B4C4D"/></svg>}
+              label={t.home.results.fineCard.speed}
+              value={fine.speed}
+            />
           )}
-
-          {/* صف رقم المخالفة */}
-          <div className="flex items-center justify-between py-1.5" style={{ borderBottom: fine.dateTime ? "1px solid #f5f5f5" : "none" }}>
-            <div className="flex items-center gap-1.5">
-              <TicketIcon />
-              <span className="text-sm text-gray-500">{t.home.results.fineCard.ticketNo}</span>
-            </div>
-            {fine.ticketNo ? (
-              <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.ticketNo}</span>
-            ) : (
-              <span className="text-sm text-gray-400">—</span>
-            )}
-          </div>
-
-          {/* صف التاريخ والوقت */}
-          {fine.dateTime && (
-            <div className="flex items-center justify-between py-1.5">
-              <div className="flex items-center gap-1.5">
-                <DateIcon />
-                <span className="text-sm text-gray-500">{t.home.results.fineCard.dateTime}</span>
-              </div>
-              <span className="text-sm font-medium text-gray-800" dir="ltr">{fine.dateTime}</span>
-            </div>
-          )}
+          <FieldRow icon={<TicketIcon />} label={t.home.results.fineCard.ticketNo} value={fine.ticketNo} noBorder={!fine.dateTime} />
+          {fine.dateTime && <FieldRow icon={<DateIcon />} label={t.home.results.fineCard.dateTime} value={fine.dateTime} noBorder />}
         </div>
 
         {/* ===== قسم Fine Details - خلفية خضراء فاتحة ===== */}
@@ -1493,7 +1509,6 @@ export default function Home() {
             style={{ backgroundColor: "#f0faf5", border: "1px solid #d0eed8" }}
           >
             <div className="flex items-center gap-2 mb-1">
-              {/* أيقونة Fine Details الخضراء */}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
                 <path d="M3 10h18" stroke="#008755" strokeWidth="1.5"/>
@@ -1664,11 +1679,7 @@ export default function Home() {
                   {/* إجمالي المبلغ */}
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-gray-900 flex items-center gap-1" dir="ltr">
-                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}>
-                        <path d="M4 3 L4 17 L10 17 C14.4 17 17.5 14.2 17.5 10 C17.5 5.8 14.4 3 10 3 Z" stroke="#111" strokeWidth="1.8" fill="none" strokeLinejoin="round"/>
-                        <line x1="1.5" y1="7.5" x2="11" y2="7.5" stroke="#111" strokeWidth="1.8" strokeLinecap="round"/>
-                        <line x1="1.5" y1="12" x2="11" y2="12" stroke="#111" strokeWidth="1.8" strokeLinecap="round"/>
-                      </svg>
+                       <span style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0, fontSize: "12px", fontWeight: 900, fontFamily: "'Arial Black', Arial, sans-serif", color: "#111", letterSpacing: "-0.5px", lineHeight: 1 }}>AED</span>
                       <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
                     </span>
                     <span className="text-sm text-gray-500">{t.home.results.totalAmount}</span>
@@ -1889,11 +1900,7 @@ export default function Home() {
               <div className="w-px bg-gray-300 mx-4" style={{ height: "20px" }} />
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-bold text-gray-900 flex items-center gap-1" dir="ltr">
-                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}>
-                    <path d="M4 3 L4 17 L10 17 C14.4 17 17.5 14.2 17.5 10 C17.5 5.8 14.4 3 10 3 Z" stroke="#111" strokeWidth="1.8" fill="none" strokeLinejoin="round"/>
-                    <line x1="1.5" y1="7.5" x2="11" y2="7.5" stroke="#111" strokeWidth="1.8" strokeLinecap="round"/>
-                    <line x1="1.5" y1="12" x2="11" y2="12" stroke="#111" strokeWidth="1.8" strokeLinecap="round"/>
-                  </svg>
+                  <span style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0, fontSize: "11px", fontWeight: 900, fontFamily: "'Arial Black', Arial, sans-serif", color: "#111", letterSpacing: "-0.5px", lineHeight: 1 }}>AED</span>
                   <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
                 </span>
                 <span className="text-sm text-gray-500">{t.home.results.totalAmount}</span>
