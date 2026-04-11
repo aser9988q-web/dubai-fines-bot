@@ -78,7 +78,10 @@ export async function getUserByOpenId(openId: string) {
 
 export async function createFineQuery(data: InsertFineQuery): Promise<number> {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) {
+    console.warn("[Database] Skipping fine query persistence: database not available");
+    return 0;
+  }
   const result = await db.insert(fineQueries).values(data);
   return (result[0] as any).insertId as number;
 }
@@ -88,7 +91,10 @@ export async function updateFineQuery(
   data: Partial<InsertFineQuery>
 ): Promise<void> {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db || !id) {
+    if (!db) console.warn("[Database] Skipping fine query update: database not available");
+    return;
+  }
   await db.update(fineQueries).set(data).where(eq(fineQueries.id, id));
 }
 
@@ -120,7 +126,10 @@ export async function getFineQueriesByUserId(userId: number, limit = 20): Promis
 
 export async function createFines(finesData: InsertFine[]): Promise<void> {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) {
+    console.warn("[Database] Skipping fines persistence: database not available");
+    return;
+  }
   if (finesData.length === 0) return;
   await db.insert(fines).values(finesData);
 }
