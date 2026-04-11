@@ -82,6 +82,63 @@ function getPlaywrightProxyConfig() {
   };
 }
 
+function normalizeBaseUrl(raw: string) {
+  return raw.trim().replace(/\/+$/, "");
+}
+
+function isDubaiPoliceRelayEnabled() {
+  const raw = process.env.DUBAI_POLICE_RELAY_ENABLED?.trim().toLowerCase();
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
+function getDubaiPoliceRelayBaseUrl() {
+  const raw = process.env.DUBAI_POLICE_RELAY_URL?.trim();
+  if (!raw) return null;
+  return normalizeBaseUrl(raw);
+}
+
+function getDubaiPoliceRelayToken() {
+  return process.env.DUBAI_POLICE_RELAY_TOKEN?.trim() || "";
+}
+
+async function requestViaRelay<T = AnyRecord>(
+  method: "GET" | "POST",
+  path: string,
+  body?: unknown
+): Promise<T | null> {
+  if (!isDubaiPoliceRelayEnabled()) return null;
+
+  const relayBaseUrl = getDubaiPoliceRelayBaseUrl();
+  if (!relayBaseUrl) {
+    throw new Error("Dubai Police relay is enabled but DUBAI_POLICE_RELAY_URL is missing");
+  }
+
+  const relayToken = getDubaiPoliceRelayToken();
+  if (!relayToken) {
+    throw new Error("Dubai Police relay is enabled but DUBAI_POLICE_RELAY_TOKEN is missing");
+  }
+
+  const response = await axios.request({
+    method,
+    url: `${relayBaseUrl}${path}`,
+    data: body,
+    timeout: 30000,
+    validateStatus: () => true,
+    headers: {
+      "x-relay-token": relayToken,
+      Accept: "application/json",
+      ...(body ? { "Content-Type": "application/json" } : {}),
+    },
+  });
+
+  if (response.status >= 400) {
+    const message = response.data?.errorMessage || `Relay returned HTTP ${response.status}`;
+    throw new Error(message);
+  }
+
+  return (response.data?.data ?? null) as T | null;
+}
+
 function buildPlaywrightLaunchArgs() {
   return [
     "--no-sandbox",
@@ -135,18 +192,18 @@ interface ResolvedPlateCodeMeta {
   plateCat: number;
 }
 
-// Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø¥Ù…Ø§Ø±Ø§Øª Ù…Ø¹ Ø§Ù„ÙƒÙˆØ¯Ø§Øª Ø§Ù„Ø­Ù‚ÙŠÙ‚ÙŠØ© Ù…Ù† Ù…ÙˆÙ‚Ø¹ Ø´Ø±Ø·Ø© Ø¯Ø¨ÙŠ
+// قائمة الإمارات مع الكودات الحقيقية من موقع شرطة دبي
 export const PLATE_SOURCES = [
-  { value: "DXB", label: "Ø¯Ø¨ÙŠ", labelEn: "Dubai" },
-  { value: "AUH", label: "Ø£Ø¨ÙˆØ¸Ø¨ÙŠ", labelEn: "Abu Dhabi" },
-  { value: "SHJ", label: "Ø§Ù„Ø´Ø§Ø±Ù‚Ø©", labelEn: "Sharjah" },
-  { value: "AJM", label: "Ø¹Ø¬Ù…Ø§Ù†", labelEn: "Ajman" },
-  { value: "UMQ", label: "Ø£Ù… Ø§Ù„Ù‚ÙŠÙˆÙŠÙ†", labelEn: "Umm Al Quwain" },
-  { value: "RAK", label: "Ø±Ø£Ø³ Ø§Ù„Ø®ÙŠÙ…Ø©", labelEn: "Ras Al Khaimah" },
-  { value: "FUJ", label: "Ø§Ù„ÙØ¬ÙŠØ±Ø©", labelEn: "Fujairah" },
+  { value: "DXB", label: "دبي", labelEn: "Dubai" },
+  { value: "AUH", label: "أبوظبي", labelEn: "Abu Dhabi" },
+  { value: "SHJ", label: "الشارقة", labelEn: "Sharjah" },
+  { value: "AJM", label: "عجمان", labelEn: "Ajman" },
+  { value: "UMQ", label: "أم القيوين", labelEn: "Umm Al Quwain" },
+  { value: "RAK", label: "رأس الخيمة", labelEn: "Ras Al Khaimah" },
+  { value: "FUJ", label: "الفجيرة", labelEn: "Fujairah" },
 ];
 
-// ÙƒÙˆØ¯Ø§Øª Ø¯Ø¨ÙŠ Ø§Ù„Ù…Ø¹Ø±ÙˆÙØ© Ù…Ø­Ù„ÙŠÙ‹Ø§ ÙƒÙ…Ø±Ø¬Ø¹ Ø³Ø±ÙŠØ¹ Ø¹Ù†Ø¯Ù…Ø§ ÙŠÙ†Ø¬Ø­ Ø§Ù„Ù…Ø·Ø§Ø¨Ù‚Ø© Ø§Ù„Ù…Ø¨Ø§Ø´Ø±Ø©
+// كودات دبي المعروفة محليًا كمرجع سريع عندما ينجح المطابقة المباشرة
 export const PLATE_CODES = [
   { value: "2", label: "A", categoryId: 2 },
   { value: "3", label: "B", categoryId: 2 },
@@ -190,8 +247,8 @@ const API_HEADERS = {
 
 function normalizeDigits(value: string) {
   return value
-    .replace(/[Ù -Ù©]/g, (d) => String("Ù Ù¡Ù¢Ù£Ù¤Ù¥Ù¦Ù§Ù¨Ù©".indexOf(d)))
-    .replace(/[Û°-Û¹]/g, (d) => String("Û°Û±Û²Û³Û´ÛµÛ¶Û·Û¸Û¹".indexOf(d)));
+    .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
 }
 
 function normalizeCompare(value: unknown) {
@@ -302,7 +359,7 @@ function mapApiDataToScraperResult(data: AnyRecord | null): ScraperResult {
     return {
       success: false,
       fines: [],
-      errorMessage: "ØªØ¹Ø°Ù‘Ø± Ù‚Ø±Ø§Ø¡Ø© Ø§Ø³ØªØ¬Ø§Ø¨Ø© Ø®Ø¯Ù…Ø© Ø´Ø±Ø·Ø© Ø¯Ø¨ÙŠ. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.",
+      errorMessage: "تعذّر قراءة استجابة خدمة شرطة دبي. يرجى المحاولة مرة أخرى.",
     };
   }
 
@@ -310,7 +367,7 @@ function mapApiDataToScraperResult(data: AnyRecord | null): ScraperResult {
     return {
       success: false,
       fines: [],
-      errorMessage: data.message || data.errorMessage || "Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ø¨ÙŠØ§Ù†Ø§Øª Ù„Ù„ÙˆØ­Ø© Ø§Ù„Ù…Ø¯Ø®Ù„Ø©",
+      errorMessage: data.message || data.errorMessage || "لم يتم العثور على بيانات للوحة المدخلة",
     };
   }
 
@@ -383,6 +440,16 @@ async function performHttpQuery(
   resolvedPlateCodeId: number,
   plateCat: number
 ): Promise<AnyRecord | null> {
+  if (isDubaiPoliceRelayEnabled()) {
+    return await requestViaRelay<AnyRecord>("POST", "/relay/search-fines", {
+      inquiryType: 3,
+      plateNo,
+      plateCat,
+      plateSrcCode,
+      plateCodeId: resolvedPlateCodeId,
+    });
+  }
+
   const response = await axios.post(
     `${DUBAI_POLICE_API}/finespayment/searchFines`,
     {
@@ -411,6 +478,14 @@ async function performHttpQuery(
 
 export async function fetchPlateCodesFromApi(plateSrcCode: string) {
   try {
+    if (isDubaiPoliceRelayEnabled()) {
+      const relayData = await requestViaRelay<AnyRecord>(
+        "GET",
+        `/relay/plate-data/${encodeURIComponent(plateSrcCode)}`
+      );
+      return extractCodes(relayData);
+    }
+
     const response = await axios.get(
       `${DUBAI_POLICE_API}/finespayment/getPlateData/${plateSrcCode}`,
       {
@@ -438,6 +513,18 @@ export async function scrapeDubaiFines(
   const normalizedPlateSrcCode = normalizeCompare(plateSrcCode);
   const normalizedPlateNo = normalizeDigits(String(plateNo ?? "")).trim();
   const normalizedPlateCode = normalizeDigits(String(plateCodeId ?? "")).trim();
+
+  if (isDubaiPoliceRelayEnabled()) {
+    const relayResult = await requestViaRelay<ScraperResult>("POST", "/relay/scrape", {
+      plateSource: normalizedPlateSrcCode,
+      plateNumber: normalizedPlateNo,
+      plateCode: normalizedPlateCode,
+    });
+
+    if (relayResult) {
+      return relayResult;
+    }
+  }
 
   const apiCodes = await fetchPlateCodesFromApi(normalizedPlateSrcCode);
   const { resolvedPlateCodeId, plateCat } = resolvePlateCodeMeta(normalizedPlateCode, apiCodes);
@@ -521,7 +608,7 @@ async function tryPlaywrightFallback(
       return {
         success: false,
         fines: [],
-        errorMessage: "ØªØ¹Ø°Ù‘Ø± Ø§Ù„Ø§ØªØµØ§Ù„ Ø¨Ù…ÙˆÙ‚Ø¹ Ø´Ø±Ø·Ø© Ø¯Ø¨ÙŠ. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰ Ù„Ø§Ø­Ù‚Ø§Ù‹.",
+        errorMessage: "تعذّر الاتصال بموقع شرطة دبي. يرجى المحاولة مرة أخرى لاحقاً.",
       };
     }
 
@@ -548,8 +635,8 @@ async function tryPlaywrightFallback(
         initialResolvedPlateCodeId,
       } = params;
       const normalizeDigits = (value: string) => value
-        .replace(/[Ù -Ù©]/g, (d) => String("Ù Ù¡Ù¢Ù£Ù¤Ù¥Ù¦Ù§Ù¨Ù©".indexOf(d)))
-        .replace(/[Û°-Û¹]/g, (d) => String("Û°Û±Û²Û³Û´ÛµÛ¶Û·Û¸Û¹".indexOf(d)));
+        .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+        .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
 
       const normalizeCompare = (value: unknown) => normalizeDigits(String(value ?? ""))
         .trim()
@@ -658,14 +745,14 @@ async function tryPlaywrightFallback(
     return {
       success: false,
       fines: [],
-      errorMessage: "ØªØ¹Ø°Ù‘Ø± Ø§Ù„Ø§ØªØµØ§Ù„ Ø¨Ù…ÙˆÙ‚Ø¹ Ø´Ø±Ø·Ø© Ø¯Ø¨ÙŠ. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰.",
+      errorMessage: "تعذّر الاتصال بموقع شرطة دبي. يرجى المحاولة مرة أخرى.",
     };
   } catch (err: any) {
     console.error("[Scraper] Playwright fallback error:", err?.message || err);
     return {
       success: false,
       fines: [],
-      errorMessage: "ØªØ¹Ø°Ù‘Ø± Ø§Ù„Ø§ØªØµØ§Ù„ Ø¨Ù…ÙˆÙ‚Ø¹ Ø´Ø±Ø·Ø© Ø¯Ø¨ÙŠ. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø© Ù…Ø±Ø© Ø£Ø®Ø±Ù‰ Ù„Ø§Ø­Ù‚Ø§Ù‹.",
+      errorMessage: "تعذّر الاتصال بموقع شرطة دبي. يرجى المحاولة مرة أخرى لاحقاً.",
     };
   } finally {
     if (browser) {
