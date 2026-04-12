@@ -958,8 +958,8 @@ function PlateFormFields({
               <div key={idx} className="space-y-2">
                 <label className="text-sm font-bold text-gray-700 block text-right">{item.label}</label>
                 <div className="relative">
-                  <select value={item.value} onChange={(e) => item.setter(e.target.value)} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="rtl">
-                    <option value="">اختر</option>
+                  <select value={item.value} onChange={(e) => item.setter(e.target.value)} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir={isRTL ? "rtl" : "ltr"}>
+                    <option value="">{t.home.form.plateCodePlaceholder}</option>
                     {KSA_LETTER_CODES.map((c) => (<option key={c.value} value={c.value}>{c.label}</option>))}
                   </select>
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
@@ -1022,14 +1022,30 @@ export default function Home() {
   const [ksaLetter2, setKsaLetter2] = useState("");
   const [ksaLetter3, setKsaLetter3] = useState("");
   const [result, setResult] = useState<QueryResult | null>(null);
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const [showHistory, setShowHistory] = useState(false);
   const [selectedFines, setSelectedFines] = useState<Set<number>>(new Set());
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [headerScrolled, setHeaderScrolled] = useState(false);
-  const { t, lang, toggleLanguage, isRTL } = useLanguage();
+  const { t, lang, setLanguage, isRTL } = useLanguage();
+  const isArabicRoute = location === "/ar" || location.startsWith("/ar?");
+
+  const buildLocalizedPath = (targetLang: "ar" | "en") => {
+    const params = window.location.search || "";
+    return targetLang === "ar" ? `/ar${params}` : `/${params}`;
+  };
+
+  const handleLanguageNavigation = () => {
+    const nextLang = isArabicRoute ? "en" : "ar";
+    setLanguage(nextLang);
+    navigate(buildLocalizedPath(nextLang));
+  };
+
+  useEffect(() => {
+    setLanguage(isArabicRoute ? "ar" : "en");
+  }, [isArabicRoute, setLanguage]);
 
   useEffect(() => {
     const handleScroll = () => setHeaderScrolled(window.scrollY > 10);
@@ -1047,7 +1063,7 @@ export default function Home() {
       setFilterStatus("all");
     },
     onError: (err) => {
-      toast.error("فشل الاستعلام: " + err.message);
+      toast.error((lang === "ar" ? "فشل الاستعلام: " : "Query failed: ") + err.message);
     },
   });
 
@@ -1072,16 +1088,16 @@ export default function Home() {
     .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
 
   const handleQuery = () => {
-    if (!plateSource) { toast.error("يرجى اختيار جهة إصدار اللوحة"); return; }
+    if (!plateSource) { toast.error(lang === "ar" ? "يرجى اختيار جهة إصدار اللوحة" : "Please select the plate source"); return; }
 
     const normalizedPlateNumber = normalizeDigits(plateNumber).trim();
-    if (!normalizedPlateNumber) { toast.error("يرجى إدخال رقم اللوحة"); return; }
+    if (!normalizedPlateNumber) { toast.error(lang === "ar" ? "يرجى إدخال رقم اللوحة" : "Please enter the plate number"); return; }
 
     const finalPlateCode = plateSource === "KSA"
       ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join("")
       : normalizeDigits(plateCode).trim();
 
-    if (!finalPlateCode) { toast.error("يرجى اختيار رمز اللوحة"); return; }
+    if (!finalPlateCode) { toast.error(lang === "ar" ? "يرجى اختيار رمز اللوحة" : "Please select the plate code"); return; }
 
     queryMutation.mutate({
       plateSource,
@@ -1089,6 +1105,7 @@ export default function Home() {
       plateCode: finalPlateCode,
       plateCodeId: plateSource === "KSA" ? undefined : selectedPlateCodeId,
       plateCategory: plateSource === "KSA" ? undefined : selectedPlateCategory,
+      lang,
     });
   };
 
@@ -1155,7 +1172,8 @@ export default function Home() {
     if (paymentPayload.totalAmount) params.set("total", paymentPayload.totalAmount);
 
     const queryString = params.toString();
-    navigate(queryString ? `/payment?${queryString}` : "/payment");
+    const paymentBasePath = isArabicRoute ? "/ar/payment" : "/payment";
+    navigate(queryString ? `${paymentBasePath}?${queryString}` : paymentBasePath);
   };
 
   const getStatusBadge = (status: string) => {
@@ -1296,7 +1314,7 @@ export default function Home() {
           <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {t.header.topBar.email}</span>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={toggleLanguage} className="flex items-center gap-1 hover:opacity-80 font-bold"><Globe className="w-3 h-3" /> {t.header.topBar.language}</button>
+          <button onClick={handleLanguageNavigation} className="flex items-center gap-1 hover:opacity-80 font-bold"><Globe className="w-3 h-3" /> {t.header.topBar.language}</button>
           <button className="flex items-center gap-1 hover:opacity-80"><User className="w-3 h-3" /> {t.header.topBar.login}</button>
         </div>
       </div>
@@ -1330,7 +1348,7 @@ export default function Home() {
         <div className="flex items-center gap-2">
           {/* زر تبديل اللغة - ظاهر على الموبايل والديسكتوب */}
           <button
-            onClick={toggleLanguage}
+            onClick={handleLanguageNavigation}
             className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold border transition-all hover:opacity-80"
             style={{ borderColor: "#008755", color: "#008755", backgroundColor: "#f0faf5" }}
           >
@@ -1506,12 +1524,17 @@ export default function Home() {
 
     // الحقول المشتركة بين الموبايل والديسكتوب
     const FieldRow = ({ icon, label, value, noBorder = false }: { icon: React.ReactNode; label: string; value: React.ReactNode; noBorder?: boolean }) => (
-      <div className="flex items-center justify-between py-1.5" style={{ borderBottom: noBorder ? "none" : "1px solid #f5f5f5" }}>
-        <div className="flex items-center gap-1.5">
+      <div className="flex items-center justify-between py-1.5 gap-3" style={{ borderBottom: noBorder ? "none" : "1px solid #f5f5f5" }}>
+        <div className="flex items-center gap-1.5 min-w-0">
           {icon}
           <span className={isMobile ? "text-xs text-gray-500" : "text-sm text-gray-500"}>{label}</span>
         </div>
-        <div className={isMobile ? "text-xs font-medium text-gray-800 max-w-[55%] text-right" : "text-sm font-medium text-gray-800 max-w-[60%] text-right"} dir="ltr">{value || <span className="text-gray-400">—</span>}</div>
+        <div
+          className={isMobile ? `text-xs font-medium text-gray-800 max-w-[55%] ${isRTL ? "text-right" : "text-left"}` : `text-sm font-medium text-gray-800 max-w-[60%] ${isRTL ? "text-right" : "text-left"}`}
+          dir="auto"
+        >
+          {value || <span className="text-gray-400">—</span>}
+        </div>
       </div>
     );
 
@@ -1547,7 +1570,7 @@ export default function Home() {
           <div className="px-3 pb-2 pt-1" style={{ direction: isRTL ? "rtl" : "ltr" }}>
             <FieldRow icon={<PlateIcon />} label={t.home.results.fineCard.source} value={getSourceLabel(fine.source, lang)} />
             <FieldRow icon={<LocationIcon />} label={t.home.results.fineCard.location} value={fine.location} />
-            {fine.speed && <FieldRow icon={<svg width="12" height="12" viewBox="0 0 17 17" fill="none"><path d="M8.5 2C4.91 2 2 4.91 2 8.5S4.91 15 8.5 15 15 12.09 15 8.5 12.09 2 8.5 2zm0 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm.5-8.5H8v4.5l3.75 2.25.75-1.23-3-1.77V5z" fill="#4B4C4D"/></svg>} label={t.home.results.fineCard.speed} value={fine.speed} />}
+            {fine.speed && <FieldRow icon={<SpeedIcon />} label={t.home.results.fineCard.speed} value={fine.speed} />}
             <FieldRow icon={<TicketIcon />} label={t.home.results.fineCard.ticketNo} value={fine.ticketNo} noBorder={!fine.dateTime} />
             {fine.dateTime && <FieldRow icon={<DateIcon />} label={t.home.results.fineCard.dateTime} value={fine.dateTime} noBorder />}
           </div>
@@ -1555,7 +1578,7 @@ export default function Home() {
           {fine.description && (
             <div className="mx-2 mb-2 px-2.5 py-2 rounded-lg" style={{ backgroundColor: "#f0faf5", border: "1px solid #d0eed8" }}>
               <span className="text-[10px] font-bold block mb-0.5" style={{ color: "#008755" }}>{t.home.results.fineCard.details}</span>
-              <p className="text-[10px] text-gray-700 leading-relaxed" style={{ direction: "ltr" }}>{fine.description}</p>
+              <p className={`text-[10px] text-gray-700 leading-relaxed ${isRTL ? "text-right" : "text-left"}`} dir="auto">{fine.description}</p>
             </div>
           )}
         </div>
@@ -1625,7 +1648,7 @@ export default function Home() {
           <FieldRow icon={<LocationIcon />} label={t.home.results.fineCard.location} value={fine.location} />
           {fine.speed && (
             <FieldRow
-              icon={<svg width="14" height="14" viewBox="0 0 17 17" fill="none"><path d="M8.5 2C4.91 2 2 4.91 2 8.5S4.91 15 8.5 15 15 12.09 15 8.5 12.09 2 8.5 2zm0 11.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm.5-8.5H8v4.5l3.75 2.25.75-1.23-3-1.77V5z" fill="#4B4C4D"/></svg>}
+              icon={<SpeedIcon />}
               label={t.home.results.fineCard.speed}
               value={fine.speed}
             />
@@ -1649,7 +1672,7 @@ export default function Home() {
               </svg>
               <span className="text-xs font-bold" style={{ color: "#008755" }}>{t.home.results.fineCard.details}</span>
             </div>
-            <p className="text-xs text-gray-700 leading-relaxed" style={{ direction: "ltr" }}>{fine.description}</p>
+            <p className={`text-xs text-gray-700 leading-relaxed ${isRTL ? "text-right" : "text-left"}`} dir="auto">{fine.description}</p>
           </div>
         )}
       </div>
@@ -1665,7 +1688,7 @@ export default function Home() {
     return (
       <div
         className="min-h-screen"
-        style={{ backgroundColor: "#f0f4f2", fontFamily: "'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif" }}
+        style={{ backgroundColor: "#f0f4f2", fontFamily: lang === "ar" ? "'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif" : "'Inter', 'Segoe UI', Arial, sans-serif" }}
         dir={isRTL ? "rtl" : "ltr"}
       >
         <SharedHeader transparent={false} />
