@@ -1947,21 +1947,15 @@ export default function Home() {
                   <span style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0, fontSize: "11px", fontWeight: 900, fontFamily: "'Arial Black', Arial, sans-serif", color: "#111", letterSpacing: "-0.5px", lineHeight: 1 }}>AED</span>
                   <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
                 </span>
-                    onClick={goToPaymentPage} "#9ca3af",
+              </div>
+              <button
+                disabled={selectedFines.size === 0}
+                className="flex-1 py-3 rounded-full text-sm font-semibold"
+                style={{
+                  backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
+                  color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
                 }}
-                onClick={() => {
-                  const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
-                  const total = selectedTotal.toFixed(0);
-                  sessionStorage.setItem("paymentData", JSON.stringify({
-                    selectedFines: selectedFinesData,
-                    totalAmount: total,
-                    plateNumber,
-                    plateSource,
-                    queryId: (result as any)?.queryId,
-                  }));
-                  sessionStorage.removeItem("paymentSessionId");
-                  navigate("/payment");
-                }}
+                onClick={goToPaymentPage}
               >
                 {t.home.results.payButton}
               </button>
