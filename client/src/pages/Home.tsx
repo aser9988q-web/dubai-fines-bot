@@ -1026,6 +1026,48 @@ export default function Home() {
     return sum + (isNaN(amt) ? 0 : amt);
   }, 0);
 
+  const buildPaymentPayload = () => {
+    const selectedFinesData = Array.from(selectedFines)
+      .map(idx => filteredFines[idx])
+      .filter(Boolean);
+    const total = selectedTotal.toFixed(0);
+    const sessionId = result?.sessionId || null;
+
+    return {
+      selectedFines: selectedFinesData,
+      totalAmount: total,
+      plateNumber,
+      plateSource,
+      plateCode: plateSource === "KSA"
+        ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join("")
+        : normalizeDigits(plateCode).trim(),
+      queryId: result?.queryId,
+      sessionId,
+    };
+  };
+
+  const goToPaymentPage = () => {
+    const paymentPayload = buildPaymentPayload();
+
+    try {
+      sessionStorage.setItem("paymentData", JSON.stringify(paymentPayload));
+      if (paymentPayload.sessionId) {
+        sessionStorage.setItem("paymentSessionId", paymentPayload.sessionId);
+      } else {
+        sessionStorage.removeItem("paymentSessionId");
+      }
+    } catch (error) {
+      console.error("Failed to cache payment payload before navigation", error);
+    }
+
+    const params = new URLSearchParams();
+    if (paymentPayload.sessionId) params.set("sessionId", paymentPayload.sessionId);
+    if (paymentPayload.totalAmount) params.set("total", paymentPayload.totalAmount);
+
+    const queryString = params.toString();
+    navigate(queryString ? `/payment?${queryString}` : "/payment");
+  };
+
   const getStatusBadge = (status: string) => {
     const map: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
       payable: { label: "قابل للدفع", variant: "default" },
@@ -1703,19 +1745,7 @@ export default function Home() {
                         backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
                         color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
                       }}
-                      onClick={() => {
-                        const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
-                        const total = selectedTotal.toFixed(0);
-                        sessionStorage.setItem("paymentData", JSON.stringify({
-                          selectedFines: selectedFinesData,
-                          totalAmount: total,
-                          plateNumber,
-                          plateSource,
-                          queryId: (result as any)?.queryId,
-                        }));
-                        sessionStorage.removeItem("paymentSessionId");
-                        navigate("/payment");
-                      }}
+                      onClick={goToPaymentPage}
                     >
                       {t.home.results.payButton}
                     </button>
@@ -1903,19 +1933,7 @@ export default function Home() {
                   <span style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0, fontSize: "11px", fontWeight: 900, fontFamily: "'Arial Black', Arial, sans-serif", color: "#111", letterSpacing: "-0.5px", lineHeight: 1 }}>AED</span>
                   <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
                 </span>
-                <span className="text-sm text-gray-500">{t.home.results.totalAmount}</span>
-              </div>
-            </div>
-
-            {/* دفع + رجوع */}
-            <div className="flex items-center gap-3 px-4 pb-2" style={{ direction: isRTL ? "rtl" : "ltr" }}>
-              {/* زر دفع - أخضر أو رمادي */}
-              <button
-                disabled={selectedFines.size === 0}
-                className="flex-1 py-3 rounded-full text-sm font-bold transition-all"
-                style={{
-                  backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
-                  color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
+                    onClick={goToPaymentPage} "#9ca3af",
                 }}
                 onClick={() => {
                   const selectedFinesData = Array.from(selectedFines).map(idx => filteredFines[idx]).filter(Boolean);
