@@ -4,7 +4,11 @@ import https from "node:https";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { ProxyAgent } from "proxy-agent";
+
+const execFileAsync = promisify(execFile);
 
 let cachedProxyUrl: string | null | undefined;
 let cachedProxyAgent: ProxyAgent | null | undefined;
@@ -311,6 +315,14 @@ const API_HEADERS = {
   Origin: "https://www.dubaipolice.gov.ae",
 };
 
+const API_GET_HEADERS = {
+  Accept: API_HEADERS.Accept,
+  "Accept-Language": API_HEADERS["Accept-Language"],
+  "User-Agent": API_HEADERS["User-Agent"],
+  Referer: API_HEADERS.Referer,
+  Origin: API_HEADERS.Origin,
+};
+
 function normalizeDigits(value: string) {
   return value
     .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
@@ -494,6 +506,26 @@ function setCachedPlateCodeEntry(plateSrcCode: string, codes: AnyRecord[]) {
   };
   plateCodeCache.set(cacheKey, entry);
   return entry;
+}
+
+async function fetchPlateCodesViaCurl(plateSrcCode: string): Promise<AnyRecord[]> {
+  try {
+    const curlArgs = [
+      "-sS",
+      `${DUBAI_POLICE_API}/finespayment/getPlateData/${encodeURIComponent(plateSrcCode)}`,
+      ...Object.entries(API_GET_HEADERS).flatMap(([key, value]) => ["-H", `${key}: ${value}`]),
+    ];
+
+    const { stdout } = await execFileAsync("curl", curlArgs, {
+      timeout: 15000,
+      maxBuffer: 1024 * 1024,
+    });
+
+    return extractCodes(parseRawJson(stdout));
+  } catch (error) {
+    console.warn(`[Scraper] curl fallback failed for plate data ${plateSrcCode}:`, error instanceof Error ? error.message : error);
+    return [];
+  }
 }
 
 function resolvePlateCodeMetaFromList(
@@ -702,11 +734,13 @@ export async function fetchPlateCodesFromApi(plateSrcCode: string, options?: { f
         `/relay/plate-data/${encodeURIComponent(normalizedPlateSrcCode)}`
       );
       codes = extractCodes(relayData);
-    } else {
+    }
+
+    if (!codes.length) {
       const response = await axios.get(
         `${DUBAI_POLICE_API}/finespayment/getPlateData/${normalizedPlateSrcCode}`,
         {
-          headers: API_HEADERS,
+          headers: API_GET_HEADERS,
           timeout: 10000,
           responseType: "text",
           transformResponse: [(data) => data],
@@ -717,7 +751,14 @@ export async function fetchPlateCodesFromApi(plateSrcCode: string, options?: { f
 
       if (response.status < 400) {
         codes = extractCodes(parseRawJson(response.data));
+        if (!codes.length) {
+          console.warn(`[Scraper] Axios plate-data response for ${normalizedPlateSrcCode} was not usable, trying curl fallback`);
+        }
       }
+    }
+
+    if (!codes.length) {
+      codes = await fetchPlateCodesViaCurl(normalizedPlateSrcCode);
     }
 
     if (!codes.length) {
@@ -727,8 +768,15 @@ export async function fetchPlateCodesFromApi(plateSrcCode: string, options?: { f
     setCachedPlateCodeEntry(normalizedPlateSrcCode, codes);
     return codes;
   } catch {
-    return getCachedPlateCodeEntry(normalizedPlateSrcCode)?.codes
+    const fallbackCodes = getCachedPlateCodeEntry(normalizedPlateSrcCode)?.codes
+      ?? await fetchPlateCodesViaCurl(normalizedPlateSrcCode)
       ?? getStaticPlateCodeRecords(normalizedPlateSrcCode);
+
+    if (fallbackCodes.length) {
+      setCachedPlateCodeEntry(normalizedPlateSrcCode, fallbackCodes);
+    }
+
+    return fallbackCodes.length ? fallbackCodes : getStaticPlateCodeRecords(normalizedPlateSrcCode);
   }
 }
 
