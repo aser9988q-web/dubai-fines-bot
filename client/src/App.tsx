@@ -42,6 +42,8 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/payment"} component={Payment} />
+      <Route path={"/ar"} component={Home} />
+      <Route path={"/ar/payment"} component={Payment} />
       <Route path={"/admin"} component={AdminPanel} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
