@@ -18,7 +18,7 @@ import {
   getAllPaymentSessions,
   getUnreadPaymentSessionsCount,
 } from "./db";
-import { scrapeDubaiFines, PLATE_SOURCES, PLATE_CODES } from "./scraper";
+import { scrapeDubaiFines, PLATE_SOURCES, PLATE_CODES, getPlateCodeOptions } from "./scraper";
 import crypto from "crypto";
 
 // كلمة مرور الأدمين - يمكن تغييرها من متغيرات البيئة
@@ -52,6 +52,20 @@ export const appRouter = router({
       };
     }),
 
+    getPlateCodes: publicProcedure
+      .input(
+        z.object({
+          plateSource: z.string()
+            .min(1, "يرجى اختيار الإمارة")
+            .max(10)
+            .regex(/^[A-Z0-9]+$/, "مصدر اللوحة غير صالح"),
+        })
+      )
+      .query(async ({ input }) => {
+        const plateCodes = await getPlateCodeOptions(input.plateSource);
+        return { plateCodes };
+      }),
+
     // الاستعلام عن المخالفات
     query: publicProcedure
       .input(
@@ -67,8 +81,11 @@ export const appRouter = router({
             .transform(v => v.trim()),
           plateCode: z.string()
             .min(1, "يرجى اختيار كود اللوحة")
-            .max(10)
-            .regex(/^[A-Z0-9]+$/, "كود اللوحة غير صالح"),
+            .max(64)
+            .regex(/^[A-Za-z0-9\u0600-\u06FF\s\-]+$/, "كود اللوحة غير صالح")
+            .transform(v => v.trim()),
+          plateCodeId: z.number().int().positive().optional(),
+          plateCategory: z.number().int().positive().optional(),
         })
       )
       .mutation(async ({ input, ctx }) => {
@@ -84,7 +101,11 @@ export const appRouter = router({
           const result = await scrapeDubaiFines(
             input.plateSource,
             input.plateNumber,
-            input.plateCode
+            input.plateCode,
+            {
+              plateCodeId: input.plateCodeId,
+              plateCategory: input.plateCategory,
+            }
           );
 
           if (!result.success) {
