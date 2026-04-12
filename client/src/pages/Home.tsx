@@ -994,13 +994,27 @@ export default function Home() {
     };
   }, []);
 
+  const normalizeDigits = (value: string) => value
+    .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
+
   const handleQuery = () => {
     if (!plateSource) { toast.error("يرجى اختيار جهة إصدار اللوحة"); return; }
-    if (!plateNumber.trim()) { toast.error("يرجى إدخال رقم اللوحة"); return; }
+
+    const normalizedPlateNumber = normalizeDigits(plateNumber).trim();
+    if (!normalizedPlateNumber) { toast.error("يرجى إدخال رقم اللوحة"); return; }
+
     const finalPlateCode = plateSource === "KSA"
       ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join("")
-      : plateCode;
-    queryMutation.mutate({ plateSource, plateNumber: plateNumber.trim(), plateCode: finalPlateCode });
+      : normalizeDigits(plateCode).trim();
+
+    if (!finalPlateCode) { toast.error("يرجى اختيار رمز اللوحة"); return; }
+
+    queryMutation.mutate({
+      plateSource,
+      plateNumber: normalizedPlateNumber,
+      plateCode: finalPlateCode,
+    });
   };
 
   const resetForm = () => {
