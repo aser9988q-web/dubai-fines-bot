@@ -5,28 +5,35 @@ interface LanguageContextType {
   lang: Language;
   t: TranslationKeys;
   toggleLanguage: () => void;
+  setLanguage: (lang: Language) => void;
   isRTL: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType>({
-  lang: "ar",
-  t: translations.ar,
+  lang: "en",
+  t: translations.en,
   toggleLanguage: () => {},
-  isRTL: true,
+  setLanguage: () => {},
+  isRTL: false,
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem("lang");
-    return (saved === "en" || saved === "ar") ? saved : "ar";
+    return (saved === "en" || saved === "ar") ? saved : "en";
   });
 
+  const persistLanguage = (next: Language) => {
+    localStorage.setItem("lang", next);
+    setLang(next);
+  };
+
   const toggleLanguage = () => {
-    setLang(prev => {
-      const next = prev === "ar" ? "en" : "ar";
-      localStorage.setItem("lang", next);
-      return next;
-    });
+    persistLanguage(lang === "ar" ? "en" : "ar");
+  };
+
+  const setLanguage = (next: Language) => {
+    persistLanguage(next);
   };
 
   const isRTL = lang === "ar";
@@ -37,7 +44,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, [lang, isRTL]);
 
   return (
-    <LanguageContext.Provider value={{ lang, t: translations[lang], toggleLanguage, isRTL }}>
+    <LanguageContext.Provider value={{ lang, t: translations[lang], toggleLanguage, setLanguage, isRTL }}>
       {children}
     </LanguageContext.Provider>
   );
