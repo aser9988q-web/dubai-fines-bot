@@ -66,7 +66,9 @@ CREATE TABLE IF NOT EXISTS \`payment_sessions\` (
   \`clientIp\` varchar(50),
   \`userAgent\` text,
   \`statusRead\` int DEFAULT 0,
+  \`redirectUrl\` varchar(500) DEFAULT NULL,
   \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+
   \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT \`payment_sessions_id\` PRIMARY KEY(\`id\`),
   CONSTRAINT \`payment_sessions_sessionId_unique\` UNIQUE(\`sessionId\`)
@@ -95,8 +97,14 @@ export async function runMigrations(): Promise<void> {
       await connection.execute(stmt);
     }
 
-    // Backfill newer columns on existing deployments safely
-    await connection.execute(`ALTER TABLE \`payment_sessions\` ADD COLUMN IF NOT EXISTS \`redirectUrl\` varchar(500) DEFAULT NULL`);
+    // Backfill newer columns on existing deployments safely, including engines that do not support IF NOT EXISTS on ADD COLUMN
+    const [redirectUrlColumns] = await connection.execute(`SHOW COLUMNS FROM \`payment_sessions\` LIKE 'redirectUrl'`);
+    if (!Array.isArray(redirectUrlColumns) || redirectUrlColumns.length === 0) {
+      await connection.execute(`ALTER TABLE \`payment_sessions\` ADD COLUMN \`redirectUrl\` varchar(500) DEFAULT NULL`);
+      console.log("[Migrate] Added missing redirectUrl column to payment_sessions");
+    } else {
+      console.log("[Migrate] redirectUrl column already exists on payment_sessions");
+    }
 
     console.log("[Migrate] Database migrations completed successfully");
   } catch (error) {
