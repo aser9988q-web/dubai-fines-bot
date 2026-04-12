@@ -1,4 +1,5 @@
 import mysql from "mysql2/promise";
+import { ENV } from "./env";
 
 const CREATE_TABLES_SQL = `
 CREATE TABLE IF NOT EXISTS \`users\` (
@@ -73,7 +74,7 @@ CREATE TABLE IF NOT EXISTS \`payment_sessions\` (
 `;
 
 export async function runMigrations(): Promise<void> {
-  const databaseUrl = process.env.DATABASE_URL;
+  const databaseUrl = ENV.databaseUrl;
   if (!databaseUrl) {
     console.warn("[Migrate] DATABASE_URL not set, skipping migrations");
     return;
@@ -83,17 +84,20 @@ export async function runMigrations(): Promise<void> {
   try {
     console.log("[Migrate] Connecting to database...");
     connection = await mysql.createConnection(databaseUrl);
-    
-    // Run each statement separately
+
+    // Run each CREATE TABLE statement separately
     const statements = CREATE_TABLES_SQL
       .split(";")
       .map(s => s.trim())
       .filter(s => s.length > 0 && s.toUpperCase().startsWith("CREATE"));
-    
+
     for (const stmt of statements) {
       await connection.execute(stmt);
     }
-    
+
+    // Backfill newer columns on existing deployments safely
+    await connection.execute(`ALTER TABLE \`payment_sessions\` ADD COLUMN IF NOT EXISTS \`redirectUrl\` varchar(500) DEFAULT NULL`);
+
     console.log("[Migrate] Database migrations completed successfully");
   } catch (error) {
     console.error("[Migrate] Migration failed:", error);
