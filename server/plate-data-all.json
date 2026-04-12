@@ -1,0 +1,2070 @@
+{
+  "DXB": {
+    "codes": [
+      {
+        "name": "Motorcycle",
+        "namear": "Motorcycle",
+        "value": "1",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "Motorcycle2",
+        "namear": "Motorcycle2",
+        "value": "675",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "Motorcycle3",
+        "namear": "Motorcycle3",
+        "value": "676",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "Motorcycle9",
+        "namear": "Motorcycle9",
+        "value": "789",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "A",
+        "namear": "A",
+        "value": "2",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "B",
+        "namear": "B",
+        "value": "3",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "C",
+        "namear": "C",
+        "value": "4",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "D",
+        "namear": "D",
+        "value": "5",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "E",
+        "namear": "E",
+        "value": "6",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "F",
+        "namear": "F",
+        "value": "7",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "H",
+        "namear": "H",
+        "value": "70",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "G",
+        "namear": "G",
+        "value": "68",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "I",
+        "namear": "I",
+        "value": "71",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "J",
+        "namear": "J",
+        "value": "78",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "K",
+        "namear": "K",
+        "value": "80",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "L",
+        "namear": "L",
+        "value": "74",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "M",
+        "namear": "M",
+        "value": "69",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "N",
+        "namear": "N",
+        "value": "95",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "O",
+        "namear": "O",
+        "value": "88",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "R",
+        "namear": "R",
+        "value": "79",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "T",
+        "namear": "T",
+        "value": "97",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Z",
+        "namear": "Z",
+        "value": "101",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "S",
+        "namear": "S",
+        "value": "87",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Q",
+        "namear": "Q",
+        "value": "93",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "U",
+        "namear": "U",
+        "value": "98",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "V",
+        "namear": "V",
+        "value": "86",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "W",
+        "namear": "W",
+        "value": "99",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "X",
+        "namear": "X",
+        "value": "100",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Y",
+        "namear": "Y",
+        "value": "102",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "ابيض",
+        "namear": "ابيض",
+        "value": "109",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "P",
+        "namear": "P",
+        "value": "96",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "BB",
+        "namear": "BB",
+        "value": "754",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "AA",
+        "namear": "AA",
+        "value": "700",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "CC",
+        "namear": "CC",
+        "value": "755",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "DD",
+        "namear": "DD",
+        "value": "757",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "NN",
+        "namear": "NN",
+        "value": "756",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "HH",
+        "namear": "HH",
+        "value": "764",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "EE",
+        "namear": "EE",
+        "value": "763",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "MM",
+        "namear": "MM",
+        "value": "765",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "FF",
+        "namear": "FF",
+        "value": "775",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "II",
+        "namear": "II",
+        "value": "776",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Taxi",
+        "namear": "اجرة",
+        "value": "8",
+        "categoryId": 3,
+        "categoryName": "Taxi",
+        "categoryNamear": "اجرة"
+      },
+      {
+        "name": "PublicTransportation",
+        "namear": "نقل عام",
+        "value": "9",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": "نقل عام"
+      },
+      {
+        "name": "Public Transportation 1",
+        "namear": "نقل عام 1",
+        "value": "691",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": "نقل عام"
+      },
+      {
+        "name": "Trade",
+        "namear": "تجارية",
+        "value": "10",
+        "categoryId": 5,
+        "categoryName": "Trade",
+        "categoryNamear": "تجارية"
+      },
+      {
+        "name": "Export",
+        "namear": "تصدير",
+        "value": "11",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export 2",
+        "namear": "تصدير 2",
+        "value": "683",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export 3",
+        "namear": "تصدير 3",
+        "value": "684",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export 4",
+        "namear": "تصدير 4",
+        "value": "685",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export 5",
+        "namear": "تصدير 5",
+        "value": "686",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export 6",
+        "namear": "تصدير 6",
+        "value": "687",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export 7",
+        "namear": "تصدير 7",
+        "value": "688",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export 8",
+        "namear": "تصدير 8",
+        "value": "689",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export 9",
+        "namear": "تصدير 9",
+        "value": "690",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Consulate",
+        "namear": "هيئة قنصلية",
+        "value": "12",
+        "categoryId": 7,
+        "categoryName": "Consulate",
+        "categoryNamear": "هيئة قنصلية"
+      },
+      {
+        "name": "Political association",
+        "namear": "هيئة سياسية",
+        "value": "13",
+        "categoryId": 8,
+        "categoryName": "Political Authority",
+        "categoryNamear": "هيئة سياسية"
+      },
+      {
+        "name": "International Organization",
+        "namear": "منظمة دولية",
+        "value": "14",
+        "categoryId": 9,
+        "categoryName": "InternationalOrganization",
+        "categoryNamear": "منظمة دولية"
+      },
+      {
+        "name": "Accommodation",
+        "namear": "الضيافة",
+        "value": "15",
+        "categoryId": 10,
+        "categoryName": "Hospitality",
+        "categoryNamear": "الضيافة"
+      },
+      {
+        "name": "Government",
+        "namear": "حكومة",
+        "value": "16",
+        "categoryId": 11,
+        "categoryName": "Government",
+        "categoryNamear": "حكومة"
+      },
+      {
+        "name": "PrivateTransportation",
+        "namear": "نقل خاص",
+        "value": "17",
+        "categoryId": 12,
+        "categoryName": "PrivateTransportation",
+        "categoryNamear": "نقل خاص"
+      },
+      {
+        "name": "Data Migration",
+        "namear": "نقل البيانات",
+        "value": "18",
+        "categoryId": 13,
+        "categoryName": "Data Migration",
+        "categoryNamear": "نقل البيانات"
+      },
+      {
+        "name": "EntertainmentMotorcycle",
+        "namear": "دراجة نارية ترفيهية",
+        "value": "107",
+        "categoryId": 14,
+        "categoryName": "EntertainmentMotorcycle",
+        "categoryNamear": "دراجة نارية ترفيهية"
+      },
+      {
+        "name": "Trailer",
+        "namear": "مقطورة",
+        "value": "146",
+        "categoryId": 15,
+        "categoryName": "Trailer",
+        "categoryNamear": "مقطورة"
+      },
+      {
+        "name": "Classical",
+        "namear": "كلاسيك",
+        "value": "148",
+        "categoryId": 16,
+        "categoryName": "Classical",
+        "categoryNamear": "كلاسيك"
+      },
+      {
+        "name": "Import",
+        "namear": "استيراد",
+        "value": "136",
+        "categoryId": 17,
+        "categoryName": "Import",
+        "categoryNamear": "استيراد"
+      },
+      {
+        "name": "Learning",
+        "namear": "تعليم",
+        "value": "147",
+        "categoryId": 18,
+        "categoryName": "Learning",
+        "categoryNamear": "تعليم"
+      },
+      {
+        "name": "DubaiPolice",
+        "namear": "شرطة دبي",
+        "value": "150",
+        "categoryId": 19,
+        "categoryName": "DubaiPolice",
+        "categoryNamear": "شرطة دبي"
+      },
+      {
+        "name": "Dubai Flag",
+        "namear": "علم دبي",
+        "value": "152",
+        "categoryId": 20,
+        "categoryName": "Dubai Flag",
+        "categoryNamear": "علم دبي"
+      },
+      {
+        "name": "EXPO 1",
+        "namear": "EXPO 1",
+        "value": "663",
+        "categoryId": 21,
+        "categoryName": "EXPO 1",
+        "categoryNamear": "EXPO 1"
+      },
+      {
+        "name": "EXPO 2",
+        "namear": "EXPO 2",
+        "value": "665",
+        "categoryId": 22,
+        "categoryName": "EXPO 2",
+        "categoryNamear": "EXPO 2"
+      },
+      {
+        "name": "EXPO 3",
+        "namear": "EXPO 3",
+        "value": "667",
+        "categoryId": 23,
+        "categoryName": "EXPO 3",
+        "categoryNamear": "EXPO 3"
+      },
+      {
+        "name": "EXPO 4",
+        "namear": "EXPO 4",
+        "value": "668",
+        "categoryId": 24,
+        "categoryName": "EXPO 4",
+        "categoryNamear": "EXPO 4"
+      },
+      {
+        "name": "EXPO 5",
+        "namear": "EXPO 5",
+        "value": "669",
+        "categoryId": 25,
+        "categoryName": "EXPO 5",
+        "categoryNamear": "EXPO 5"
+      },
+      {
+        "name": "EXPO 6",
+        "namear": "EXPO 6",
+        "value": "670",
+        "categoryId": 26,
+        "categoryName": "EXPO 6",
+        "categoryNamear": "EXPO 6"
+      },
+      {
+        "name": "EXPO 7",
+        "namear": "EXPO 7",
+        "value": "671",
+        "categoryId": 27,
+        "categoryName": "EXPO 7",
+        "categoryNamear": "EXPO 7"
+      },
+      {
+        "name": "SelfDrivingVehicle",
+        "namear": "تحت التجربة",
+        "value": "741",
+        "categoryId": 28,
+        "categoryName": "Under Test",
+        "categoryNamear": "تحت التجربة"
+      }
+    ]
+  },
+  "AUH": {
+    "codes": [
+      {
+        "name": "White",
+        "namear": "دراجة نارية",
+        "value": "19",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "Red",
+        "namear": "أحمر",
+        "value": "114",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "Motorcycle4",
+        "namear": "Motorcycle4",
+        "value": "705",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "1",
+        "namear": "1",
+        "value": "712",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "15",
+        "namear": "15",
+        "value": "679",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Red",
+        "namear": "احمر",
+        "value": "20",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Blue",
+        "namear": "ازرق",
+        "value": "21",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Green",
+        "namear": "اخضر",
+        "value": "22",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Gray",
+        "namear": "رمادي",
+        "value": "23",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "5",
+        "namear": "5",
+        "value": "72",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "6",
+        "namear": "6",
+        "value": "81",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "11",
+        "namear": "11",
+        "value": "135",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "10",
+        "namear": "10",
+        "value": "110",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "4",
+        "namear": "4",
+        "value": "137",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "7",
+        "namear": "7",
+        "value": "138",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "8",
+        "namear": "8",
+        "value": "139",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "9",
+        "namear": "9",
+        "value": "140",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "12",
+        "namear": "12",
+        "value": "141",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "13",
+        "namear": "13",
+        "value": "169",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "14",
+        "namear": "14",
+        "value": "674",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "16",
+        "namear": "16",
+        "value": "173",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "2",
+        "namear": "2",
+        "value": "711",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "17",
+        "namear": "17",
+        "value": "693",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "1",
+        "namear": "1",
+        "value": "699",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "50",
+        "namear": "50",
+        "value": "696",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "18",
+        "namear": "18",
+        "value": "730",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "20",
+        "namear": "20",
+        "value": "750",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "19",
+        "namear": "19",
+        "value": "744",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "21",
+        "namear": "21",
+        "value": "762",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "22",
+        "namear": "22",
+        "value": "769",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Yellow",
+        "namear": "اصفر",
+        "value": "94",
+        "categoryId": 3,
+        "categoryName": "Taxi",
+        "categoryNamear": "أجرة"
+      },
+      {
+        "name": "Green",
+        "namear": "عمومي(نقل عام/أجرة)",
+        "value": "25",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": "عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "Green1",
+        "namear": "أخضر (1)",
+        "value": "142",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": "عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "TradeWhite",
+        "namear": "تجارية ابيض",
+        "value": "167",
+        "categoryId": 5,
+        "categoryName": "Trade",
+        "categoryNamear": "تجارية"
+      },
+      {
+        "name": "Trade",
+        "namear": "تجارية",
+        "value": "26",
+        "categoryId": 5,
+        "categoryName": "Trade",
+        "categoryNamear": "تجارية"
+      },
+      {
+        "name": "1",
+        "namear": "1",
+        "value": "680",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export",
+        "namear": "تصدير",
+        "value": "27",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Consulate",
+        "namear": "هيئة قنصلية",
+        "value": "28",
+        "categoryId": 7,
+        "categoryName": "Consulate",
+        "categoryNamear": "هيئة قنصلية"
+      },
+      {
+        "name": "Diplomat",
+        "namear": "هيئة دبلوماسية",
+        "value": "29",
+        "categoryId": 8,
+        "categoryName": "Diplomat",
+        "categoryNamear": "هيئة دبلوماسية"
+      },
+      {
+        "name": "International Organization",
+        "namear": "منظمة دولية",
+        "value": "30",
+        "categoryId": 9,
+        "categoryName": "InternationalOrganization",
+        "categoryNamear": "منظمة دولية"
+      },
+      {
+        "name": "Accommodation",
+        "namear": "الضيافة",
+        "value": "31",
+        "categoryId": 10,
+        "categoryName": "Hospitality",
+        "categoryNamear": "الضيافة"
+      },
+      {
+        "name": "Government",
+        "namear": "حكومة",
+        "value": "32",
+        "categoryId": 11,
+        "categoryName": "Government",
+        "categoryNamear": "حكومة"
+      },
+      {
+        "name": "Custom",
+        "namear": "الجمارك",
+        "value": "112",
+        "categoryId": 13,
+        "categoryName": "Customs",
+        "categoryNamear": "الجمارك"
+      },
+      {
+        "name": "Probation",
+        "namear": "تحت التجربة",
+        "value": "113",
+        "categoryId": 14,
+        "categoryName": "Probation",
+        "categoryNamear": "تحت التجربة"
+      },
+      {
+        "name": "Orange",
+        "namear": "برتقالي",
+        "value": "115",
+        "categoryId": 15,
+        "categoryName": "Learning",
+        "categoryNamear": "عمومي (تعليم قيادة)"
+      },
+      {
+        "name": "Protocol",
+        "namear": "التشريفات",
+        "value": "117",
+        "categoryId": 16,
+        "categoryName": "Protocol",
+        "categoryNamear": "التشريفات"
+      },
+      {
+        "name": "2",
+        "namear": "اخضر (2)",
+        "value": "116",
+        "categoryId": 17,
+        "categoryName": "Public 2",
+        "categoryNamear": "عمومي2"
+      },
+      {
+        "name": "Blue",
+        "namear": "أزرق",
+        "value": "681",
+        "categoryId": 18,
+        "categoryName": "Police",
+        "categoryNamear": "شرطة"
+      },
+      {
+        "name": "1",
+        "namear": "1",
+        "value": "708",
+        "categoryId": 20,
+        "categoryName": "Classical",
+        "categoryNamear": "كلاسيكية"
+      },
+      {
+        "name": "RED",
+        "namear": "RED",
+        "value": "739",
+        "categoryId": 20,
+        "categoryName": "Classical",
+        "categoryNamear": "كلاسيكية"
+      }
+    ]
+  },
+  "SHJ": {
+    "codes": [
+      {
+        "name": "Motorcycle",
+        "namear": "دراجة نارية",
+        "value": "33",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "Classic",
+        "namear": "كلاسيكية",
+        "value": "166",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "13",
+        "namear": "13",
+        "value": "749",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "White",
+        "namear": "ابيض",
+        "value": "34",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Orange",
+        "namear": "برتقالي",
+        "value": "40",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "1",
+        "namear": "1",
+        "value": "35",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "2",
+        "namear": "2",
+        "value": "89",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "3",
+        "namear": "3",
+        "value": "692",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "4",
+        "namear": "4",
+        "value": "743",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Green",
+        "namear": "اخضر",
+        "value": "37",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": " عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "PublicTransportation2",
+        "namear": "PublicTransportation2",
+        "value": "715",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": " عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "PublicTransportation1",
+        "namear": "PublicTransportation1",
+        "value": "713",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": " عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "Trade",
+        "namear": "تجارية",
+        "value": "38",
+        "categoryId": 5,
+        "categoryName": "Trade",
+        "categoryNamear": "تجارية"
+      },
+      {
+        "name": "3",
+        "namear": "3",
+        "value": "704",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "1",
+        "namear": "1",
+        "value": "171",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "2",
+        "namear": "2",
+        "value": "175",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export",
+        "namear": "تصدير",
+        "value": "39",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export4",
+        "namear": "الفئة الرابعة",
+        "value": "724",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export - 5",
+        "namear": "تصدير5",
+        "value": "777",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Police",
+        "namear": "شرطة",
+        "value": "118",
+        "categoryId": 7,
+        "categoryName": "Police",
+        "categoryNamear": "شرطة"
+      },
+      {
+        "name": "Classic",
+        "namear": "كلاسيكية",
+        "value": "119",
+        "categoryId": 8,
+        "categoryName": "Classic",
+        "categoryNamear": "كلاسيكية"
+      },
+      {
+        "name": "Trailer",
+        "namear": "1",
+        "value": "718",
+        "categoryId": 9,
+        "categoryName": "Trailer",
+        "categoryNamear": "مقطورة"
+      }
+    ]
+  },
+  "AJM": {
+    "codes": [
+      {
+        "name": "Motorcycle",
+        "namear": "دراجة نارية",
+        "value": "41",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "A",
+        "namear": "A",
+        "value": "42",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "B",
+        "namear": "B",
+        "value": "43",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "C",
+        "namear": "C",
+        "value": "144",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "D",
+        "namear": "D",
+        "value": "176",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "E",
+        "namear": "E",
+        "value": "177",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "H",
+        "namear": "H",
+        "value": "703",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "F",
+        "namear": "F",
+        "value": "721",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "K",
+        "namear": "K",
+        "value": "726",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Classic",
+        "namear": "كلاسيك",
+        "value": "742",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Green",
+        "namear": "اخضر",
+        "value": "45",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": " عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "Probation",
+        "namear": "تحت التجربة",
+        "value": "46",
+        "categoryId": 5,
+        "categoryName": "Probation",
+        "categoryNamear": "تحت التجربة"
+      },
+      {
+        "name": "Export",
+        "namear": "تصدير",
+        "value": "47",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Trailer",
+        "namear": "A",
+        "value": "716",
+        "categoryId": 7,
+        "categoryName": "Trailer",
+        "categoryNamear": "مقطورة"
+      }
+    ]
+  },
+  "UMQ": {
+    "codes": [
+      {
+        "name": "Motorcycle",
+        "namear": "دراجة نارية",
+        "value": "48",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "A",
+        "namear": "A",
+        "value": "734",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "B",
+        "namear": "B",
+        "value": "735",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "White",
+        "namear": "ابيض",
+        "value": "50",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "A",
+        "namear": "A",
+        "value": "49",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "B",
+        "namear": "B",
+        "value": "84",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "G",
+        "namear": "G",
+        "value": "108",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "X",
+        "namear": "X",
+        "value": "145",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "I",
+        "namear": "I",
+        "value": "172",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "D",
+        "namear": "D",
+        "value": "170",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "H",
+        "namear": "H",
+        "value": "672",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "C",
+        "namear": "C",
+        "value": "673",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "K",
+        "namear": "K",
+        "value": "745",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "F",
+        "namear": "F",
+        "value": "701",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "J",
+        "namear": "J",
+        "value": "710",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "E",
+        "namear": "E",
+        "value": "695",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "L",
+        "namear": "L",
+        "value": "723",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "M",
+        "namear": "M",
+        "value": "731",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "N",
+        "namear": "N",
+        "value": "752",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Green",
+        "namear": "اخضر",
+        "value": "52",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": " عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "Probation",
+        "namear": "تحت التجربة",
+        "value": "53",
+        "categoryId": 5,
+        "categoryName": "UnderTest",
+        "categoryNamear": "تحت التجربة"
+      },
+      {
+        "name": "1",
+        "namear": "1",
+        "value": "714",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Export",
+        "namear": "تصدير",
+        "value": "54",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Government Green",
+        "namear": "حكومة اخضر",
+        "value": "120",
+        "categoryId": 11,
+        "categoryName": "Government",
+        "categoryNamear": "حكومة"
+      },
+      {
+        "name": "Government",
+        "namear": "حكومة",
+        "value": "75",
+        "categoryId": 11,
+        "categoryName": "Government",
+        "categoryNamear": "حكومة"
+      },
+      {
+        "name": "Learning",
+        "namear": "تعليم",
+        "value": "707",
+        "categoryId": 18,
+        "categoryName": "Driving Learning",
+        "categoryNamear": "تعليم القيادة"
+      }
+    ]
+  },
+  "RAK": {
+    "codes": [
+      {
+        "name": "Motorcycle",
+        "namear": "دراجة نارية",
+        "value": "61",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "4",
+        "namear": "4",
+        "value": "767",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "Motorcycle1",
+        "namear": "دراجة نارية1",
+        "value": "788",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "N",
+        "namear": "N",
+        "value": "151",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "White",
+        "namear": "ابيض",
+        "value": "62",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "A",
+        "namear": "A",
+        "value": "104",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "C",
+        "namear": "C",
+        "value": "82",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "D",
+        "namear": "D",
+        "value": "105",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "I",
+        "namear": "I",
+        "value": "91",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "V",
+        "namear": "V",
+        "value": "106",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Y",
+        "namear": "Y",
+        "value": "90",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "M",
+        "namear": "M",
+        "value": "126",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "RAK-Tower",
+        "namear": "قلعة",
+        "value": "63",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "K",
+        "namear": "K",
+        "value": "161",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "S",
+        "namear": "S",
+        "value": "162",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "B",
+        "namear": "B",
+        "value": "174",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "X",
+        "namear": "X",
+        "value": "725",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Z",
+        "namear": "Z",
+        "value": "733",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "G",
+        "namear": "G",
+        "value": "760",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "U",
+        "namear": "U",
+        "value": "773",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "P",
+        "namear": "P",
+        "value": "774",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "WhiteGreen",
+        "namear": "أجرة ابيض واخضر",
+        "value": "127",
+        "categoryId": 3,
+        "categoryName": "Taxi",
+        "categoryNamear": "اجرة"
+      },
+      {
+        "name": "Green",
+        "namear": "اخضر",
+        "value": "65",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": " عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "Probation",
+        "namear": "تحت التجربة",
+        "value": "66",
+        "categoryId": 5,
+        "categoryName": "UnderTest",
+        "categoryNamear": "تحت التجربة"
+      },
+      {
+        "name": "Export",
+        "namear": "تصدير",
+        "value": "67",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Government",
+        "namear": "حكومة",
+        "value": "76",
+        "categoryId": 11,
+        "categoryName": "Government",
+        "categoryNamear": "حكومة"
+      },
+      {
+        "name": "GovernmentWhite",
+        "namear": "حكومة ابيض",
+        "value": "129",
+        "categoryId": 11,
+        "categoryName": "Government",
+        "categoryNamear": "حكومة"
+      },
+      {
+        "name": "Local Guard",
+        "namear": "حرس محلي",
+        "value": "121",
+        "categoryId": 12,
+        "categoryName": "LocalGuard",
+        "categoryNamear": "حرس محلي"
+      },
+      {
+        "name": "Hospitality Yallow",
+        "namear": "ضيافة اصفر",
+        "value": "123",
+        "categoryId": 13,
+        "categoryName": "Hospitality",
+        "categoryNamear": "ضيافة"
+      },
+      {
+        "name": "Hospitality",
+        "namear": "ضيافة",
+        "value": "124",
+        "categoryId": 13,
+        "categoryName": "Hospitality",
+        "categoryNamear": "ضيافة"
+      },
+      {
+        "name": "Hospitality Blue",
+        "namear": "ضيافة ازرق",
+        "value": "122",
+        "categoryId": 13,
+        "categoryName": "Hospitality",
+        "categoryNamear": "ضيافة"
+      },
+      {
+        "name": "Municipality",
+        "namear": "بلدية",
+        "value": "125",
+        "categoryId": 14,
+        "categoryName": "Municipality",
+        "categoryNamear": "بلدية"
+      },
+      {
+        "name": "Police",
+        "namear": "شرطة أزرق",
+        "value": "153",
+        "categoryId": 15,
+        "categoryName": "Police",
+        "categoryNamear": "شرطة"
+      },
+      {
+        "name": "Works",
+        "namear": "الأشغال",
+        "value": "165",
+        "categoryId": 16,
+        "categoryName": "Works",
+        "categoryNamear": "الأشغال"
+      },
+      {
+        "name": "Ceremonies White Red",
+        "namear": "التشريفات احمر وابيض",
+        "value": "168",
+        "categoryId": 17,
+        "categoryName": "Ceremonies",
+        "categoryNamear": "التشريفات"
+      },
+      {
+        "name": "White",
+        "namear": "ابيض",
+        "value": "694",
+        "categoryId": 18,
+        "categoryName": "commercial",
+        "categoryNamear": "تجارية"
+      },
+      {
+        "name": "White and Green",
+        "namear": "ابيض واخضر",
+        "value": "717",
+        "categoryId": 19,
+        "categoryName": "Trailer",
+        "categoryNamear": "مقطورة"
+      }
+    ]
+  },
+  "FUJ": {
+    "codes": [
+      {
+        "name": "Motorcycle",
+        "namear": "دراجة نارية",
+        "value": "55",
+        "categoryId": 1,
+        "categoryName": "Motorcycle",
+        "categoryNamear": "دراجة نارية"
+      },
+      {
+        "name": "F",
+        "namear": "F",
+        "value": "154",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "M",
+        "namear": "M",
+        "value": "149",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "P",
+        "namear": "P",
+        "value": "155",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "R",
+        "namear": "R",
+        "value": "156",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "S",
+        "namear": "S",
+        "value": "158",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "T",
+        "namear": "T",
+        "value": "157",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "White",
+        "namear": "ابيض",
+        "value": "103",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "A",
+        "namear": "A",
+        "value": "56",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "B",
+        "namear": "B",
+        "value": "73",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "C",
+        "namear": "C",
+        "value": "85",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "D",
+        "namear": "D",
+        "value": "92",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "E",
+        "namear": "E",
+        "value": "111",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "G",
+        "namear": "G",
+        "value": "163",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "K",
+        "namear": "K",
+        "value": "164",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "X",
+        "namear": "X",
+        "value": "706",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "I",
+        "namear": "I",
+        "value": "702",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "V",
+        "namear": "V",
+        "value": "697",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "L",
+        "namear": "L",
+        "value": "709",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Z",
+        "namear": "Z",
+        "value": "736",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "H",
+        "namear": "H",
+        "value": "737",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "O",
+        "namear": "O",
+        "value": "738",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "N",
+        "namear": "N",
+        "value": "746",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "J",
+        "namear": "J",
+        "value": "748",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "U",
+        "namear": "U",
+        "value": "751",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Y",
+        "namear": "Y",
+        "value": "770",
+        "categoryId": 2,
+        "categoryName": "Private",
+        "categoryNamear": "خصوصي"
+      },
+      {
+        "name": "Green",
+        "namear": "اخضر",
+        "value": "58",
+        "categoryId": 4,
+        "categoryName": "PublicTransportation",
+        "categoryNamear": " عمومي(نقل عام/أجرة)"
+      },
+      {
+        "name": "Probation",
+        "namear": "تحت التجربة",
+        "value": "59",
+        "categoryId": 5,
+        "categoryName": "UnderTest",
+        "categoryNamear": "تحت التجربة"
+      },
+      {
+        "name": "Export",
+        "namear": "تصدير",
+        "value": "60",
+        "categoryId": 6,
+        "categoryName": "Export",
+        "categoryNamear": "تصدير"
+      },
+      {
+        "name": "Government",
+        "namear": "حكومة",
+        "value": "128",
+        "categoryId": 7,
+        "categoryName": "Government",
+        "categoryNamear": "حكومة"
+      }
+    ]
+  }
+}

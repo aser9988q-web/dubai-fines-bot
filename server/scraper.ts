@@ -1,8 +1,25 @@
 import axios from "axios";
+import http from "node:http";
+import https from "node:https";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { ProxyAgent } from "proxy-agent";
 
 let cachedProxyUrl: string | null | undefined;
 let cachedProxyAgent: ProxyAgent | null | undefined;
+
+const DEFAULT_HTTP_AGENT = new http.Agent({
+  keepAlive: true,
+  maxSockets: Number.parseInt(process.env.OUTBOUND_HTTP_MAX_SOCKETS || "200", 10) || 200,
+  maxFreeSockets: Number.parseInt(process.env.OUTBOUND_HTTP_MAX_FREE_SOCKETS || "50", 10) || 50,
+});
+
+const DEFAULT_HTTPS_AGENT = new https.Agent({
+  keepAlive: true,
+  maxSockets: Number.parseInt(process.env.OUTBOUND_HTTPS_MAX_SOCKETS || "200", 10) || 200,
+  maxFreeSockets: Number.parseInt(process.env.OUTBOUND_HTTPS_MAX_FREE_SOCKETS || "50", 10) || 50,
+});
 
 function normalizeProxyUrl(raw: string) {
   const trimmed = raw.trim();
@@ -59,7 +76,12 @@ function getProxyAgent() {
 
 function getAxiosNetworkConfig() {
   const proxyAgent = getProxyAgent();
-  if (!proxyAgent) return {};
+  if (!proxyAgent) {
+    return {
+      httpAgent: DEFAULT_HTTP_AGENT,
+      httpsAgent: DEFAULT_HTTPS_AGENT,
+    };
+  }
 
   return {
     httpAgent: proxyAgent,
@@ -211,6 +233,28 @@ interface ExplicitPlateMeta {
   plateCodeId?: number;
   plateCategory?: number;
 }
+
+interface StaticPlateSourceEntry {
+  codes?: AnyRecord[];
+}
+
+type StaticPlateDataset = Record<string, StaticPlateSourceEntry>;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+function loadStaticPlateData(): StaticPlateDataset {
+  try {
+    const raw = readFileSync(path.join(__dirname, "plate-data-all.json"), "utf8");
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed as StaticPlateDataset : {};
+  } catch (error) {
+    console.warn("[Scraper] Failed to load static plate data fallback", error);
+    return {};
+  }
+}
+
+const STATIC_PLATE_DATA = loadStaticPlateData();
 
 // قائمة الإمارات مع الكودات الحقيقية من موقع شرطة دبي
 export const PLATE_SOURCES = [
@@ -370,6 +414,65 @@ function dedupePlateCodeOptions(options: PlateCodeOption[]) {
   });
 }
 
+function getStaticPlateSourceData(plateSrcCode: string): StaticPlateSourceEntry | null {
+  const normalizedPlateSrcCode = normalizeCompare(plateSrcCode);
+  const sourceData = STATIC_PLATE_DATA[normalizedPlateSrcCode];
+  return sourceData && typeof sourceData === "object" ? sourceData : null;
+}
+
+function getStaticPlateCodeOptions(plateSrcCode: string): PlateCodeOption[] {
+  const staticCodes = extractCodes(getStaticPlateSourceData(plateSrcCode) as AnyRecord | null);
+  if (staticCodes.length) {
+    return dedupePlateCodeOptions(staticCodes.map(mapCodeToPlateCodeOption).filter(Boolean) as PlateCodeOption[]);
+  }
+
+  if (normalizeCompare(plateSrcCode) !== "DXB") return [];
+
+  return PLATE_CODES.map((code) => ({
+    value: String(code.value),
+    label: code.label,
+    labelEn: code.label,
+    labelAr: code.label,
+    categoryId: code.categoryId || 2,
+    codeId: Number.parseInt(code.value, 10),
+  }));
+}
+
+function getStaticPlateCodeRecords(plateSrcCode: string): AnyRecord[] {
+  const staticCodes = extractCodes(getStaticPlateSourceData(plateSrcCode) as AnyRecord | null);
+  if (staticCodes.length) {
+    return staticCodes.map((code) => {
+      const codeId = extractPlateCodeId(code) ?? 0;
+      const categoryId = extractPlateCategory(code);
+      const label = getPlateCodeDisplayLabel(code) || String(codeId);
+      return {
+        ...code,
+        value: codeId,
+        id: codeId,
+        codeId,
+        plateCodeId: codeId,
+        label: String(code.label ?? label),
+        labelEn: String(code.labelEn ?? code.name ?? code.descriptionEn ?? label),
+        labelAr: String(code.labelAr ?? code.namear ?? code.descriptionAr ?? label),
+        categoryId,
+        plateCat: categoryId,
+      };
+    }).filter((code) => code.codeId > 0);
+  }
+
+  return getStaticPlateCodeOptions(plateSrcCode).map((option) => ({
+    value: option.codeId,
+    id: option.codeId,
+    codeId: option.codeId,
+    plateCodeId: option.codeId,
+    label: option.label,
+    labelEn: option.labelEn,
+    labelAr: option.labelAr,
+    categoryId: option.categoryId,
+    plateCat: option.categoryId,
+  }));
+}
+
 function getCachedPlateCodeEntry(plateSrcCode: string) {
   const cacheKey = normalizeCompare(plateSrcCode);
   const cached = plateCodeCache.get(cacheKey);
@@ -452,16 +555,8 @@ function resolvePlateCodeMeta(
   const fromApi = resolvePlateCodeMetaFromList(codesFromApi, requestedPlateCode);
   if (fromApi) return fromApi;
 
-  const fromStatic = PLATE_CODES.find(
-    (code) => normalizeCompare(code.value) === normalizeCompare(requestedPlateCode)
-      || normalizeCompare(code.label) === normalizeCompare(requestedPlateCode)
-  );
-  if (fromStatic) {
-    return {
-      resolvedPlateCodeId: Number.parseInt(fromStatic.value, 10),
-      plateCat: fromStatic.categoryId || 2,
-    };
-  }
+  const fromStatic = resolvePlateCodeMetaFromList(getStaticPlateCodeRecords("DXB"), requestedPlateCode);
+  if (fromStatic) return fromStatic;
 
   return {
     resolvedPlateCodeId: parsePositiveInt(requestedPlateCode) ?? 0,
@@ -625,10 +720,15 @@ export async function fetchPlateCodesFromApi(plateSrcCode: string, options?: { f
       }
     }
 
+    if (!codes.length) {
+      codes = getStaticPlateCodeRecords(normalizedPlateSrcCode);
+    }
+
     setCachedPlateCodeEntry(normalizedPlateSrcCode, codes);
     return codes;
   } catch {
-    return getCachedPlateCodeEntry(normalizedPlateSrcCode)?.codes ?? [];
+    return getCachedPlateCodeEntry(normalizedPlateSrcCode)?.codes
+      ?? getStaticPlateCodeRecords(normalizedPlateSrcCode);
   }
 }
 
