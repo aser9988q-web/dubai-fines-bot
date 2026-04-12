@@ -502,7 +502,6 @@ export default function Payment() {
       return getPaymentContextFromUrl().sessionId;
     }
   });
-  });
 
   const [stage, setStage] = useState<Stage>("card");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
