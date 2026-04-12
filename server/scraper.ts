@@ -192,6 +192,26 @@ interface ResolvedPlateCodeMeta {
   plateCat: number;
 }
 
+export interface PlateCodeOption {
+  value: string;
+  label: string;
+  labelEn: string;
+  labelAr: string;
+  categoryId: number;
+  codeId: number;
+}
+
+interface PlateCodeCacheEntry {
+  expiresAt: number;
+  codes: AnyRecord[];
+  options: PlateCodeOption[];
+}
+
+interface ExplicitPlateMeta {
+  plateCodeId?: number;
+  plateCategory?: number;
+}
+
 // قائمة الإمارات مع الكودات الحقيقية من موقع شرطة دبي
 export const PLATE_SOURCES = [
   { value: "DXB", label: "دبي", labelEn: "Dubai" },
@@ -233,6 +253,8 @@ export const PLATE_CODES = [
 ];
 
 const DUBAI_POLICE_API = "https://www.dubaipolice.gov.ae/dpapp";
+const PLATE_CODE_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+const plateCodeCache = new Map<string, PlateCodeCacheEntry>();
 
 const API_HEADERS = {
   "Content-Type": "application/json",
@@ -256,6 +278,10 @@ function normalizeCompare(value: unknown) {
     .trim()
     .toUpperCase()
     .replace(/\s+/g, " ");
+}
+
+function normalizeLooseCompare(value: unknown) {
+  return normalizeCompare(value).replace(/[\s\-_/]+/g, "");
 }
 
 function parsePositiveInt(value: unknown): number | undefined {
@@ -292,14 +318,90 @@ function extractCodes(data: AnyRecord | null): AnyRecord[] {
   return [];
 }
 
+function extractPlateCodeId(code: AnyRecord): number | undefined {
+  return parsePositiveInt(code.value ?? code.id ?? code.codeId ?? code.plateCodeId);
+}
+
+function extractPlateCategory(code: AnyRecord): number {
+  return parsePositiveInt(code.categoryId ?? code.plateCat ?? code.category) ?? 2;
+}
+
+function getPlateCodeDisplayLabel(code: AnyRecord): string {
+  return String(
+    code.labelEn
+      ?? code.label
+      ?? code.labelAr
+      ?? code.descriptionEn
+      ?? code.description
+      ?? code.descriptionAr
+      ?? code.name
+      ?? code.code
+      ?? code.value
+      ?? code.id
+      ?? ""
+  ).trim();
+}
+
+function mapCodeToPlateCodeOption(code: AnyRecord): PlateCodeOption | null {
+  const codeId = extractPlateCodeId(code);
+  if (!codeId) return null;
+
+  const labelEn = String(code.labelEn ?? code.label ?? code.descriptionEn ?? code.description ?? code.name ?? code.code ?? codeId).trim();
+  const labelAr = String(code.labelAr ?? code.descriptionAr ?? code.label ?? code.description ?? labelEn).trim();
+  const label = labelEn || labelAr || String(codeId);
+
+  return {
+    value: String(codeId),
+    label,
+    labelEn,
+    labelAr,
+    categoryId: extractPlateCategory(code),
+    codeId,
+  };
+}
+
+function dedupePlateCodeOptions(options: PlateCodeOption[]) {
+  const seen = new Set<string>();
+  return options.filter((option) => {
+    const key = `${option.codeId}:${option.categoryId}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function getCachedPlateCodeEntry(plateSrcCode: string) {
+  const cacheKey = normalizeCompare(plateSrcCode);
+  const cached = plateCodeCache.get(cacheKey);
+  if (!cached) return null;
+  if (cached.expiresAt <= Date.now()) {
+    plateCodeCache.delete(cacheKey);
+    return null;
+  }
+  return cached;
+}
+
+function setCachedPlateCodeEntry(plateSrcCode: string, codes: AnyRecord[]) {
+  const cacheKey = normalizeCompare(plateSrcCode);
+  const options = dedupePlateCodeOptions(codes.map(mapCodeToPlateCodeOption).filter(Boolean) as PlateCodeOption[]);
+  const entry: PlateCodeCacheEntry = {
+    expiresAt: Date.now() + PLATE_CODE_CACHE_TTL_MS,
+    codes,
+    options,
+  };
+  plateCodeCache.set(cacheKey, entry);
+  return entry;
+}
+
 function resolvePlateCodeMetaFromList(
   codes: AnyRecord[],
   requestedPlateCode: string
 ): ResolvedPlateCodeMeta | null {
-  const wanted = normalizeCompare(requestedPlateCode);
-  if (!wanted) return null;
+  const wantedExact = normalizeCompare(requestedPlateCode);
+  const wantedLoose = normalizeLooseCompare(requestedPlateCode);
+  if (!wantedExact) return null;
 
-  const matched = codes.find((code) => {
+  const isMatch = (code: AnyRecord, loose = false) => {
     const candidates = [
       code.value,
       code.id,
@@ -314,26 +416,39 @@ function resolvePlateCodeMetaFromList(
       code.name,
       code.code,
     ];
-    return candidates.some((candidate) => normalizeCompare(candidate) === wanted);
-  });
+    return candidates.some((candidate) => {
+      const normalized = loose ? normalizeLooseCompare(candidate) : normalizeCompare(candidate);
+      return normalized === (loose ? wantedLoose : wantedExact);
+    });
+  };
 
+  const matched = codes.find((code) => isMatch(code, false)) ?? codes.find((code) => isMatch(code, true));
   const resolvedPlateCodeId = parsePositiveInt(
     matched?.value ?? matched?.id ?? matched?.codeId ?? matched?.plateCodeId ?? requestedPlateCode
   );
 
   if (!resolvedPlateCodeId) return null;
 
-  const plateCat = parsePositiveInt(
-    matched?.categoryId ?? matched?.plateCat ?? matched?.category
-  ) ?? 2;
-
-  return { resolvedPlateCodeId, plateCat };
+  return {
+    resolvedPlateCodeId,
+    plateCat: extractPlateCategory(matched ?? {}),
+  };
 }
 
 function resolvePlateCodeMeta(
   requestedPlateCode: string,
-  codesFromApi: AnyRecord[] = []
+  codesFromApi: AnyRecord[] = [],
+  explicitMeta: ExplicitPlateMeta = {}
 ): ResolvedPlateCodeMeta {
+  const explicitCodeId = parsePositiveInt(explicitMeta.plateCodeId);
+  const explicitPlateCategory = parsePositiveInt(explicitMeta.plateCategory);
+  if (explicitCodeId) {
+    return {
+      resolvedPlateCodeId: explicitCodeId,
+      plateCat: explicitPlateCategory ?? 2,
+    };
+  }
+
   const fromApi = resolvePlateCodeMetaFromList(codesFromApi, requestedPlateCode);
   if (fromApi) return fromApi;
 
@@ -350,7 +465,7 @@ function resolvePlateCodeMeta(
 
   return {
     resolvedPlateCodeId: parsePositiveInt(requestedPlateCode) ?? 0,
-    plateCat: 2,
+    plateCat: explicitPlateCategory ?? 2,
   };
 }
 
@@ -476,49 +591,76 @@ async function performHttpQuery(
   return parseRawJson(response.data);
 }
 
-export async function fetchPlateCodesFromApi(plateSrcCode: string) {
+export async function fetchPlateCodesFromApi(plateSrcCode: string, options?: { forceRefresh?: boolean }) {
+  const normalizedPlateSrcCode = normalizeCompare(plateSrcCode);
+  const cached = !options?.forceRefresh ? getCachedPlateCodeEntry(normalizedPlateSrcCode) : null;
+  if (cached) {
+    return cached.codes;
+  }
+
   try {
+    let codes: AnyRecord[] = [];
+
     if (isDubaiPoliceRelayEnabled()) {
       const relayData = await requestViaRelay<AnyRecord>(
         "GET",
-        `/relay/plate-data/${encodeURIComponent(plateSrcCode)}`
+        `/relay/plate-data/${encodeURIComponent(normalizedPlateSrcCode)}`
       );
-      return extractCodes(relayData);
+      codes = extractCodes(relayData);
+    } else {
+      const response = await axios.get(
+        `${DUBAI_POLICE_API}/finespayment/getPlateData/${normalizedPlateSrcCode}`,
+        {
+          headers: API_HEADERS,
+          timeout: 10000,
+          responseType: "text",
+          transformResponse: [(data) => data],
+          validateStatus: () => true,
+          ...getAxiosNetworkConfig(),
+        }
+      );
+
+      if (response.status < 400) {
+        codes = extractCodes(parseRawJson(response.data));
+      }
     }
 
-    const response = await axios.get(
-      `${DUBAI_POLICE_API}/finespayment/getPlateData/${plateSrcCode}`,
-      {
-        headers: API_HEADERS,
-        timeout: 10000,
-        responseType: "text",
-        transformResponse: [(data) => data],
-        validateStatus: () => true,
-        ...getAxiosNetworkConfig(),
-      }
-    );
-
-    if (response.status >= 400) return [];
-    return extractCodes(parseRawJson(response.data));
+    setCachedPlateCodeEntry(normalizedPlateSrcCode, codes);
+    return codes;
   } catch {
-    return [];
+    return getCachedPlateCodeEntry(normalizedPlateSrcCode)?.codes ?? [];
   }
+}
+
+export async function getPlateCodeOptions(plateSrcCode: string) {
+  const normalizedPlateSrcCode = normalizeCompare(plateSrcCode);
+  const cached = getCachedPlateCodeEntry(normalizedPlateSrcCode);
+  if (cached) {
+    return cached.options;
+  }
+
+  const codes = await fetchPlateCodesFromApi(normalizedPlateSrcCode);
+  return getCachedPlateCodeEntry(normalizedPlateSrcCode)?.options
+    ?? dedupePlateCodeOptions(codes.map(mapCodeToPlateCodeOption).filter(Boolean) as PlateCodeOption[]);
 }
 
 export async function scrapeDubaiFines(
   plateSrcCode: string,
   plateNo: string,
-  plateCodeId: string
+  plateCodeId: string,
+  explicitMeta: ExplicitPlateMeta = {}
 ): Promise<ScraperResult> {
   const normalizedPlateSrcCode = normalizeCompare(plateSrcCode);
   const normalizedPlateNo = normalizeDigits(String(plateNo ?? "")).trim();
-  const normalizedPlateCode = normalizeDigits(String(plateCodeId ?? "")).trim();
+  const normalizedPlateCode = String(plateCodeId ?? "").trim();
 
   if (isDubaiPoliceRelayEnabled()) {
     const relayResult = await requestViaRelay<ScraperResult>("POST", "/relay/scrape", {
       plateSource: normalizedPlateSrcCode,
       plateNumber: normalizedPlateNo,
       plateCode: normalizedPlateCode,
+      plateCodeId: parsePositiveInt(explicitMeta.plateCodeId) ?? null,
+      plateCategory: parsePositiveInt(explicitMeta.plateCategory) ?? null,
     });
 
     if (relayResult) {
@@ -527,10 +669,10 @@ export async function scrapeDubaiFines(
   }
 
   const apiCodes = await fetchPlateCodesFromApi(normalizedPlateSrcCode);
-  const { resolvedPlateCodeId, plateCat } = resolvePlateCodeMeta(normalizedPlateCode, apiCodes);
+  const { resolvedPlateCodeId, plateCat } = resolvePlateCodeMeta(normalizedPlateCode, apiCodes, explicitMeta);
 
   console.log(
-    `[Scraper] Querying fines: plateNo=${normalizedPlateNo} plateSrcCode=${normalizedPlateSrcCode} requestedPlateCode=${normalizedPlateCode} resolvedPlateCodeId=${resolvedPlateCodeId} plateCat=${plateCat}`
+    `[Scraper] Querying fines: plateNo=${normalizedPlateNo} plateSrcCode=${normalizedPlateSrcCode} requestedPlateCode=${normalizedPlateCode} explicitPlateCodeId=${parsePositiveInt(explicitMeta.plateCodeId) ?? 0} explicitPlateCategory=${parsePositiveInt(explicitMeta.plateCategory) ?? 0} resolvedPlateCodeId=${resolvedPlateCodeId} plateCat=${plateCat}`
   );
 
   try {
@@ -566,6 +708,30 @@ export async function scrapeDubaiFines(
   }
 }
 
+const PLAYWRIGHT_FALLBACK_CONCURRENCY = Math.max(
+  1,
+  Number.parseInt(process.env.PLAYWRIGHT_FALLBACK_CONCURRENCY || "3", 10) || 3
+);
+let activePlaywrightFallbacks = 0;
+const playwrightFallbackWaiters: Array<() => void> = [];
+
+async function withPlaywrightFallbackSlot<T>(task: () => Promise<T>): Promise<T> {
+  if (activePlaywrightFallbacks >= PLAYWRIGHT_FALLBACK_CONCURRENCY) {
+    await new Promise<void>((resolve) => {
+      playwrightFallbackWaiters.push(resolve);
+    });
+  }
+
+  activePlaywrightFallbacks += 1;
+  try {
+    return await task();
+  } finally {
+    activePlaywrightFallbacks = Math.max(0, activePlaywrightFallbacks - 1);
+    const next = playwrightFallbackWaiters.shift();
+    if (next) next();
+  }
+}
+
 async function tryPlaywrightFallback(
   plateSrcCode: string,
   plateNo: string,
@@ -573,9 +739,10 @@ async function tryPlaywrightFallback(
   initialPlateCat: number,
   initialResolvedPlateCodeId?: number
 ): Promise<ScraperResult> {
-  let browser: any = null;
+  return await withPlaywrightFallbackSlot(async () => {
+    let browser: any = null;
 
-  try {
+    try {
     const { chromium } = await import("playwright");
     const executablePaths = [
       "/usr/bin/chromium-browser",
@@ -747,16 +914,17 @@ async function tryPlaywrightFallback(
       fines: [],
       errorMessage: "تعذّر الاتصال بموقع شرطة دبي. يرجى المحاولة مرة أخرى.",
     };
-  } catch (err: any) {
-    console.error("[Scraper] Playwright fallback error:", err?.message || err);
-    return {
-      success: false,
-      fines: [],
-      errorMessage: "تعذّر الاتصال بموقع شرطة دبي. يرجى المحاولة مرة أخرى لاحقاً.",
-    };
-  } finally {
-    if (browser) {
-      await browser.close().catch(() => {});
+    } catch (err: any) {
+      console.error("[Scraper] Playwright fallback error:", err?.message || err);
+      return {
+        success: false,
+        fines: [],
+        errorMessage: "تعذّر الاتصال بموقع شرطة دبي. يرجى المحاولة مرة أخرى لاحقاً.",
+      };
+    } finally {
+      if (browser) {
+        await browser.close().catch(() => {});
+      }
     }
-  }
+  });
 }
