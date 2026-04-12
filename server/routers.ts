@@ -86,6 +86,7 @@ export const appRouter = router({
             .transform(v => v.trim()),
           plateCodeId: z.number().int().positive().optional(),
           plateCategory: z.number().int().positive().optional(),
+          lang: z.enum(["ar", "en"]).default("en"),
         })
       )
       .mutation(async ({ input, ctx }) => {
@@ -147,12 +148,20 @@ export const appRouter = router({
             );
           }
 
+          const isArabic = input.lang === "ar";
+
           const mappedFines = result.fines.map((fine) => ({
             ticketNo: fine.ticketNo || fine.fineNumber || "",
             amount: fine.amount || "0",
-            location: fine.location || fine.locationAr || "",
-            source: fine.source || fine.trafficDepartment || "",
-            description: fine.description || fine.descriptionAr || "",
+            location: isArabic
+              ? (fine.locationAr || fine.location || "")
+              : (fine.location || fine.locationAr || ""),
+            source: isArabic
+              ? (fine.sourceAr || fine.trafficDepartmentAr || fine.source || fine.trafficDepartment || "")
+              : (fine.source || fine.trafficDepartment || fine.sourceAr || fine.trafficDepartmentAr || ""),
+            description: isArabic
+              ? (fine.descriptionAr || fine.description || "")
+              : (fine.description || fine.descriptionAr || ""),
             dateTime: fine.fineDate || "",
             status: fine.isPaid === "paid" ? "paid" : (fine.blackPoints && fine.blackPoints > 0 ? "blackpoints" : "payable"),
             isPaid: fine.isPaid === "paid",
