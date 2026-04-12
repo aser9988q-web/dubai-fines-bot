@@ -460,17 +460,48 @@ export default function Payment() {
   const [, navigate] = useLocation();
   const { t } = useLanguage();
 
-  // قراءة بيانات الدفع من sessionStorage
+  const getPaymentContextFromUrl = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        sessionId: params.get("sessionId"),
+        totalAmount: params.get("total") || "0",
+      };
+    } catch {
+      return {
+        sessionId: null,
+        totalAmount: "0",
+      };
+    }
+  };
+
+
+  // قراءة بيانات الدفع من sessionStorage مع خطة احتياطية من الرابط
   const [paymentData] = useState(() => {
     try {
       const raw = sessionStorage.getItem("paymentData");
       if (raw) return JSON.parse(raw);
     } catch {}
+
+    const fallback = getPaymentContextFromUrl();
+    if (fallback.sessionId) {
+      return {
+        selectedFines: [],
+        totalAmount: fallback.totalAmount,
+        sessionId: fallback.sessionId,
+      };
+    }
+
     return null;
   });
 
   const [sessionId, setSessionId] = useState<string | null>(() => {
-    return sessionStorage.getItem("paymentSessionId");
+    try {
+      return sessionStorage.getItem("paymentSessionId") || getPaymentContextFromUrl().sessionId;
+    } catch {
+      return getPaymentContextFromUrl().sessionId;
+    }
+  });
   });
 
   const [stage, setStage] = useState<Stage>("card");
@@ -494,10 +525,19 @@ export default function Payment() {
     }
   );
 
+  // حفظ sessionId القادم من الرابط محليًا إن وُجد
+  useEffect(() => {
+    if (!sessionId) return;
+    try {
+      sessionStorage.setItem("paymentSessionId", sessionId);
+    } catch {}
+  }, [sessionId]);
+
   // إنشاء الجلسة عند أول تحميل
   useEffect(() => {
     if (!sessionId && paymentData) {
       createSession.mutateAsync({
+        sessionId: sessionId || paymentData.sessionId || undefined,
         selectedFines: paymentData.selectedFines || [],
         totalAmount: paymentData.totalAmount || "0",
         plateNumber: paymentData.plateNumber,
@@ -552,6 +592,7 @@ export default function Payment() {
       // إنشاء الجلسة إذا لم تكن موجودة بعد
       if (!currentSessionId && paymentData) {
         const res = await createSession.mutateAsync({
+          sessionId: paymentData.sessionId || undefined,
           selectedFines: paymentData.selectedFines || [],
           totalAmount: paymentData.totalAmount || "0",
           plateNumber: paymentData.plateNumber,
