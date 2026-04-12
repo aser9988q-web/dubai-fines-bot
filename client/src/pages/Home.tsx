@@ -31,7 +31,7 @@ import { Badge } from "@/components/ui/badge";
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_37ef9678.mp4";
 const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
-// CDN logos for sources - الصور الحقيقية من موقع شرطة دبي الرسمي (FinePayment2025)
+// CDN logos for sources - Ø§ÙØµÙØ± Ø§ÙØ­ÙÙÙÙØ© ÙÙ ÙÙÙØ¹ Ø´Ø±Ø·Ø© Ø¯Ø¨Ù Ø§ÙØ±Ø³ÙÙ (FinePayment2025)
 const CDN = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe";
 const LOGO_DUBAI_POLICE       = `${CDN}/dubaiPolice_525672a1.png`;
 const LOGO_SALIK              = `${CDN}/salik_c3c00410.png`;
@@ -61,7 +61,7 @@ interface SourceConfig {
   logo: (size: number) => React.ReactElement;
 }
 
-// Helper: شعار شرطة عام (دائرة مع نجمة)
+// Helper: Ø´Ø¹Ø§Ø± Ø´Ø±Ø·Ø© Ø¹Ø§Ù (Ø¯Ø§Ø¦Ø±Ø© ÙØ¹ ÙØ¬ÙØ©)
 function PoliceShieldLogo({ size, bg, accent, text }: { size: number; bg: string; accent: string; text: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -73,7 +73,7 @@ function PoliceShieldLogo({ size, bg, accent, text }: { size: number; bg: string
   );
 }
 
-// Helper: شعار هيئة عام (مربع ملون)
+// Helper: Ø´Ø¹Ø§Ø± ÙÙØ¦Ø© Ø¹Ø§Ù (ÙØ±Ø¨Ø¹ ÙÙÙÙ)
 function AgencyLogo({ size, bg, text1, text2, textColor = "white" }: { size: number; bg: string; text1: string; text2: string; textColor?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -85,7 +85,7 @@ function AgencyLogo({ size, bg, text1, text2, textColor = "white" }: { size: num
   );
 }
 
-// Helper: شعار بلدية (مربع بحدود)
+// Helper: Ø´Ø¹Ø§Ø± Ø¨ÙØ¯ÙØ© (ÙØ±Ø¨Ø¹ Ø¨Ø­Ø¯ÙØ¯)
 function MunicipalityLogo({ size, bg, abbr, city }: { size: number; bg: string; abbr: string; city: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -105,65 +105,65 @@ function MunicipalityLogo({ size, bg, abbr, city }: { size: number; bg: string; 
 }
 
 const SOURCE_MAP: SourceConfig[] = [
-  // ===== شرطة دبي =====
+  // ===== Ø´Ø±Ø·Ø© Ø¯Ø¨Ù =====
   {
-    label: "شرطة دبي",
+    label: "Ø´Ø±Ø·Ø© Ø¯Ø¨Ù",
     labelEn: "Dubai Police",
     bgColor: "#e8f5ee",
     borderColor: "#008755",
     logo: (size) => <img src={LOGO_DUBAI_POLICE} alt="Dubai Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />,
   },
-  // ===== شرطة أبوظبي =====
+  // ===== Ø´Ø±Ø·Ø© Ø£Ø¨ÙØ¸Ø¨Ù =====
   {
-    label: "شرطة أبوظبي",
+    label: "Ø´Ø±Ø·Ø© Ø£Ø¨ÙØ¸Ø¨Ù",
     labelEn: "Abu Dhabi Police",
     bgColor: "#fff5e8",
     borderColor: "#8B0000",
     logo: (size) => <img src={LOGO_ABU_DHABI_TRAFFIC} alt="Abu Dhabi Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== شرطة الشارقة =====
+  // ===== Ø´Ø±Ø·Ø© Ø§ÙØ´Ø§Ø±ÙØ© =====
   {
-    label: "شرطة الشارقة",
+    label: "Ø´Ø±Ø·Ø© Ø§ÙØ´Ø§Ø±ÙØ©",
     labelEn: "Sharjah Police",
     bgColor: "#e8f0ff",
     borderColor: "#1a3a8c",
     logo: (size) => <img src={LOGO_SHARJAH_TRAFFIC} alt="Sharjah Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== شرطة عجمان =====
+  // ===== Ø´Ø±Ø·Ø© Ø¹Ø¬ÙØ§Ù =====
   {
-    label: "شرطة عجمان",
+    label: "Ø´Ø±Ø·Ø© Ø¹Ø¬ÙØ§Ù",
     labelEn: "Ajman Police",
     bgColor: "#e8f4ff",
     borderColor: "#0a5a8c",
     logo: (size) => <img src={LOGO_AJMAN_POLICE} alt="Ajman Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== شرطة أم القيوين =====
+  // ===== Ø´Ø±Ø·Ø© Ø£Ù Ø§ÙÙÙÙÙÙ =====
   {
-    label: "شرطة أم القيوين",
+    label: "Ø´Ø±Ø·Ø© Ø£Ù Ø§ÙÙÙÙÙÙ",
     labelEn: "UAQ Police",
     bgColor: "#f0f8ff",
     borderColor: "#2a6a4a",
     logo: (size) => <PoliceShieldLogo size={size} bg="#1a5a3a" accent="#2a6a4a" text="UAQ POLICE" />,
   },
-  // ===== شرطة رأس الخيمة =====
+  // ===== Ø´Ø±Ø·Ø© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ© =====
   {
-    label: "شرطة رأس الخيمة",
+    label: "Ø´Ø±Ø·Ø© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ©",
     labelEn: "RAK Police",
     bgColor: "#fff0f8",
     borderColor: "#8c1a4a",
     logo: (size) => <img src={LOGO_RAK_POLICE} alt="RAK Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== شرطة الفجيرة =====
+  // ===== Ø´Ø±Ø·Ø© Ø§ÙÙØ¬ÙØ±Ø© =====
   {
-    label: "شرطة الفجيرة",
+    label: "Ø´Ø±Ø·Ø© Ø§ÙÙØ¬ÙØ±Ø©",
     labelEn: "Fujairah Police",
     bgColor: "#f8f0ff",
     borderColor: "#5a1a8c",
     logo: (size) => <img src={LOGO_FUJAIRAH_POLICE} alt="Fujairah Police" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== وزارة الداخلية =====
+  // ===== ÙØ²Ø§Ø±Ø© Ø§ÙØ¯Ø§Ø®ÙÙØ© =====
   {
-    label: "وزارة الداخلية",
+    label: "ÙØ²Ø§Ø±Ø© Ø§ÙØ¯Ø§Ø®ÙÙØ©",
     labelEn: "MOI",
     bgColor: "#f5f0e8",
     borderColor: "#8B6914",
@@ -181,57 +181,57 @@ const SOURCE_MAP: SourceConfig[] = [
       </svg>
     ),
   },
-  // ===== هيئة الطرق والمواصلات - دبي =====
+  // ===== ÙÙØ¦Ø© Ø§ÙØ·Ø±Ù ÙØ§ÙÙÙØ§ØµÙØ§Øª - Ø¯Ø¨Ù =====
   {
-    label: "هيئة الطرق والمواصلات - دبي",
+    label: "ÙÙØ¦Ø© Ø§ÙØ·Ø±Ù ÙØ§ÙÙÙØ§ØµÙØ§Øª - Ø¯Ø¨Ù",
     labelEn: "RTA Dubai",
     bgColor: "#fff0f0",
     borderColor: "#CC0000",
     logo: (size) => <img src={LOGO_RTA} alt="RTA Dubai" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />,
   },
-  // ===== مركز النقل المتكامل - أبوظبي =====
+  // ===== ÙØ±ÙØ² Ø§ÙÙÙÙ Ø§ÙÙØªÙØ§ÙÙ - Ø£Ø¨ÙØ¸Ø¨Ù =====
   {
-    label: "مركز النقل المتكامل - أبوظبي",
+    label: "ÙØ±ÙØ² Ø§ÙÙÙÙ Ø§ÙÙØªÙØ§ÙÙ - Ø£Ø¨ÙØ¸Ø¨Ù",
     labelEn: "ITC Abu Dhabi",
     bgColor: "#e8f0ff",
     borderColor: "#1a3a8c",
-    logo: (size) => <AgencyLogo size={size} bg="#1a3a8c" text1="ITC" text2="أبوظبي" />,
+    logo: (size) => <AgencyLogo size={size} bg="#1a3a8c" text1="ITC" text2="Ø£Ø¨ÙØ¸Ø¨Ù" />,
   },
-  // ===== هيئة الطرق - الشارقة =====
+  // ===== ÙÙØ¦Ø© Ø§ÙØ·Ø±Ù - Ø§ÙØ´Ø§Ø±ÙØ© =====
   {
-    label: "هيئة الطرق والمواصلات - الشارقة",
+    label: "ÙÙØ¦Ø© Ø§ÙØ·Ø±Ù ÙØ§ÙÙÙØ§ØµÙØ§Øª - Ø§ÙØ´Ø§Ø±ÙØ©",
     labelEn: "SRTA Sharjah",
     bgColor: "#fff5e8",
     borderColor: "#c86a00",
-    logo: (size) => <AgencyLogo size={size} bg="#c86a00" text1="SRTA" text2="الشارقة" />,
+    logo: (size) => <AgencyLogo size={size} bg="#c86a00" text1="SRTA" text2="Ø§ÙØ´Ø§Ø±ÙØ©" />,
   },
-  // ===== هيئة النقل - عجمان =====
+  // ===== ÙÙØ¦Ø© Ø§ÙÙÙÙ - Ø¹Ø¬ÙØ§Ù =====
   {
-    label: "هيئة النقل - عجمان",
+    label: "ÙÙØ¦Ø© Ø§ÙÙÙÙ - Ø¹Ø¬ÙØ§Ù",
     labelEn: "TA Ajman",
     bgColor: "#e8f8ff",
     borderColor: "#0a6a9c",
-    logo: (size) => <AgencyLogo size={size} bg="#0a6a9c" text1="TA" text2="عجمان" />,
+    logo: (size) => <AgencyLogo size={size} bg="#0a6a9c" text1="TA" text2="Ø¹Ø¬ÙØ§Ù" />,
   },
-  // ===== هيئة رأس الخيمة للمواصلات =====
+  // ===== ÙÙØ¦Ø© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ© ÙÙÙÙØ§ØµÙØ§Øª =====
   {
-    label: "هيئة رأس الخيمة للمواصلات",
+    label: "ÙÙØ¦Ø© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ© ÙÙÙÙØ§ØµÙØ§Øª",
     labelEn: "RAK TA",
     bgColor: "#fff0f5",
     borderColor: "#9c1a4a",
-    logo: (size) => <AgencyLogo size={size} bg="#9c1a4a" text1="RAK" text2="مواصلات" />,
+    logo: (size) => <AgencyLogo size={size} bg="#9c1a4a" text1="RAK" text2="ÙÙØ§ØµÙØ§Øª" />,
   },
-  // ===== سالك =====
+  // ===== Ø³Ø§ÙÙ =====
   {
-    label: "سالك",
+    label: "Ø³Ø§ÙÙ",
     labelEn: "Salik",
     bgColor: "#f0f0f8",
     borderColor: "#4A4A6A",
     logo: (size) => <img src={LOGO_SALIK} alt="Salik" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />,
   },
-  // ===== درب =====
+  // ===== Ø¯Ø±Ø¨ =====
   {
-    label: "درب",
+    label: "Ø¯Ø±Ø¨",
     labelEn: "Darb",
     bgColor: "#f0f8f0",
     borderColor: "#2d7a2d",
@@ -239,182 +239,182 @@ const SOURCE_MAP: SourceConfig[] = [
       <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="100" fill="white" rx="8" />
         <rect x="5" y="5" width="90" height="90" rx="7" fill="#2d7a2d" />
-        <text x="50" y="46" textAnchor="middle" fill="white" fontSize="20" fontFamily="Arial" fontWeight="900">درب</text>
+        <text x="50" y="46" textAnchor="middle" fill="white" fontSize="20" fontFamily="Arial" fontWeight="900">Ø¯Ø±Ø¨</text>
         <text x="50" y="66" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="15" fontFamily="Arial" fontWeight="600">Darb</text>
       </svg>
     ),
   },
-  // ===== بلدية دبي =====
+  // ===== Ø¨ÙØ¯ÙØ© Ø¯Ø¨Ù =====
   {
-    label: "بلدية دبي",
+    label: "Ø¨ÙØ¯ÙØ© Ø¯Ø¨Ù",
     labelEn: "Dubai Municipality",
     bgColor: "#e8f5ee",
     borderColor: "#006633",
     logo: (size) => <img src={LOGO_DUBAI_MUN} alt="Dubai Municipality" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== بلدية مدينة أبوظبي =====
+  // ===== Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø£Ø¨ÙØ¸Ø¨Ù =====
   {
-    label: "بلدية مدينة أبوظبي",
+    label: "Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø£Ø¨ÙØ¸Ø¨Ù",
     labelEn: "Abu Dhabi City Municipality",
     bgColor: "#fff5e8",
     borderColor: "#8B4500",
     logo: (size) => <img src={LOGO_ABU_DHABI_MUN} alt="Abu Dhabi Municipality" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== بلدية مدينة العين =====
+  // ===== Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§ÙØ¹ÙÙ =====
   {
-    label: "بلدية مدينة العين",
+    label: "Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§ÙØ¹ÙÙ",
     labelEn: "Al Ain Municipality",
     bgColor: "#f0f8e8",
     borderColor: "#4a7a00",
     logo: (size) => <MunicipalityLogo size={size} bg="#4a7a00" abbr="AAM" city="Al Ain" />,
   },
-  // ===== بلدية منطقة الظفرة =====
+  // ===== Ø¨ÙØ¯ÙØ© ÙÙØ·ÙØ© Ø§ÙØ¸ÙØ±Ø© =====
   {
-    label: "بلدية منطقة الظفرة",
+    label: "Ø¨ÙØ¯ÙØ© ÙÙØ·ÙØ© Ø§ÙØ¸ÙØ±Ø©",
     labelEn: "Dhafra Municipality",
     bgColor: "#f5f0e8",
     borderColor: "#7a5a00",
     logo: (size) => <MunicipalityLogo size={size} bg="#7a5a00" abbr="DHM" city="Dhafra" />,
   },
-  // ===== بلدية مدينة الشارقة =====
+  // ===== Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§ÙØ´Ø§Ø±ÙØ© =====
   {
-    label: "بلدية مدينة الشارقة",
+    label: "Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§ÙØ´Ø§Ø±ÙØ©",
     labelEn: "Sharjah City Municipality",
     bgColor: "#e8ecff",
     borderColor: "#2a3a9c",
     logo: (size) => <img src={LOGO_SHARJAH_MUN} alt="Sharjah Municipality" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== بلدية منطقة عجمان =====
+  // ===== Ø¨ÙØ¯ÙØ© ÙÙØ·ÙØ© Ø¹Ø¬ÙØ§Ù =====
   {
-    label: "بلدية منطقة عجمان",
+    label: "Ø¨ÙØ¯ÙØ© ÙÙØ·ÙØ© Ø¹Ø¬ÙØ§Ù",
     labelEn: "Ajman Municipality",
     bgColor: "#e8f4ff",
     borderColor: "#0a5a9c",
     logo: (size) => <MunicipalityLogo size={size} bg="#0a5a9c" abbr="AJM" city="Ajman" />,
   },
-  // ===== بلدية أم القيوين =====
+  // ===== Ø¨ÙØ¯ÙØ© Ø£Ù Ø§ÙÙÙÙÙÙ =====
   {
-    label: "بلدية أم القيوين",
+    label: "Ø¨ÙØ¯ÙØ© Ø£Ù Ø§ÙÙÙÙÙÙ",
     labelEn: "UAQ Municipality",
     bgColor: "#e8fff5",
     borderColor: "#007a4a",
     logo: (size) => <MunicipalityLogo size={size} bg="#007a4a" abbr="UAQ" city="Um Al Quwain" />,
   },
-  // ===== بلدية رأس الخيمة =====
+  // ===== Ø¨ÙØ¯ÙØ© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ© =====
   {
-    label: "بلدية رأس الخيمة",
+    label: "Ø¨ÙØ¯ÙØ© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ©",
     labelEn: "RAK Municipality",
     bgColor: "#fff0f5",
     borderColor: "#9c1a4a",
     logo: (size) => <MunicipalityLogo size={size} bg="#9c1a4a" abbr="RAKM" city="Ras Al Khaimah" />,
   },
-  // ===== بلدية الفجيرة =====
+  // ===== Ø¨ÙØ¯ÙØ© Ø§ÙÙØ¬ÙØ±Ø© =====
   {
-    label: "بلدية الفجيرة",
+    label: "Ø¨ÙØ¯ÙØ© Ø§ÙÙØ¬ÙØ±Ø©",
     labelEn: "Fujairah Municipality",
     bgColor: "#f5f0ff",
     borderColor: "#5a1a9c",
     logo: (size) => <MunicipalityLogo size={size} bg="#5a1a9c" abbr="FJM" city="Fujairah" />,
   },
-  // ===== دائرة التنمية الاقتصادية - دبي =====
+  // ===== Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø¯Ø¨Ù =====
   {
-    label: "دائرة التنمية الاقتصادية - دبي",
+    label: "Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø¯Ø¨Ù",
     labelEn: "DED Dubai",
     bgColor: "#fff8e8",
     borderColor: "#c87000",
     logo: (size) => <AgencyLogo size={size} bg="#c87000" text1="DED" text2="Dubai" />,
   },
-  // ===== دائرة التنمية الاقتصادية - أبوظبي =====
+  // ===== Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø£Ø¨ÙØ¸Ø¨Ù =====
   {
-    label: "دائرة التنمية الاقتصادية - أبوظبي",
+    label: "Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø£Ø¨ÙØ¸Ø¨Ù",
     labelEn: "ADDED",
     bgColor: "#fff5e8",
     borderColor: "#8B4500",
-    logo: (size) => <AgencyLogo size={size} bg="#8B4500" text1="ADDED" text2="أبوظبي" />,
+    logo: (size) => <AgencyLogo size={size} bg="#8B4500" text1="ADDED" text2="Ø£Ø¨ÙØ¸Ø¨Ù" />,
   },
-  // ===== دائرة التنمية الاقتصادية - الشارقة =====
+  // ===== Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø§ÙØ´Ø§Ø±ÙØ© =====
   {
-    label: "دائرة التنمية الاقتصادية - الشارقة",
+    label: "Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø§ÙØ´Ø§Ø±ÙØ©",
     labelEn: "SEDD",
     bgColor: "#e8ecff",
     borderColor: "#2a3a9c",
-    logo: (size) => <AgencyLogo size={size} bg="#2a3a9c" text1="SEDD" text2="الشارقة" />,
+    logo: (size) => <AgencyLogo size={size} bg="#2a3a9c" text1="SEDD" text2="Ø§ÙØ´Ø§Ø±ÙØ©" />,
   },
-  // ===== الهيئة الاتحادية للهوية والجنسية (ICP) =====
+  // ===== Ø§ÙÙÙØ¦Ø© Ø§ÙØ§ØªØ­Ø§Ø¯ÙØ© ÙÙÙÙÙØ© ÙØ§ÙØ¬ÙØ³ÙØ© (ICP) =====
   {
-    label: "الهيئة الاتحادية للهوية والجنسية والجمارك وأمن المنافذ",
+    label: "Ø§ÙÙÙØ¦Ø© Ø§ÙØ§ØªØ­Ø§Ø¯ÙØ© ÙÙÙÙÙØ© ÙØ§ÙØ¬ÙØ³ÙØ© ÙØ§ÙØ¬ÙØ§Ø±Ù ÙØ£ÙÙ Ø§ÙÙÙØ§ÙØ°",
     labelEn: "ICP",
     bgColor: "#f5f0e8",
     borderColor: "#7a5a00",
     logo: (size) => <AgencyLogo size={size} bg="#7a5a00" text1="ICP" text2="UAE" />,
   },
-  // ===== حكومة الشارقة =====
+  // ===== Ø­ÙÙÙØ© Ø§ÙØ´Ø§Ø±ÙØ© =====
   {
-    label: "حكومة الشارقة",
+    label: "Ø­ÙÙÙØ© Ø§ÙØ´Ø§Ø±ÙØ©",
     labelEn: "Sharjah Government",
     bgColor: "#e8ecff",
     borderColor: "#2a3a9c",
     logo: (size) => <img src={LOGO_SHARJAH_GOV} alt="Sharjah Government" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== الكويت =====
+  // ===== Ø§ÙÙÙÙØª =====
   {
-    label: "الكويت",
+    label: "Ø§ÙÙÙÙØª",
     labelEn: "Kuwait",
     bgColor: "#f0f8e8",
     borderColor: "#2d7a2d",
     logo: (size) => <img src={LOGO_KUWAIT} alt="Kuwait" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== قطر =====
+  // ===== ÙØ·Ø± =====
   {
-    label: "قطر",
+    label: "ÙØ·Ø±",
     labelEn: "Qatar",
     bgColor: "#f8e8f0",
     borderColor: "#8B0000",
     logo: (size) => <img src={LOGO_QATAR} alt="Qatar" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== عمان =====
+  // ===== Ø¹ÙØ§Ù =====
   {
-    label: "عُمان",
+    label: "Ø¹ÙÙØ§Ù",
     labelEn: "Oman",
     bgColor: "#fff0e8",
     borderColor: "#c83a00",
     logo: (size) => <img src={LOGO_OMAN} alt="Oman" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== البحرين =====
+  // ===== Ø§ÙØ¨Ø­Ø±ÙÙ =====
   {
-    label: "البحرين",
+    label: "Ø§ÙØ¨Ø­Ø±ÙÙ",
     labelEn: "Bahrain",
     bgColor: "#f8e8e8",
     borderColor: "#cc0000",
     logo: (size) => <img src={LOGO_BAHRAIN} alt="Bahrain" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== المملكة العربية السعودية =====
+  // ===== Ø§ÙÙÙÙÙØ© Ø§ÙØ¹Ø±Ø¨ÙØ© Ø§ÙØ³Ø¹ÙØ¯ÙØ© =====
   {
-    label: "المملكة العربية السعودية",
+    label: "Ø§ÙÙÙÙÙØ© Ø§ÙØ¹Ø±Ø¨ÙØ© Ø§ÙØ³Ø¹ÙØ¯ÙØ©",
     labelEn: "Saudi Arabia",
     bgColor: "#e8f5ee",
     borderColor: "#006633",
     logo: (size) => <img src={LOGO_KSA} alt="Saudi Arabia" width={size} height={size} style={{ objectFit: "contain", display: "block" }} />
   },
-  // ===== النيابة العامة =====
+  // ===== Ø§ÙÙÙØ§Ø¨Ø© Ø§ÙØ¹Ø§ÙØ© =====
   {
-    label: "النيابة العامة للدولة",
+    label: "Ø§ÙÙÙØ§Ø¨Ø© Ø§ÙØ¹Ø§ÙØ© ÙÙØ¯ÙÙØ©",
     labelEn: "Public Prosecution",
     bgColor: "#f0f0f5",
     borderColor: "#3a3a6a",
     logo: (size) => <AgencyLogo size={size} bg="#3a3a6a" text1="PP" text2="UAE" />,
   },
-  // ===== دائرة القضاء - أبوظبي =====
+  // ===== Ø¯Ø§Ø¦Ø±Ø© Ø§ÙÙØ¶Ø§Ø¡ - Ø£Ø¨ÙØ¸Ø¨Ù =====
   {
-    label: "دائرة القضاء - أبوظبي",
+    label: "Ø¯Ø§Ø¦Ø±Ø© Ø§ÙÙØ¶Ø§Ø¡ - Ø£Ø¨ÙØ¸Ø¨Ù",
     labelEn: "ADJD",
     bgColor: "#f5f0e8",
     borderColor: "#8B6914",
-    logo: (size) => <AgencyLogo size={size} bg="#8B6914" text1="ADJD" text2="أبوظبي" />,
+    logo: (size) => <AgencyLogo size={size} bg="#8B6914" text1="ADJD" text2="Ø£Ø¨ÙØ¸Ø¨Ù" />,
   },
-  // ===== محاكم دبي =====
+  // ===== ÙØ­Ø§ÙÙ Ø¯Ø¨Ù =====
   {
-    label: "محاكم دبي",
+    label: "ÙØ­Ø§ÙÙ Ø¯Ø¨Ù",
     labelEn: "Dubai Courts",
     bgColor: "#e8f5ee",
     borderColor: "#006633",
@@ -428,156 +428,156 @@ function getSourceConfig(source: string): SourceConfig | null {
   const up = s.toUpperCase();
   const lo = s.toLowerCase();
 
-  // ===== شرطة دبي =====
-  if (lo.includes("شرطة دبي") || up.includes("DUBAI POLICE") || (up.includes("DUBAI") && up.includes("POLICE")))
+  // ===== Ø´Ø±Ø·Ø© Ø¯Ø¨Ù =====
+  if (lo.includes("Ø´Ø±Ø·Ø© Ø¯Ø¨Ù") || up.includes("DUBAI POLICE") || (up.includes("DUBAI") && up.includes("POLICE")))
     return SOURCE_MAP[0];
 
-  // ===== شرطة أبوظبي =====
-  if (lo.includes("شرطة أبوظبي") || lo.includes("شرطة ابوظبي") || up.includes("ABU DHABI POLICE") || (up.includes("ABU DHABI") && up.includes("POLICE")))
+  // ===== Ø´Ø±Ø·Ø© Ø£Ø¨ÙØ¸Ø¨Ù =====
+  if (lo.includes("Ø´Ø±Ø·Ø© Ø£Ø¨ÙØ¸Ø¨Ù") || lo.includes("Ø´Ø±Ø·Ø© Ø§Ø¨ÙØ¸Ø¨Ù") || up.includes("ABU DHABI POLICE") || (up.includes("ABU DHABI") && up.includes("POLICE")))
     return SOURCE_MAP[1];
 
-  // ===== شرطة الشارقة =====
-  if (lo.includes("شرطة الشارقة") || up.includes("SHARJAH POLICE") || (up.includes("SHARJAH") && up.includes("POLICE")))
+  // ===== Ø´Ø±Ø·Ø© Ø§ÙØ´Ø§Ø±ÙØ© =====
+  if (lo.includes("Ø´Ø±Ø·Ø© Ø§ÙØ´Ø§Ø±ÙØ©") || up.includes("SHARJAH POLICE") || (up.includes("SHARJAH") && up.includes("POLICE")))
     return SOURCE_MAP[2];
 
-  // ===== شرطة عجمان =====
-  if (lo.includes("شرطة عجمان") || up.includes("AJMAN POLICE") || (up.includes("AJMAN") && up.includes("POLICE")))
+  // ===== Ø´Ø±Ø·Ø© Ø¹Ø¬ÙØ§Ù =====
+  if (lo.includes("Ø´Ø±Ø·Ø© Ø¹Ø¬ÙØ§Ù") || up.includes("AJMAN POLICE") || (up.includes("AJMAN") && up.includes("POLICE")))
     return SOURCE_MAP[3];
 
-  // ===== شرطة أم القيوين =====
-  if (lo.includes("شرطة أم القيوين") || lo.includes("شرطة ام القيوين") || up.includes("UAQ POLICE") || (up.includes("UAQ") && up.includes("POLICE")) || up.includes("UMM AL QUWAIN"))
+  // ===== Ø´Ø±Ø·Ø© Ø£Ù Ø§ÙÙÙÙÙÙ =====
+  if (lo.includes("Ø´Ø±Ø·Ø© Ø£Ù Ø§ÙÙÙÙÙÙ") || lo.includes("Ø´Ø±Ø·Ø© Ø§Ù Ø§ÙÙÙÙÙÙ") || up.includes("UAQ POLICE") || (up.includes("UAQ") && up.includes("POLICE")) || up.includes("UMM AL QUWAIN"))
     return SOURCE_MAP[4];
 
-  // ===== شرطة رأس الخيمة =====
-  if (lo.includes("شرطة رأس الخيمة") || lo.includes("شرطة راس الخيمة") || up.includes("RAK POLICE") || (up.includes("RAS AL KHAIMAH") && up.includes("POLICE")))
+  // ===== Ø´Ø±Ø·Ø© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ© =====
+  if (lo.includes("Ø´Ø±Ø·Ø© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ©") || lo.includes("Ø´Ø±Ø·Ø© Ø±Ø§Ø³ Ø§ÙØ®ÙÙØ©") || up.includes("RAK POLICE") || (up.includes("RAS AL KHAIMAH") && up.includes("POLICE")))
     return SOURCE_MAP[5];
 
-  // ===== شرطة الفجيرة =====
-  if (lo.includes("شرطة الفجيرة") || up.includes("FUJAIRAH POLICE") || (up.includes("FUJAIRAH") && up.includes("POLICE")))
+  // ===== Ø´Ø±Ø·Ø© Ø§ÙÙØ¬ÙØ±Ø© =====
+  if (lo.includes("Ø´Ø±Ø·Ø© Ø§ÙÙØ¬ÙØ±Ø©") || up.includes("FUJAIRAH POLICE") || (up.includes("FUJAIRAH") && up.includes("POLICE")))
     return SOURCE_MAP[6];
 
-  // ===== وزارة الداخلية =====
-  if (lo.includes("وزارة الداخلية") || up.includes("MINISTRY OF INTERIOR") || up === "MOI")
+  // ===== ÙØ²Ø§Ø±Ø© Ø§ÙØ¯Ø§Ø®ÙÙØ© =====
+  if (lo.includes("ÙØ²Ø§Ø±Ø© Ø§ÙØ¯Ø§Ø®ÙÙØ©") || up.includes("MINISTRY OF INTERIOR") || up === "MOI")
     return SOURCE_MAP[7];
 
-  // ===== هيئة الطرق والمواصلات - دبي (RTA) =====
-  if (lo.includes("هيئة الطرق والمواصلات") || up.includes("RTA") || up.includes("ROADS AND TRANSPORT") || up.includes("ROADS & TRANSPORT"))
+  // ===== ÙÙØ¦Ø© Ø§ÙØ·Ø±Ù ÙØ§ÙÙÙØ§ØµÙØ§Øª - Ø¯Ø¨Ù (RTA) =====
+  if (lo.includes("ÙÙØ¦Ø© Ø§ÙØ·Ø±Ù ÙØ§ÙÙÙØ§ØµÙØ§Øª") || up.includes("RTA") || up.includes("ROADS AND TRANSPORT") || up.includes("ROADS & TRANSPORT"))
     return SOURCE_MAP[8];
 
-  // ===== مركز النقل المتكامل - أبوظبي =====
-  if (lo.includes("مركز النقل المتكامل") || up.includes("ITC") || up.includes("INTEGRATED TRANSPORT"))
+  // ===== ÙØ±ÙØ² Ø§ÙÙÙÙ Ø§ÙÙØªÙØ§ÙÙ - Ø£Ø¨ÙØ¸Ø¨Ù =====
+  if (lo.includes("ÙØ±ÙØ² Ø§ÙÙÙÙ Ø§ÙÙØªÙØ§ÙÙ") || up.includes("ITC") || up.includes("INTEGRATED TRANSPORT"))
     return SOURCE_MAP[9];
 
-  // ===== Abu Dhabi Traffic (القيمة الحرفية من الـ API) - مرور أبوظبي =====
-  if (lo.includes("abu dhabi traffic") || up.includes("ABU DHABI TRAFFIC") || lo.includes("مرور أبوظبي") || lo.includes("مرور ابوظبي") || (up.includes("ABU DHABI") && up.includes("TRAFFIC")))
-    return SOURCE_MAP[1]; // شرطة أبوظبي / مرور أبوظبي
+  // ===== Abu Dhabi Traffic (Ø§ÙÙÙÙØ© Ø§ÙØ­Ø±ÙÙØ© ÙÙ Ø§ÙÙ API) - ÙØ±ÙØ± Ø£Ø¨ÙØ¸Ø¨Ù =====
+  if (lo.includes("abu dhabi traffic") || up.includes("ABU DHABI TRAFFIC") || lo.includes("ÙØ±ÙØ± Ø£Ø¨ÙØ¸Ø¨Ù") || lo.includes("ÙØ±ÙØ± Ø§Ø¨ÙØ¸Ø¨Ù") || (up.includes("ABU DHABI") && up.includes("TRAFFIC")))
+    return SOURCE_MAP[1]; // Ø´Ø±Ø·Ø© Ø£Ø¨ÙØ¸Ø¨Ù / ÙØ±ÙØ± Ø£Ø¨ÙØ¸Ø¨Ù
 
-  // ===== هيئة الطرق - الشارقة =====
-  if (lo.includes("هيئة الطرق") && lo.includes("الشارقة") || up.includes("SRTA"))
+  // ===== ÙÙØ¦Ø© Ø§ÙØ·Ø±Ù - Ø§ÙØ´Ø§Ø±ÙØ© =====
+  if (lo.includes("ÙÙØ¦Ø© Ø§ÙØ·Ø±Ù") && lo.includes("Ø§ÙØ´Ø§Ø±ÙØ©") || up.includes("SRTA"))
     return SOURCE_MAP[10];
 
-  // ===== هيئة النقل - عجمان =====
-  if ((lo.includes("هيئة النقل") && lo.includes("عجمان")) || (up.includes("TA") && up.includes("AJMAN")))
+  // ===== ÙÙØ¦Ø© Ø§ÙÙÙÙ - Ø¹Ø¬ÙØ§Ù =====
+  if ((lo.includes("ÙÙØ¦Ø© Ø§ÙÙÙÙ") && lo.includes("Ø¹Ø¬ÙØ§Ù")) || (up.includes("TA") && up.includes("AJMAN")))
     return SOURCE_MAP[11];
 
-  // ===== هيئة رأس الخيمة للمواصلات =====
-  if (lo.includes("هيئة رأس الخيمة") || lo.includes("هيئة راس الخيمة") || up.includes("RAK TA") || (up.includes("RAK") && up.includes("TRANSPORT")))
+  // ===== ÙÙØ¦Ø© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ© ÙÙÙÙØ§ØµÙØ§Øª =====
+  if (lo.includes("ÙÙØ¦Ø© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ©") || lo.includes("ÙÙØ¦Ø© Ø±Ø§Ø³ Ø§ÙØ®ÙÙØ©") || up.includes("RAK TA") || (up.includes("RAK") && up.includes("TRANSPORT")))
     return SOURCE_MAP[12];
 
-  // ===== سالك =====
-  if (lo.includes("سالك") || up.includes("SALIK"))
+  // ===== Ø³Ø§ÙÙ =====
+  if (lo.includes("Ø³Ø§ÙÙ") || up.includes("SALIK"))
     return SOURCE_MAP[13];
 
-  // ===== درب =====
-  if (lo.includes("درب") || up.includes("DARB"))
+  // ===== Ø¯Ø±Ø¨ =====
+  if (lo.includes("Ø¯Ø±Ø¨") || up.includes("DARB"))
     return SOURCE_MAP[14];
 
-  // ===== بلدية دبي =====
-  if (lo.includes("بلدية دبي") || up.includes("DUBAI MUNICIPALITY") || up.includes("DUBAI MUN"))
+  // ===== Ø¨ÙØ¯ÙØ© Ø¯Ø¨Ù =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© Ø¯Ø¨Ù") || up.includes("DUBAI MUNICIPALITY") || up.includes("DUBAI MUN"))
     return SOURCE_MAP[15];
 
-  // ===== بلدية مدينة أبوظبي =====
-  if (lo.includes("بلدية مدينة أبوظبي") || lo.includes("بلدية مدينة ابوظبي") || up.includes("ABU DHABI CITY MUNICIPALITY"))
+  // ===== Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø£Ø¨ÙØ¸Ø¨Ù =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø£Ø¨ÙØ¸Ø¨Ù") || lo.includes("Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§Ø¨ÙØ¸Ø¨Ù") || up.includes("ABU DHABI CITY MUNICIPALITY"))
     return SOURCE_MAP[16];
 
-  // ===== بلدية مدينة العين =====
-  if (lo.includes("بلدية مدينة العين") || up.includes("AL AIN MUNICIPALITY"))
+  // ===== Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§ÙØ¹ÙÙ =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§ÙØ¹ÙÙ") || up.includes("AL AIN MUNICIPALITY"))
     return SOURCE_MAP[17];
 
-  // ===== بلدية منطقة الظفرة =====
-  if (lo.includes("بلدية منطقة الظفرة") || up.includes("DHAFRA"))
+  // ===== Ø¨ÙØ¯ÙØ© ÙÙØ·ÙØ© Ø§ÙØ¸ÙØ±Ø© =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© ÙÙØ·ÙØ© Ø§ÙØ¸ÙØ±Ø©") || up.includes("DHAFRA"))
     return SOURCE_MAP[18];
 
-  // ===== بلدية مدينة الشارقة =====
-  if (lo.includes("بلدية مدينة الشارقة") || up.includes("SHARJAH CITY MUNICIPALITY") || up.includes("SHARJAH MUN"))
+  // ===== Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§ÙØ´Ø§Ø±ÙØ© =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© ÙØ¯ÙÙØ© Ø§ÙØ´Ø§Ø±ÙØ©") || up.includes("SHARJAH CITY MUNICIPALITY") || up.includes("SHARJAH MUN"))
     return SOURCE_MAP[19];
 
-  // ===== بلدية منطقة عجمان =====
-  if (lo.includes("بلدية منطقة عجمان") || lo.includes("بلدية عجمان") || up.includes("AJMAN MUNICIPALITY"))
+  // ===== Ø¨ÙØ¯ÙØ© ÙÙØ·ÙØ© Ø¹Ø¬ÙØ§Ù =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© ÙÙØ·ÙØ© Ø¹Ø¬ÙØ§Ù") || lo.includes("Ø¨ÙØ¯ÙØ© Ø¹Ø¬ÙØ§Ù") || up.includes("AJMAN MUNICIPALITY"))
     return SOURCE_MAP[20];
 
-  // ===== بلدية أم القيوين =====
-  if (lo.includes("بلدية أم القيوين") || lo.includes("بلدية ام القيوين") || up.includes("UAQ MUNICIPALITY"))
+  // ===== Ø¨ÙØ¯ÙØ© Ø£Ù Ø§ÙÙÙÙÙÙ =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© Ø£Ù Ø§ÙÙÙÙÙÙ") || lo.includes("Ø¨ÙØ¯ÙØ© Ø§Ù Ø§ÙÙÙÙÙÙ") || up.includes("UAQ MUNICIPALITY"))
     return SOURCE_MAP[21];
 
-  // ===== بلدية رأس الخيمة =====
-  if (lo.includes("بلدية رأس الخيمة") || lo.includes("بلدية راس الخيمة") || up.includes("RAK MUNICIPALITY"))
+  // ===== Ø¨ÙØ¯ÙØ© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ© =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ©") || lo.includes("Ø¨ÙØ¯ÙØ© Ø±Ø§Ø³ Ø§ÙØ®ÙÙØ©") || up.includes("RAK MUNICIPALITY"))
     return SOURCE_MAP[22];
 
-  // ===== بلدية الفجيرة =====
-  if (lo.includes("بلدية الفجيرة") || up.includes("FUJAIRAH MUNICIPALITY"))
+  // ===== Ø¨ÙØ¯ÙØ© Ø§ÙÙØ¬ÙØ±Ø© =====
+  if (lo.includes("Ø¨ÙØ¯ÙØ© Ø§ÙÙØ¬ÙØ±Ø©") || up.includes("FUJAIRAH MUNICIPALITY"))
     return SOURCE_MAP[23];
 
-  // ===== دائرة التنمية الاقتصادية - دبي =====
-  if ((lo.includes("دائرة التنمية") && lo.includes("دبي")) || up.includes("DED") && up.includes("DUBAI"))
+  // ===== Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø¯Ø¨Ù =====
+  if ((lo.includes("Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ©") && lo.includes("Ø¯Ø¨Ù")) || up.includes("DED") && up.includes("DUBAI"))
     return SOURCE_MAP[24];
 
-  // ===== دائرة التنمية الاقتصادية - أبوظبي =====
-  if ((lo.includes("دائرة التنمية") && (lo.includes("أبوظبي") || lo.includes("ابوظبي"))) || up.includes("ADDED"))
+  // ===== Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø£Ø¨ÙØ¸Ø¨Ù =====
+  if ((lo.includes("Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ©") && (lo.includes("Ø£Ø¨ÙØ¸Ø¨Ù") || lo.includes("Ø§Ø¨ÙØ¸Ø¨Ù"))) || up.includes("ADDED"))
     return SOURCE_MAP[25];
 
-  // ===== دائرة التنمية الاقتصادية - الشارقة =====
-  if ((lo.includes("دائرة التنمية") && lo.includes("الشارقة")) || up.includes("SEDD"))
+  // ===== Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ© Ø§ÙØ§ÙØªØµØ§Ø¯ÙØ© - Ø§ÙØ´Ø§Ø±ÙØ© =====
+  if ((lo.includes("Ø¯Ø§Ø¦Ø±Ø© Ø§ÙØªÙÙÙØ©") && lo.includes("Ø§ÙØ´Ø§Ø±ÙØ©")) || up.includes("SEDD"))
     return SOURCE_MAP[26];
 
   // ===== ICP =====
-  if (lo.includes("هيئة الاتحادية للهوية") || up.includes("ICP") || up.includes("IDENTITY") || up.includes("CUSTOMS"))
+  if (lo.includes("ÙÙØ¦Ø© Ø§ÙØ§ØªØ­Ø§Ø¯ÙØ© ÙÙÙÙÙØ©") || up.includes("ICP") || up.includes("IDENTITY") || up.includes("CUSTOMS"))
     return SOURCE_MAP[27];
 
-  // ===== النيابة العامة =====
-  if (lo.includes("النيابة العامة") || up.includes("PUBLIC PROSECUTION") || up.includes("PROSECUTION"))
+  // ===== Ø§ÙÙÙØ§Ø¨Ø© Ø§ÙØ¹Ø§ÙØ© =====
+  if (lo.includes("Ø§ÙÙÙØ§Ø¨Ø© Ø§ÙØ¹Ø§ÙØ©") || up.includes("PUBLIC PROSECUTION") || up.includes("PROSECUTION"))
     return SOURCE_MAP[28];
 
-  // ===== دائرة القضاء - أبوظبي =====
-  if ((lo.includes("دائرة القضاء") && (lo.includes("أبوظبي") || lo.includes("ابوظبي"))) || up.includes("ADJD"))
+  // ===== Ø¯Ø§Ø¦Ø±Ø© Ø§ÙÙØ¶Ø§Ø¡ - Ø£Ø¨ÙØ¸Ø¨Ù =====
+  if ((lo.includes("Ø¯Ø§Ø¦Ø±Ø© Ø§ÙÙØ¶Ø§Ø¡") && (lo.includes("Ø£Ø¨ÙØ¸Ø¨Ù") || lo.includes("Ø§Ø¨ÙØ¸Ø¨Ù"))) || up.includes("ADJD"))
     return SOURCE_MAP[29];
 
-  // ===== محاكم دبي =====
-  if (lo.includes("محاكم دبي") || up.includes("DUBAI COURTS"))
+  // ===== ÙØ­Ø§ÙÙ Ø¯Ø¨Ù =====
+  if (lo.includes("ÙØ­Ø§ÙÙ Ø¯Ø¨Ù") || up.includes("DUBAI COURTS"))
     return SOURCE_MAP[30];
 
-  // ===== حكومة الشارقة =====
-  if (lo.includes("حكومة الشارقة") || up.includes("SHARJAH GOVERNMENT") || up.includes("SHARJAH GOV"))
+  // ===== Ø­ÙÙÙØ© Ø§ÙØ´Ø§Ø±ÙØ© =====
+  if (lo.includes("Ø­ÙÙÙØ© Ø§ÙØ´Ø§Ø±ÙØ©") || up.includes("SHARJAH GOVERNMENT") || up.includes("SHARJAH GOV"))
     return SOURCE_MAP[31];
 
-  // ===== الكويت =====
-  if (lo.includes("الكويت") || up.includes("KUWAIT") || up === "KWT")
+  // ===== Ø§ÙÙÙÙØª =====
+  if (lo.includes("Ø§ÙÙÙÙØª") || up.includes("KUWAIT") || up === "KWT")
     return SOURCE_MAP[32];
 
-  // ===== قطر =====
-  if (lo.includes("قطر") || up.includes("QATAR") || up === "QAT")
+  // ===== ÙØ·Ø± =====
+  if (lo.includes("ÙØ·Ø±") || up.includes("QATAR") || up === "QAT")
     return SOURCE_MAP[33];
 
-  // ===== عمان =====
-  if (lo.includes("عُمان") || lo.includes("عمان") || up.includes("OMAN") || up === "OMN")
+  // ===== Ø¹ÙØ§Ù =====
+  if (lo.includes("Ø¹ÙÙØ§Ù") || lo.includes("Ø¹ÙØ§Ù") || up.includes("OMAN") || up === "OMN")
     return SOURCE_MAP[34];
 
-  // ===== البحرين =====
-  if (lo.includes("البحرين") || up.includes("BAHRAIN") || up === "BAH")
+  // ===== Ø§ÙØ¨Ø­Ø±ÙÙ =====
+  if (lo.includes("Ø§ÙØ¨Ø­Ø±ÙÙ") || up.includes("BAHRAIN") || up === "BAH")
     return SOURCE_MAP[35];
 
-  // ===== السعودية =====
-  if (lo.includes("السعودية") || lo.includes("سعودية") || up.includes("SAUDI") || up.includes("KSA") || up === "KSA")
+  // ===== Ø§ÙØ³Ø¹ÙØ¯ÙØ© =====
+  if (lo.includes("Ø§ÙØ³Ø¹ÙØ¯ÙØ©") || lo.includes("Ø³Ø¹ÙØ¯ÙØ©") || up.includes("SAUDI") || up.includes("KSA") || up === "KSA")
     return SOURCE_MAP[36];
 
   return null;
@@ -606,7 +606,7 @@ function getSourceBgColor(source: string): string {
 
 function getSourceLabel(source: string, lang?: string): string {
   const config = getSourceConfig(source);
-  if (!config) return source || "—";
+  if (!config) return source || "â";
   return lang === "en" ? (config.labelEn || config.label) : config.label;
 }
 
@@ -637,23 +637,23 @@ function SourceBadge({ source, lang }: { source: string; lang?: string }) {
 
 // ===== PLATE SOURCES =====
 const ALL_PLATE_SOURCES = [
-  { value: "DXB",  label: "دبي",         labelEn: "Dubai" },
-  { value: "AUH",  label: "أبوظبي",      labelEn: "Abu Dhabi" },
-  { value: "SHJ",  label: "الشارقة",     labelEn: "Sharjah" },
-  { value: "AJM",  label: "عجمان",       labelEn: "Ajman" },
-  { value: "UMQ",  label: "أم القيوين",  labelEn: "Umm Al Quwain" },
-  { value: "RAK",  label: "رأس الخيمة", labelEn: "Ras Al Khaimah" },
-  { value: "FUJ",  label: "الفجيرة",    labelEn: "Fujairah" },
-  { value: "OMN",  label: "عُمان",       labelEn: "Oman" },
-  { value: "QAT",  label: "قطر",         labelEn: "Qatar" },
-  { value: "KWT",  label: "الكويت",      labelEn: "Kuwait" },
-  { value: "BAH",  label: "البحرين",     labelEn: "Bahrain" },
-  { value: "KSA",  label: "السعودية",    labelEn: "Saudi Arabia" },
+  { value: "DXB",  label: "Ø¯Ø¨Ù",         labelEn: "Dubai" },
+  { value: "AUH",  label: "Ø£Ø¨ÙØ¸Ø¨Ù",      labelEn: "Abu Dhabi" },
+  { value: "SHJ",  label: "Ø§ÙØ´Ø§Ø±ÙØ©",     labelEn: "Sharjah" },
+  { value: "AJM",  label: "Ø¹Ø¬ÙØ§Ù",       labelEn: "Ajman" },
+  { value: "UMQ",  label: "Ø£Ù Ø§ÙÙÙÙÙÙ",  labelEn: "Umm Al Quwain" },
+  { value: "RAK",  label: "Ø±Ø£Ø³ Ø§ÙØ®ÙÙØ©", labelEn: "Ras Al Khaimah" },
+  { value: "FUJ",  label: "Ø§ÙÙØ¬ÙØ±Ø©",    labelEn: "Fujairah" },
+  { value: "OMN",  label: "Ø¹ÙÙØ§Ù",       labelEn: "Oman" },
+  { value: "QAT",  label: "ÙØ·Ø±",         labelEn: "Qatar" },
+  { value: "KWT",  label: "Ø§ÙÙÙÙØª",      labelEn: "Kuwait" },
+  { value: "BAH",  label: "Ø§ÙØ¨Ø­Ø±ÙÙ",     labelEn: "Bahrain" },
+  { value: "KSA",  label: "Ø§ÙØ³Ø¹ÙØ¯ÙØ©",    labelEn: "Saudi Arabia" },
 ];
 
 // ===== PLATE CODES =====
 const PLATE_CODES_BY_SOURCE: Record<string, string[]> = {
-  DXB: ["Motorcycle","Motorcycle2","Motorcycle3","Motorcycle9","A","B","C","D","E","F","H","G","I","J","K","L","M","N","O","R","T","Z","S","Q","U","V","W","X","Y","ابيض","P","BB","AA","CC","DD","NN","HH","EE","MM","FF","II","Taxi","PublicTransportation","Public Transportation 1","Trade","Export","Export 2","Export 3","Export 4","Export 5","Export 6","Export 7","Export 8","Export 9","Consulate","Political association","International Organization","Accommodation","Government","PrivateTransportation","Data Migration","EntertainmentMotorcycle","Trailer","Classical","Import","Learning","DubaiPolice","Dubai Flag","EXPO 1","EXPO 2","EXPO 3","EXPO 4","EXPO 5","EXPO 6","EXPO 7","SelfDrivingVehicle"],
+  DXB: ["Motorcycle","Motorcycle2","Motorcycle3","Motorcycle9","A","B","C","D","E","F","H","G","I","J","K","L","M","N","O","R","T","Z","S","Q","U","V","W","X","Y","Ø§Ø¨ÙØ¶","P","BB","AA","CC","DD","NN","HH","EE","MM","FF","II","Taxi","PublicTransportation","Public Transportation 1","Trade","Export","Export 2","Export 3","Export 4","Export 5","Export 6","Export 7","Export 8","Export 9","Consulate","Political association","International Organization","Accommodation","Government","PrivateTransportation","Data Migration","EntertainmentMotorcycle","Trailer","Classical","Import","Learning","DubaiPolice","Dubai Flag","EXPO 1","EXPO 2","EXPO 3","EXPO 4","EXPO 5","EXPO 6","EXPO 7","SelfDrivingVehicle"],
   AUH: ["White","Red","Motorcycle4","1","15","Blue","Green","Gray","5","6","11","10","4","7","8","9","12","13","14","16","2","17","50","18","20","19","21","22","Yellow","Green1","TradeWhite","Trade","Export","Consulate","Diplomat","International Organization","Accommodation","Government","Custom","Probation","Orange","Protocol","RED"],
   SHJ: ["Motorcycle","Classic","13","White","Orange","1","2","3","4","Green","PublicTransportation2","PublicTransportation1","Trade","Export","Export4","Export - 5","Police","Trailer"],
   AJM: ["Motorcycle","A","B","C","D","E","H","F","K","Classic","Green","Probation","Export","Trailer"],
@@ -669,23 +669,23 @@ const PLATE_CODES_BY_SOURCE: Record<string, string[]> = {
 
 // ===== KSA LETTER CODES =====
 const KSA_LETTER_CODES = [
-  { value: "أ", label: "أ - A" },
-  { value: "ب", label: "ب - B" },
-  { value: "ح", label: "ح - J" },
-  { value: "د", label: "د - D" },
-  { value: "ر", label: "ر - R" },
-  { value: "س", label: "س - S" },
-  { value: "ص", label: "ص - X" },
-  { value: "ط", label: "ط - T" },
-  { value: "ع", label: "ع - E" },
-  { value: "ق", label: "ق - G" },
-  { value: "ك", label: "ك - K" },
-  { value: "ل", label: "ل - L" },
-  { value: "م", label: "م - M" },
-  { value: "ن", label: "ن - N" },
-  { value: "ه", label: "ه - H" },
-  { value: "و", label: "و - U" },
-  { value: "ي", label: "ي - V" },
+  { value: "Ø£", label: "Ø£ - A" },
+  { value: "Ø¨", label: "Ø¨ - B" },
+  { value: "Ø­", label: "Ø­ - J" },
+  { value: "Ø¯", label: "Ø¯ - D" },
+  { value: "Ø±", label: "Ø± - R" },
+  { value: "Ø³", label: "Ø³ - S" },
+  { value: "Øµ", label: "Øµ - X" },
+  { value: "Ø·", label: "Ø· - T" },
+  { value: "Ø¹", label: "Ø¹ - E" },
+  { value: "Ù", label: "Ù - G" },
+  { value: "Ù", label: "Ù - K" },
+  { value: "Ù", label: "Ù - L" },
+  { value: "Ù", label: "Ù - M" },
+  { value: "Ù", label: "Ù - N" },
+  { value: "Ù", label: "Ù - H" },
+  { value: "Ù", label: "Ù - U" },
+  { value: "Ù", label: "Ù - V" },
 ];
 
 type SearchTab = "plate" | "licence" | "tcnumber";
@@ -786,7 +786,7 @@ function DubaiPlateDisplay({ plateSource, plateNumber, plateCode }: { plateSourc
 
       {/* Plate number on the right */}
       <span style={{ fontSize: "24px", fontFamily: "'Arial Black', Arial, sans-serif", fontWeight: 900, color: "#111", letterSpacing: "2px", minWidth: "40px", textAlign: "center" }}>
-        {plateNumber || (plateCode || plateSource ? "" : "—")}
+        {plateNumber || (plateCode || plateSource ? "" : "â")}
       </span>
     </div>
   );
@@ -887,8 +887,8 @@ function PlateFormFields({
   const dynamicPlateCodes = plateCodesData?.plateCodes ?? [];
   const hasDynamicPlateCodes = dynamicPlateCodes.length > 0;
   const normalizePlateValue = (value: string) => value
-    .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
-    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
+    .replace(/[Ù -Ù©]/g, (d) => String("Ù Ù¡Ù¢Ù£Ù¤Ù¥Ù¦Ù§Ù¨Ù©".indexOf(d)))
+    .replace(/[Û°-Û¹]/g, (d) => String("Û°Û±Û²Û³Û´ÛµÛ¶Û·Û¸Û¹".indexOf(d)))
     .trim()
     .toUpperCase();
   const currentPlateCodes = hasDynamicPlateCodes
@@ -913,7 +913,7 @@ function PlateFormFields({
 
   return (
     <>
-      {/* جهة إصدار اللوحة */}
+      {/* Ø¬ÙØ© Ø¥ØµØ¯Ø§Ø± Ø§ÙÙÙØ­Ø© */}
       <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateSource}</label>
         <div className="relative">
@@ -935,26 +935,26 @@ function PlateFormFields({
           <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
         </div>
       </div>
-      {/* رقم اللوحة */}
+      {/* Ø±ÙÙ Ø§ÙÙÙØ­Ø© */}
       <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateNumber}</label>
         <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} placeholder={t.home.form.plateNumberPlaceholder} onKeyDown={(e) => e.key === "Enter" && onEnter()} className="w-full text-base rounded-xl px-4 py-4 focus:outline-none" style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
       </div>
-      {/* رمز اللوحة */}
+      {/* Ø±ÙØ² Ø§ÙÙÙØ­Ø© */}
       {plateSource === "KSA" ? (
         <>
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateCode}</label>
             <div className="relative">
               <select value={plateCode} onChange={(e) => { setPlateCode(e.target.value); setSelectedPlateCodeId(undefined); setSelectedPlateCategory(undefined); }} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
-                <option value="">اختر</option>
+                <option value="">Ø§Ø®ØªØ±</option>
                 {PLATE_CODES_BY_SOURCE.KSA.map((code) => (<option key={code} value={code}>{code}</option>))}
               </select>
               <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            {[{ value: ksaLetter1, setter: setKsaLetter1, label: "رمز اللوحة 1" },{ value: ksaLetter2, setter: setKsaLetter2, label: "رمز اللوحة 2" },{ value: ksaLetter3, setter: setKsaLetter3, label: "رمز اللوحة 3" }].map((item, idx) => (
+            {[{ value: ksaLetter1, setter: setKsaLetter1, label: "Ø±ÙØ² Ø§ÙÙÙØ­Ø© 1" },{ value: ksaLetter2, setter: setKsaLetter2, label: "Ø±ÙØ² Ø§ÙÙÙØ­Ø© 2" },{ value: ksaLetter3, setter: setKsaLetter3, label: "Ø±ÙØ² Ø§ÙÙÙØ­Ø© 3" }].map((item, idx) => (
               <div key={idx} className="space-y-2">
                 <label className="text-sm font-bold text-gray-700 block text-right">{item.label}</label>
                 <div className="relative">
@@ -1063,7 +1063,7 @@ export default function Home() {
       setFilterStatus("all");
     },
     onError: (err) => {
-      toast.error((lang === "ar" ? "فشل الاستعلام: " : "Query failed: ") + err.message);
+      toast.error((lang === "ar" ? "ÙØ´Ù Ø§ÙØ§Ø³ØªØ¹ÙØ§Ù: " : "Query failed: ") + err.message);
     },
   });
 
@@ -1084,20 +1084,20 @@ export default function Home() {
   }, []);
 
   const normalizeDigits = (value: string) => value
-    .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
-    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
+    .replace(/[Ù -Ù©]/g, (d) => String("Ù Ù¡Ù¢Ù£Ù¤Ù¥Ù¦Ù§Ù¨Ù©".indexOf(d)))
+    .replace(/[Û°-Û¹]/g, (d) => String("Û°Û±Û²Û³Û´ÛµÛ¶Û·Û¸Û¹".indexOf(d)));
 
   const handleQuery = () => {
-    if (!plateSource) { toast.error(lang === "ar" ? "يرجى اختيار جهة إصدار اللوحة" : "Please select the plate source"); return; }
+    if (!plateSource) { toast.error(lang === "ar" ? "ÙØ±Ø¬Ù Ø§Ø®ØªÙØ§Ø± Ø¬ÙØ© Ø¥ØµØ¯Ø§Ø± Ø§ÙÙÙØ­Ø©" : "Please select the plate source"); return; }
 
     const normalizedPlateNumber = normalizeDigits(plateNumber).trim();
-    if (!normalizedPlateNumber) { toast.error(lang === "ar" ? "يرجى إدخال رقم اللوحة" : "Please enter the plate number"); return; }
+    if (!normalizedPlateNumber) { toast.error(lang === "ar" ? "ÙØ±Ø¬Ù Ø¥Ø¯Ø®Ø§Ù Ø±ÙÙ Ø§ÙÙÙØ­Ø©" : "Please enter the plate number"); return; }
 
     const finalPlateCode = plateSource === "KSA"
       ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join("")
       : normalizeDigits(plateCode).trim();
 
-    if (!finalPlateCode) { toast.error(lang === "ar" ? "يرجى اختيار رمز اللوحة" : "Please select the plate code"); return; }
+    if (!finalPlateCode) { toast.error(lang === "ar" ? "ÙØ±Ø¬Ù Ø§Ø®ØªÙØ§Ø± Ø±ÙØ² Ø§ÙÙÙØ­Ø©" : "Please select the plate code"); return; }
 
     queryMutation.mutate({
       plateSource,
@@ -1178,10 +1178,10 @@ export default function Home() {
 
   const getStatusBadge = (status: string) => {
     const map: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-      payable: { label: "قابل للدفع", variant: "default" },
-      paid: { label: "مدفوع", variant: "secondary" },
-      seized: { label: "حجز", variant: "destructive" },
-      blackpoints: { label: "نقاط سوداء", variant: "outline" },
+      payable: { label: "ÙØ§Ø¨Ù ÙÙØ¯ÙØ¹", variant: "default" },
+      paid: { label: "ÙØ¯ÙÙØ¹", variant: "secondary" },
+      seized: { label: "Ø­Ø¬Ø²", variant: "destructive" },
+      blackpoints: { label: "ÙÙØ§Ø· Ø³ÙØ¯Ø§Ø¡", variant: "outline" },
     };
     return map[status] || { label: status, variant: "outline" };
   };
@@ -1230,13 +1230,13 @@ export default function Home() {
     : plateCode;
   const plateDisplay = [plateSourceLabel.toUpperCase(), plateNumber, finalPlateCodeDisplay].filter(Boolean).join(" ");
 
-  // Filter tabs config - مطابق للموقع الأصلي
+  // Filter tabs config - ÙØ·Ø§Ø¨Ù ÙÙÙÙÙØ¹ Ø§ÙØ£ØµÙÙ
   const filterTabs = [
     {
       key: "all" as FilterStatus,
       label: t.home.results.filters.all,
       count: allFines.length,
-      // أيقونة كتاب/سجل مطابقة للموقع الأصلي
+      // Ø£ÙÙÙÙØ© ÙØªØ§Ø¨/Ø³Ø¬Ù ÙØ·Ø§Ø¨ÙØ© ÙÙÙÙÙØ¹ Ø§ÙØ£ØµÙÙ
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
@@ -1247,7 +1247,7 @@ export default function Home() {
       key: "seized" as FilterStatus,
       label: t.home.results.filters.booking,
       count: allFines.filter(f => f.status === "seized").length,
-      // أيقونة قفل مطابقة للموقع الأصلي
+      // Ø£ÙÙÙÙØ© ÙÙÙ ÙØ·Ø§Ø¨ÙØ© ÙÙÙÙÙØ¹ Ø§ÙØ£ØµÙÙ
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -1259,7 +1259,7 @@ export default function Home() {
       key: "payable" as FilterStatus,
       label: t.home.results.filters.payable,
       count: allFines.filter(f => !f.isPaid && f.status !== "seized" && f.status !== "blackpoints").length,
-      // أيقونة عملات معدنية مطابقة للموقع الأصلي
+      // Ø£ÙÙÙÙØ© Ø¹ÙÙØ§Øª ÙØ¹Ø¯ÙÙØ© ÙØ·Ø§Ø¨ÙØ© ÙÙÙÙÙØ¹ Ø§ÙØ£ØµÙÙ
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="10"/>
@@ -1273,7 +1273,7 @@ export default function Home() {
       key: "blackpoints" as FilterStatus,
       label: t.home.results.filters.blackPoints,
       count: allFines.filter(f => f.status === "blackpoints").length,
-      // أيقونة علامة تعجب داخل معين مطابقة للموقع الأصلي
+      // Ø£ÙÙÙÙØ© Ø¹ÙØ§ÙØ© ØªØ¹Ø¬Ø¨ Ø¯Ø§Ø®Ù ÙØ¹ÙÙ ÙØ·Ø§Ø¨ÙØ© ÙÙÙÙÙØ¹ Ø§ÙØ£ØµÙÙ
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 2L2 19.5h20L12 2z"/>
@@ -1286,7 +1286,7 @@ export default function Home() {
       key: "notpayable" as FilterStatus,
       label: t.home.results.filters.notPayable,
       count: allFines.filter(f => f.isPaid).length,
-      // أيقونة درع/حماية مطابقة للموقع الأصلي
+      // Ø£ÙÙÙÙØ© Ø¯Ø±Ø¹/Ø­ÙØ§ÙØ© ÙØ·Ø§Ø¨ÙØ© ÙÙÙÙÙØ¹ Ø§ÙØ£ØµÙÙ
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -1326,7 +1326,7 @@ export default function Home() {
       >
         {/* Right: Logo + Name */}
         <div className="flex items-center gap-3">
-          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-12 w-12 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }} />
+          <img src="/dubai-police-logo.svg" alt="Ø´Ø±Ø·Ø© Ø¯Ø¨Ù" className="h-12 w-12 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }} />
           <div className="hidden md:block">
             <div className="text-lg font-black" style={{ color: "#008755" }}>{t.header.siteName}</div>
             <div className="text-xs text-gray-500">{t.header.siteNameEn}</div>
@@ -1346,7 +1346,7 @@ export default function Home() {
 
         {/* Left: Icons */}
         <div className="flex items-center gap-2">
-          {/* زر تبديل اللغة - ظاهر على الموبايل والديسكتوب */}
+          {/* Ø²Ø± ØªØ¨Ø¯ÙÙ Ø§ÙÙØºØ© - Ø¸Ø§ÙØ± Ø¹ÙÙ Ø§ÙÙÙØ¨Ø§ÙÙ ÙØ§ÙØ¯ÙØ³ÙØªÙØ¨ */}
           <button
             onClick={handleLanguageNavigation}
             className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold border transition-all hover:opacity-80"
@@ -1366,7 +1366,7 @@ export default function Home() {
             className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
             style={{ border: "1.5px solid #e5e7eb", color: "#374151" }}
           >
-            ⓘ
+            â
           </button>
           <button
             className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
@@ -1412,7 +1412,7 @@ export default function Home() {
         <div className="px-4 pb-3">
           <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-3 max-h-60 overflow-y-auto max-w-2xl mx-auto">
             {!history || history.length === 0 ? (
-              <p className="text-gray-400 text-sm text-center py-4">لا توجد استعلامات سابقة</p>
+              <p className="text-gray-400 text-sm text-center py-4">ÙØ§ ØªÙØ¬Ø¯ Ø§Ø³ØªØ¹ÙØ§ÙØ§Øª Ø³Ø§Ø¨ÙØ©</p>
             ) : (
               <div className="space-y-2">
                 {(history as QueryHistory[]).map((q) => (
@@ -1448,231 +1448,254 @@ export default function Home() {
       setSelectedFines(next);
     };
 
-    // Status badge config
     const isBlackPoints = fine.status === "blackpoints";
     const isSeized = fine.status === "seized";
 
     const statusConfig = fine.isPaid
-      ? { label: t.home.results.status.paid, bg: "#e7f6f1", color: "#006c44" }
+      ? { label: t.home.results.status.paid, bg: "#eef1f1", color: "#5b5f62" }
       : isSeized
-      ? { label: t.home.results.status.seized, bg: "#fff0e8", color: "#c84800" }
+      ? { label: t.home.results.status.seized, bg: "#fff2e8", color: "#c45e13" }
       : isBlackPoints
-      ? { label: t.home.results.status.blackPoints, bg: "rgba(158,158,158,0.16)", color: "rgba(0,0,0,0.6)" }
+      ? { label: t.home.results.status.blackPoints, bg: "#f0f1f2", color: "#565b61" }
       : fine.status === "notpayable"
-      ? { label: t.home.results.filters.notPayable, bg: "#fff0e8", color: "#c84800" }
-      : { label: t.home.results.status.payable, bg: "#e7f6f1", color: "#006c44" };
+      ? { label: t.home.results.filters.notPayable, bg: "#fff2e8", color: "#c45e13" }
+      : { label: t.home.results.status.payable, bg: "#e8faf2", color: "#007d53" };
 
-    // رمز الدرهم الإماراتي - نص AED واضح
-    const DirhamIcon = ({ color = "#111", size = 20 }: { color?: string; size?: number }) => (
+    const sourceConfig = getSourceConfig(fine.source);
+    const iconSize = isMobile ? 20 : 22;
+    const amountSize = isMobile ? 30 : 34;
+    const bodyLabelSize = isMobile ? 14 : 15;
+    const bodyValueSize = isMobile ? 15 : 16;
+
+    const DirhamMark = ({ size = 24 }: { size?: number }) => (
       <span
         style={{
-          display: "inline-block",
-          verticalAlign: "middle",
-          flexShrink: 0,
-          fontSize: size * 0.65,
+          fontSize: size,
+          lineHeight: 1,
           fontWeight: 900,
           fontFamily: "'Arial Black', Arial, sans-serif",
-          color: color,
-          letterSpacing: "-0.5px",
-          lineHeight: 1,
+          color: "#101114",
+          display: "inline-block",
+          transform: "translateY(-1px)",
         }}
-      >AED</span>
+      >Ã</span>
     );
 
-    // أيقونة لوحة السيارة - مطابقة للأصلي
-    const PlateIcon = () => (
-      <svg width="16" height="13" viewBox="0 0 28 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="1.5" width="7" height="19" fill="#ECECEC"/>
-        <rect x="1" y="1" width="26" height="20" rx="3" stroke="#6B6C6E" strokeWidth="2"/>
-        <line x1="10" y1="1" x2="10" y2="20" stroke="#6B6C6E" strokeWidth="2"/>
-      </svg>
-    );
-
-    // أيقونة الموقع - مطابقة للأصلي
-    const LocationIcon = () => (
-      <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4.36708 14.1781C3.89615 14.1781 3.50109 14.0222 3.1819 13.7102C2.86272 13.3983 2.70312 13.0122 2.70312 12.552V7.07528C2.70312 6.8196 2.76068 6.5767 2.8758 6.34659C2.99092 6.11648 3.15313 5.92472 3.36243 5.77131L7.09847 3.02528C7.24499 2.91278 7.40458 2.83097 7.57725 2.77983C7.74993 2.72869 7.92522 2.70312 8.10313 2.70312C8.28103 2.70312 8.45632 2.72869 8.629 2.77983C8.80167 2.83097 8.96126 2.91278 9.10778 3.02528L12.8438 5.77131C13.0531 5.92472 13.2153 6.11648 13.3305 6.34659C13.4456 6.5767 13.5031 6.8196 13.5031 7.07528V12.552C13.5031 13.0122 13.3435 13.3983 13.0243 13.7102C12.7052 14.0222 12.3101 14.1781 11.8392 14.1781H9.79063V9.48381H6.41563V14.1781H4.36708Z" fill="#EBEBEC" stroke="#89898B" strokeWidth="1.35"/>
-      </svg>
-    );
-
-    // أيقونة السرعة - مطابقة للأصلي
-    const SpeedIcon = () => (
-      <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6.78063 10.2247C7.05063 10.4947 7.405 10.6325 7.84375 10.6381C8.2825 10.6438 8.61438 10.4834 8.83938 10.1572L11.6406 6.03969C11.7756 5.83719 11.7588 5.65156 11.59 5.48281C11.4213 5.31406 11.2356 5.29719 11.0331 5.43219L6.88188 8.23344C6.55563 8.45844 6.38969 8.77906 6.38406 9.19531C6.37844 9.61156 6.51063 9.95469 6.78063 10.2247ZM3.10188 13.6334C2.80938 13.6334 2.52813 13.5631 2.25813 13.4225C1.98813 13.2819 1.78563 13.0822 1.65063 12.8234C1.34688 12.2947 1.10781 11.7266 0.933438 11.1191C0.759063 10.5116 0.671875 9.87594 0.671875 9.21219C0.671875 7.28281 1.36344 5.63 2.74656 4.25375C4.12969 2.8775 5.79375 2.18937 7.73875 2.18937C9.68375 2.18937 11.3478 2.8775 12.7309 4.25375C14.1141 5.63 14.8056 7.28281 14.8056 9.21219C14.8056 9.87594 14.7184 10.5116 14.5441 11.1191C14.3697 11.7266 14.1306 12.2947 13.8269 12.8234C13.6919 13.0822 13.4894 13.2819 13.2194 13.4225C12.9494 13.5631 12.6681 13.6334 12.3756 13.6334H3.10188Z" fill="#4B4C4D"/>
-      </svg>
-    );
-
-    // أيقونة رقم التذكرة - مطابقة للأصلي
-    const TicketIcon = () => (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9.31803 7.03719L8.99772 8.96297H7.09017L7.41048 7.03719H9.31803Z" fill="#4B4C4D"/>
-        <path fillRule="evenodd" clipRule="evenodd" d="M8.00033 0.666748C3.95024 0.666748 0.666992 3.94999 0.666992 8.00008C0.666992 12.0502 3.95024 15.3334 8.00033 15.3334C12.0504 15.3334 15.3337 12.0502 15.3337 8.00008C15.3337 3.94999 12.0504 0.666748 8.00033 0.666748ZM6.08691 5.77008L5.76661 7.03719H4.66699V8.96297H5.44319L5.12288 10.2301H4.66699V11.4972H4.80033C4.80033 11.4972 4.80033 11.4972 4.80033 11.4972H6.44699L6.44699 11.4972H6.76729L7.08759 10.2301H8.99514L8.67484 11.4972H10.0015L10.3218 10.2301H11.3337V8.96297H10.6437L10.964 7.03719H11.3337V5.77008H11.2003C11.2003 5.77008 11.2003 5.77008 11.2003 5.77008H9.55366L9.55366 5.77008H9.23335L8.91305 7.03719H7.00549L7.3258 5.77008H6.08691Z" fill="#4B4C4D"/>
-      </svg>
-    );
-
-    // أيقونة التاريخ - مطابقة للأصلي
-    const DateIcon = () => (
-      <svg width="14" height="14" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.29941 13.7333C2.98275 13.7333 2.71275 13.6239 2.48941 13.4052C2.26608 13.1865 2.15441 12.9219 2.15441 12.6113V4.38875C2.15441 4.07812 2.26608 3.81354 2.48941 3.595C2.71275 3.37646 2.98275 3.26719 3.29941 3.26719H4.21816V2.125H5.35566V3.26719H11.6432V2.125H12.7807V3.26719H13.6994C14.0161 3.26719 14.2861 3.37646 14.5094 3.595C14.7327 3.81354 14.8444 4.07812 14.8444 4.38875V12.6113C14.8444 12.9219 14.7327 13.1865 14.5094 13.4052C14.2861 13.6239 14.0161 13.7333 13.6994 13.7333H3.29941ZM3.29941 12.6113H13.6994V6.67167H3.29941V12.6113ZM3.29941 5.54958H13.6994V4.38875H3.29941V5.54958Z" fill="#4B4C4D"/>
-      </svg>
-    );
-
-    // شعار المصدر
-    const sourceConfig = getSourceConfig(fine.source);
-    const sourceBgColor = sourceConfig?.bgColor ?? "#e8f5ee";
-    const sourceBorderColor = sourceConfig?.borderColor ?? "#008755";
-
-    // الحقول المشتركة بين الموبايل والديسكتوب
-    const FieldRow = ({ icon, label, value, noBorder = false }: { icon: React.ReactNode; label: string; value: React.ReactNode; noBorder?: boolean }) => (
-      <div className="flex items-center justify-between py-1.5 gap-3" style={{ borderBottom: noBorder ? "none" : "1px solid #f5f5f5" }}>
-        <div className="flex items-center gap-1.5 min-w-0">
-          {icon}
-          <span className={isMobile ? "text-xs text-gray-500" : "text-sm text-gray-500"}>{label}</span>
-        </div>
+    const CheckboxIcon = () => (
+      <button
+        type="button"
+        aria-label={isSelected ? "Deselect fine" : "Select fine"}
+        onClick={toggleSelect}
+        className="flex items-center justify-center flex-shrink-0"
+        style={{
+          width: isMobile ? "42px" : "46px",
+          height: isMobile ? "42px" : "46px",
+          borderRadius: "12px",
+          border: `2px solid ${isSelected ? "#008755" : "#c7ccd1"}`,
+          backgroundColor: isSelected ? "#eefaf5" : "#ffffff",
+          boxShadow: isSelected ? "0 0 0 3px rgba(0,135,85,0.08)" : "none",
+        }}
+      >
         <div
-          className={isMobile ? `text-xs font-medium text-gray-800 max-w-[55%] ${isRTL ? "text-right" : "text-left"}` : `text-sm font-medium text-gray-800 max-w-[60%] ${isRTL ? "text-right" : "text-left"}`}
+          style={{
+            width: isMobile ? "20px" : "22px",
+            height: isMobile ? "20px" : "22px",
+            borderRadius: "7px",
+            backgroundColor: isSelected ? "#008755" : "transparent",
+            border: isSelected ? "none" : "2px solid #c7ccd1",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {isSelected && (
+            <svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 5L4.2 8.2L12 1" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
+        </div>
+      </button>
+    );
+
+    const SourceFieldIcon = () => (
+      <svg width={iconSize} height={iconSize} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 16.2H17" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M4.2 8.6H15.8" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M5.2 8.6V16.2" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M10 8.6V16.2" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M14.8 8.6V16.2" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M2.6 7L10 3L17.4 7" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+
+    const LocationFieldIcon = () => (
+      <svg width={iconSize} height={iconSize} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 17C13.2 13.3 14.8 10.8 14.8 8.4C14.8 5.75 12.65 3.6 10 3.6C7.35 3.6 5.2 5.75 5.2 8.4C5.2 10.8 6.8 13.3 10 17Z" fill="#45474B"/>
+        <circle cx="10" cy="8.3" r="1.7" fill="#ffffff"/>
+      </svg>
+    );
+
+    const TicketFieldIcon = () => (
+      <svg width={iconSize} height={iconSize} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="8" fill="#45474B"/>
+        <path d="M7.2 12.9L7.8 9.9H5.9V8.4H8.1L8.6 6.1H10.1L9.6 8.4H11.6L12.1 6.1H13.6L13.1 8.4H14.8V9.9H12.7L12.1 12.9H10.6L11.2 9.9H9.2L8.6 12.9H7.2ZM9.5 8.4L9 9.9H11L11.5 8.4H9.5Z" fill="#ffffff"/>
+      </svg>
+    );
+
+    const DateFieldIcon = () => (
+      <svg width={iconSize} height={iconSize} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="8" fill="#45474B"/>
+        <path d="M10 6.2V10.1L12.5 11.6" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+
+    const SpeedFieldIcon = () => (
+      <svg width={iconSize} height={iconSize} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.2 13.6C2.8 12.8 2.6 11.9 2.6 11C2.6 6.9 5.9 3.6 10 3.6C14.1 3.6 17.4 6.9 17.4 11C17.4 11.9 17.2 12.8 16.8 13.6" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M10 11L13 8.3" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M4.1 14.9H15.9" stroke="#45474B" strokeWidth="1.8" strokeLinecap="round"/>
+      </svg>
+    );
+
+    const DetailsTicketIcon = () => (
+      <svg width={isMobile ? 28 : 30} height={isMobile ? 28 : 30} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 8.5C6 7.12 7.12 6 8.5 6H19.5C20.88 6 22 7.12 22 8.5V10.05C20.67 10.27 19.65 11.43 19.65 12.82C19.65 14.21 20.67 15.37 22 15.59V17.5C22 18.88 20.88 20 19.5 20H8.5C7.12 20 6 18.88 6 17.5V15.59C7.33 15.37 8.35 14.21 8.35 12.82C8.35 11.43 7.33 10.27 6 10.05V8.5Z" fill="#46D695" stroke="#0A845C" strokeWidth="1.4"/>
+        <path d="M14 9.1V16.9" stroke="#ffffff" strokeWidth="1.5" strokeDasharray="1.8 1.8"/>
+      </svg>
+    );
+
+    const DetailsInfoIcon = () => (
+      <svg width={isMobile ? 28 : 30} height={isMobile ? 28 : 30} viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="15" cy="15" r="13" fill="#4A4B4E"/>
+        <path d="M15 13.1V20" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round"/>
+        <circle cx="15" cy="9.6" r="1.4" fill="#ffffff"/>
+      </svg>
+    );
+
+    const displayAmount = isNaN(amt) ? fine.amount : amt.toLocaleString();
+    const cardRadius = isMobile ? "34px" : "28px";
+    const cardPadding = isMobile ? "30px" : "26px";
+
+    const InfoRow = ({ icon, label, value, highlight = false }: { icon: React.ReactNode; label: string; value: React.ReactNode; highlight?: boolean }) => (
+      <div className="flex items-start justify-between gap-4" style={{ paddingBottom: isMobile ? "10px" : "12px" }}>
+        <div
+          className={isRTL ? "text-left" : "text-right"}
+          style={{
+            minWidth: 0,
+            flex: 1,
+            fontSize: bodyValueSize,
+            fontWeight: highlight ? 800 : 500,
+            color: highlight ? "#008755" : "#4c4f55",
+            lineHeight: 1.45,
+          }}
           dir="auto"
         >
-          {value || <span className="text-gray-400">—</span>}
+          {value || <span style={{ color: "#b0b4b8" }}>â</span>}
+        </div>
+        <div className="flex items-center gap-2.5 flex-shrink-0" style={{ color: "#141518" }}>
+          <span style={{ fontSize: bodyLabelSize, fontWeight: 700, lineHeight: 1.35 }}>{label}</span>
+          <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{icon}</span>
         </div>
       </div>
     );
 
-    if (isMobile) {
-      // ===== تصميم الموبايل - مضغوط وأصغر =====
-      return (
-        <div
-          style={{
-            backgroundColor: "#ffffff",
-            borderRadius: "12px",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
-            border: "1px solid #e8e8e8",
-            overflow: "hidden",
-            marginBottom: "10px",
-          }}
-        >
-          {/* هيدر: checkbox + شعار + badge + مبلغ */}
-          <div className="flex items-center gap-2 px-3 py-2.5" style={{ direction: "ltr", borderBottom: "1px solid #f0f0f0" }}>
-            <input type="checkbox" checked={isSelected} onChange={toggleSelect} className="w-4 h-4 flex-shrink-0 cursor-pointer" style={{ accentColor: "#008755" }} />
-            <div className="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0" style={{ backgroundColor: sourceBgColor, border: `1.5px solid ${sourceBorderColor}30` }}>
-              {sourceConfig ? sourceConfig.logo(18) : <svg width="18" height="18" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" fill="#008755"/><text x="50" y="58" textAnchor="middle" fill="white" fontSize="28" fontWeight="bold" fontFamily="Arial">D</text></svg>}
-            </div>
-            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: statusConfig.bg, color: statusConfig.color }}>{statusConfig.label}</span>
-            <div className="flex-1 flex items-center justify-end gap-1">
-              <span className="text-base font-black flex items-center gap-1" style={{ color: "#111", fontFamily: "'Arial Black', Arial, sans-serif" }} dir="ltr">
-                <DirhamIcon color="#111" size={16} />
-                <span>{isNaN(amt) ? fine.amount : amt.toLocaleString()}</span>
-              </span>
-            </div>
-          </div>
-
-          {/* حقول مضغوطة */}
-          <div className="px-3 pb-2 pt-1" style={{ direction: isRTL ? "rtl" : "ltr" }}>
-            <FieldRow icon={<PlateIcon />} label={t.home.results.fineCard.source} value={getSourceLabel(fine.source, lang)} />
-            <FieldRow icon={<LocationIcon />} label={t.home.results.fineCard.location} value={fine.location} />
-            {fine.speed && <FieldRow icon={<SpeedIcon />} label={t.home.results.fineCard.speed} value={fine.speed} />}
-            <FieldRow icon={<TicketIcon />} label={t.home.results.fineCard.ticketNo} value={fine.ticketNo} noBorder={!fine.dateTime} />
-            {fine.dateTime && <FieldRow icon={<DateIcon />} label={t.home.results.fineCard.dateTime} value={fine.dateTime} noBorder />}
-          </div>
-
-          {fine.description && (
-            <div className="mx-2 mb-2 px-2.5 py-2 rounded-lg" style={{ backgroundColor: "#f0faf5", border: "1px solid #d0eed8" }}>
-              <span className="text-[10px] font-bold block mb-0.5" style={{ color: "#008755" }}>{t.home.results.fineCard.details}</span>
-              <p className={`text-[10px] text-gray-700 leading-relaxed ${isRTL ? "text-right" : "text-left"}`} dir="auto">{fine.description}</p>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // ===== تصميم الديسكتوب =====
     return (
       <div
         style={{
           backgroundColor: "#ffffff",
-          borderRadius: "16px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-          border: "1px solid #e8e8e8",
-          overflow: "hidden",
-          marginBottom: "12px",
+          borderRadius: cardRadius,
+          boxShadow: isMobile ? "0 12px 36px rgba(0,0,0,0.08)" : "0 14px 34px rgba(0,0,0,0.08)",
+          border: "1px solid rgba(230,232,234,0.95)",
+          padding: cardPadding,
+          marginBottom: isMobile ? "20px" : "18px",
         }}
       >
-        {/* ===== HEADER ROW: checkbox + شعار المصدر + badge + المبلغ ===== */}
-        <div
-          className="flex items-center gap-3 px-4 py-3"
-          style={{ direction: "ltr" }}
-        >
-          {/* Checkbox */}
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={toggleSelect}
-            className="w-4 h-4 flex-shrink-0 cursor-pointer"
-            style={{ accentColor: "#008755" }}
-          />
-          {/* شعار المصدر الدائري */}
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
-            style={{ backgroundColor: sourceBgColor, border: `1.5px solid ${sourceBorderColor}30` }}
-          >
-            {sourceConfig ? sourceConfig.logo(22) : (
-              <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
-                <circle cx="50" cy="50" r="48" fill="#008755"/>
-                <text x="50" y="58" textAnchor="middle" fill="white" fontSize="28" fontWeight="bold" fontFamily="Arial">D</text>
-              </svg>
-            )}
-          </div>
-          {/* badge الحالة */}
-          <span
-            className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
-            style={{ backgroundColor: statusConfig.bg, color: statusConfig.color }}
-          >
-            {statusConfig.label}
-          </span>
-          {/* المبلغ - على اليمين */}
-          <div className="flex-1 flex items-center justify-end gap-1.5">
-            <span
-              className="text-xl font-black flex items-center gap-1"
-              style={{ color: "#111", fontFamily: "'Arial Black', Arial, sans-serif" }}
-              dir="ltr"
+        <div className="flex items-start justify-between gap-3" style={{ direction: "ltr", marginBottom: isMobile ? "26px" : "30px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "16px" : "18px", minWidth: 0, flex: 1 }}>
+            <div
+              className="flex items-center gap-2"
+              style={{
+                fontSize: amountSize,
+                fontWeight: 900,
+                color: "#111216",
+                lineHeight: 1,
+                fontFamily: "'Arial Black', 'Cairo', Arial, sans-serif",
+              }}
             >
-              <DirhamIcon color="#111" size={20} />
-              <span>{isNaN(amt) ? fine.amount : amt.toLocaleString()}</span>
-            </span>
+              <DirhamMark size={isMobile ? 28 : 30} />
+              <span>{displayAmount}</span>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap" style={{ justifyContent: isRTL ? "flex-end" : "flex-start" }}>
+              <span
+                style={{
+                  backgroundColor: statusConfig.bg,
+                  color: statusConfig.color,
+                  borderRadius: isMobile ? "12px" : "14px",
+                  padding: isMobile ? "6px 14px" : "8px 16px",
+                  fontSize: isMobile ? "16px" : "17px",
+                  fontWeight: 700,
+                  lineHeight: 1.1,
+                }}
+              >
+                {statusConfig.label}
+              </span>
+              <div
+                className="flex items-center justify-center overflow-hidden"
+                style={{
+                  width: isMobile ? "40px" : "44px",
+                  height: isMobile ? "40px" : "44px",
+                  borderRadius: "999px",
+                  backgroundColor: "#f4fbf8",
+                  border: "1.5px solid rgba(0,135,85,0.16)",
+                }}
+              >
+                {sourceConfig ? sourceConfig.logo(isMobile ? 28 : 30) : <SourceFieldIcon />}
+              </div>
+            </div>
           </div>
+
+          <CheckboxIcon />
         </div>
 
-        {/* ===== حقول المخالفة - كل حقل في صف منفصل ===== */}
-        <div className="px-4 pb-3" style={{ direction: isRTL ? "rtl" : "ltr" }}>
-          <FieldRow icon={<PlateIcon />} label={t.home.results.fineCard.source} value={getSourceLabel(fine.source, lang)} />
-          <FieldRow icon={<LocationIcon />} label={t.home.results.fineCard.location} value={fine.location} />
-          {fine.speed && (
-            <FieldRow
-              icon={<SpeedIcon />}
-              label={t.home.results.fineCard.speed}
-              value={fine.speed}
-            />
-          )}
-          <FieldRow icon={<TicketIcon />} label={t.home.results.fineCard.ticketNo} value={fine.ticketNo} noBorder={!fine.dateTime} />
-          {fine.dateTime && <FieldRow icon={<DateIcon />} label={t.home.results.fineCard.dateTime} value={fine.dateTime} noBorder />}
+        <div style={{ direction: "rtl", marginBottom: fine.description ? (isMobile ? "16px" : "18px") : 0 }}>
+          <InfoRow icon={<SourceFieldIcon />} label={t.home.results.fineCard.source} value={getSourceLabel(fine.source, lang)} />
+          <InfoRow icon={<LocationFieldIcon />} label={t.home.results.fineCard.location} value={fine.location} highlight />
+          <InfoRow icon={<TicketFieldIcon />} label={t.home.results.fineCard.ticketNo} value={fine.ticketNo} />
+          {fine.dateTime && <InfoRow icon={<DateFieldIcon />} label={t.home.results.fineCard.dateTime} value={fine.dateTime} />}
+          {fine.speed && <InfoRow icon={<SpeedFieldIcon />} label={t.home.results.fineCard.speed} value={fine.speed} />}
         </div>
 
-        {/* ===== قسم Fine Details - خلفية خضراء فاتحة ===== */}
         {fine.description && (
           <div
-            className="mx-3 mb-3 px-3 py-2.5 rounded-xl"
-            style={{ backgroundColor: "#f0faf5", border: "1px solid #d0eed8" }}
+            style={{
+              backgroundColor: "#f7f7f7",
+              borderRadius: isMobile ? "24px" : "22px",
+              padding: isMobile ? "24px 22px" : "24px 24px",
+            }}
           >
-            <div className="flex items-center gap-2 mb-1">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
-                <path d="M3 10h18" stroke="#008755" strokeWidth="1.5"/>
-                <path d="M16 19h6" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
-                <path d="M19 16v6" stroke="#008755" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              <span className="text-xs font-bold" style={{ color: "#008755" }}>{t.home.results.fineCard.details}</span>
+            <div className="flex items-center justify-between gap-3" style={{ marginBottom: isMobile ? "14px" : "16px", direction: "rtl" }}>
+              <DetailsTicketIcon />
+              <span style={{ fontSize: isMobile ? "26px" : "28px", fontWeight: 800, color: "#111216", lineHeight: 1.1 }}>
+                {t.home.results.fineCard.details}
+              </span>
             </div>
-            <p className={`text-xs text-gray-700 leading-relaxed ${isRTL ? "text-right" : "text-left"}`} dir="auto">{fine.description}</p>
+            <div className="flex items-end justify-between gap-4" style={{ direction: "rtl" }}>
+              <DetailsInfoIcon />
+              <p
+                className={isRTL ? "text-right" : "text-left"}
+                style={{
+                  margin: 0,
+                  color: "#1f2328",
+                  fontSize: isMobile ? "17px" : "18px",
+                  lineHeight: 1.7,
+                  flex: 1,
+                }}
+                dir="auto"
+              >
+                {fine.description}
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -1698,7 +1721,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto px-8 py-6">
             {/* Back + title */}
             <div className="flex items-center justify-between mb-6" dir="ltr">
-              {/* اللوحة على اليسار (مع dir=ltr العنصر الأول يظهر على اليسار) */}
+              {/* Ø§ÙÙÙØ­Ø© Ø¹ÙÙ Ø§ÙÙØ³Ø§Ø± (ÙØ¹ dir=ltr Ø§ÙØ¹ÙØµØ± Ø§ÙØ£ÙÙ ÙØ¸ÙØ± Ø¹ÙÙ Ø§ÙÙØ³Ø§Ø±) */}
               <div
                 className="flex items-stretch rounded-2xl overflow-hidden flex-shrink-0"
                 style={{ border: "2px solid #c8c8c8", backgroundColor: "#ffffff", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", height: "56px" }}
@@ -1710,7 +1733,7 @@ export default function Home() {
                   style={{ backgroundColor: "#f5f5f5", borderRight: "2px solid #c8c8c8", minWidth: "56px" }}
                 >
                   <span className="text-base font-black text-gray-900 leading-none" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
-                    {finalPlateCodeDisplay || plateCode || "—"}
+                    {finalPlateCodeDisplay || plateCode || "â"}
                   </span>
                   <span className="text-[9px] font-black text-gray-600 tracking-widest mt-0.5" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
                     {plateSource === "DXB" ? "DUBAI" : plateSource === "AUH" ? "ABU DHABI" : plateSource === "SHJ" ? "SHARJAH" : plateSource === "AJM" ? "AJMAN" : plateSource === "RAK" ? "RAS AL KHAIMAH" : plateSource === "FUJ" ? "FUJAIRAH" : plateSource === "UMQ" ? "UMM AL QUWAIN" : plateSource || "UAE"}
@@ -1719,11 +1742,11 @@ export default function Home() {
                 {/* Right section: plate number */}
                 <div className="flex items-center justify-center px-4 py-1">
                   <span className="text-xl font-black text-gray-900" style={{ fontFamily: "'Arial Black', Arial, sans-serif", letterSpacing: "3px" }}>
-                    {plateNumber || "—"}
+                    {plateNumber || "â"}
                   </span>
                 </div>
               </div>
-              {/* النص + زر الرجوع على اليمين - مطابق للأصلي */}
+              {/* Ø§ÙÙØµ + Ø²Ø± Ø§ÙØ±Ø¬ÙØ¹ Ø¹ÙÙ Ø§ÙÙÙÙÙ - ÙØ·Ø§Ø¨Ù ÙÙØ£ØµÙÙ */}
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
@@ -1784,7 +1807,7 @@ export default function Home() {
                 <button
                   className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
                   style={{ backgroundColor: "#ffffff", border: "1.5px solid #e5e7eb", color: "#374151" }}
-                  onClick={() => toast.info("سيتم تفعيله قريباً")}
+                  onClick={() => toast.info("Ø³ÙØªÙ ØªÙØ¹ÙÙÙ ÙØ±ÙØ¨Ø§Ù")}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
                   {t.home.results.requestList}
@@ -1796,7 +1819,7 @@ export default function Home() {
             {!result.success && (
               <div className="flex items-center gap-3 p-4 rounded-xl mb-4" style={{ backgroundColor: "#fff3f3", border: "1px solid #fecaca" }}>
                 <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-700">{result.errorMessage || (lang === "ar" ? "لم يتم العثور على مخالفات" : "No fines found")}</p>
+                <p className="text-sm text-red-700">{result.errorMessage || (lang === "ar" ? "ÙÙ ÙØªÙ Ø§ÙØ¹Ø«ÙØ± Ø¹ÙÙ ÙØ®Ø§ÙÙØ§Øª" : "No fines found")}</p>
               </div>
             )}
 
@@ -1824,14 +1847,14 @@ export default function Home() {
               >
                 {/* Stats row + Buttons */}
                 <div className="flex items-center px-6 py-4" style={{ direction: isRTL ? "rtl" : "ltr" }}>
-                  {/* المخالفات */}
+                  {/* Ø§ÙÙØ®Ø§ÙÙØ§Øª */}
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-gray-900">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
                     <span className="text-sm text-gray-500">{t.home.results.summary.fines}</span>
                   </div>
                   {/* Divider */}
                   <div className="w-px bg-gray-200 mx-6" style={{ height: "24px" }} />
-                  {/* إجمالي المبلغ */}
+                  {/* Ø¥Ø¬ÙØ§ÙÙ Ø§ÙÙØ¨ÙØº */}
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-gray-900 flex items-center gap-1" dir="ltr">
                        <span style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0, fontSize: "12px", fontWeight: 900, fontFamily: "'Arial Black', Arial, sans-serif", color: "#111", letterSpacing: "-0.5px", lineHeight: 1 }}>AED</span>
@@ -1840,9 +1863,9 @@ export default function Home() {
                     <span className="text-sm text-gray-500">{t.home.results.totalAmount}</span>
                   </div>
                   <div className="flex-1" />
-                  {/* أزرار */}
+                  {/* Ø£Ø²Ø±Ø§Ø± */}
                   <div className="flex items-center gap-3">
-                    {/* زر رجوع */}
+                    {/* Ø²Ø± Ø±Ø¬ÙØ¹ */}
                     <button
                       onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
                       className="px-8 py-2.5 rounded-full text-sm font-semibold"
@@ -1850,7 +1873,7 @@ export default function Home() {
                     >
                       {t.home.results.backButton}
                     </button>
-                    {/* زر دفع */}
+                    {/* Ø²Ø± Ø¯ÙØ¹ */}
                     <button
                       disabled={selectedFines.size === 0}
                       className="px-8 py-2.5 rounded-full text-sm font-bold transition-all"
@@ -1864,7 +1887,7 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
-                {/* الدفع بالتقسيط عبر الخصم المباشر */}
+                {/* Ø§ÙØ¯ÙØ¹ Ø¨Ø§ÙØªÙØ³ÙØ· Ø¹Ø¨Ø± Ø§ÙØ®ØµÙ Ø§ÙÙØ¨Ø§Ø´Ø± */}
                 <div
                   className="flex items-center gap-2 px-6 pb-4 pt-2"
                   style={{ direction: isRTL ? "rtl" : "ltr", borderTop: "1px solid #f0f0f0" }}
@@ -1876,7 +1899,7 @@ export default function Home() {
                   />
                   <span className="text-sm text-gray-600">{t.home.results.payInstallment}</span>
                   <button
-                    onClick={() => toast.info(lang === "ar" ? "خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية." : "DDA Instalments service allows you to pay fines in monthly installments.")}
+                    onClick={() => toast.info(lang === "ar" ? "Ø®Ø¯ÙØ© Ø§ÙØ¯ÙØ¹ Ø¨Ø§ÙØªÙØ³ÙØ· Ø¹Ø¨Ø± Ø§ÙØ®ØµÙ Ø§ÙÙØ¨Ø§Ø´Ø± ØªØªÙØ­ ÙÙ Ø³Ø¯Ø§Ø¯ Ø§ÙÙØ®Ø§ÙÙØ§Øª Ø¹ÙÙ Ø£ÙØ³Ø§Ø· Ø´ÙØ±ÙØ©." : "DDA Instalments service allows you to pay fines in monthly installments.")}
                     className="flex-shrink-0"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -1908,8 +1931,8 @@ export default function Home() {
 
             {/* Action buttons */}
             <div className="flex items-center gap-2">
-              <button className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info(lang === "ar" ? "سيتم تفعيله قريباً" : "Coming soon")}>...</button>
-              <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info(lang === "ar" ? "سيتم تفعيله قريباً" : "Coming soon")}>
+              <button className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info(lang === "ar" ? "Ø³ÙØªÙ ØªÙØ¹ÙÙÙ ÙØ±ÙØ¨Ø§Ù" : "Coming soon")}>...</button>
+              <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold" style={{ backgroundColor: "#f0f4f2", border: "1px solid #e5e7eb", color: "#374151" }} onClick={() => toast.info(lang === "ar" ? "Ø³ÙØªÙ ØªÙØ¹ÙÙÙ ÙØ±ÙØ¨Ø§Ù" : "Coming soon")}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
                 <span>{t.home.results.requestList}</span>
               </button>
@@ -1926,9 +1949,9 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Plate + مراجعة المخالفات - مطابق للأصلي: اللوحة على اليسار والنص على اليمين */}
+            {/* Plate + ÙØ±Ø§Ø¬Ø¹Ø© Ø§ÙÙØ®Ø§ÙÙØ§Øª - ÙØ·Ø§Ø¨Ù ÙÙØ£ØµÙÙ: Ø§ÙÙÙØ­Ø© Ø¹ÙÙ Ø§ÙÙØ³Ø§Ø± ÙØ§ÙÙØµ Ø¹ÙÙ Ø§ÙÙÙÙÙ */}
             <div className="flex items-center justify-between py-1" dir="ltr">
-              {/* اللوحة على اليسار */}
+              {/* Ø§ÙÙÙØ­Ø© Ø¹ÙÙ Ø§ÙÙØ³Ø§Ø± */}
               <div
                 className="flex items-stretch rounded-xl overflow-hidden flex-shrink-0"
                 style={{ border: "1.5px solid #c8c8c8", backgroundColor: "#ffffff", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
@@ -1939,7 +1962,7 @@ export default function Home() {
                   style={{ backgroundColor: "#f5f5f5", borderRight: "1.5px solid #c8c8c8", minWidth: "44px" }}
                 >
                   <span className="text-sm font-black text-gray-900 leading-none" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
-                    {finalPlateCodeDisplay || plateCode || "—"}
+                    {finalPlateCodeDisplay || plateCode || "â"}
                   </span>
                   <span className="text-[8px] font-black text-gray-600 tracking-widest mt-0.5" style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}>
                     {plateSource === "DXB" ? "DUBAI" : plateSource === "AUH" ? "ABU DHABI" : plateSource === "SHJ" ? "SHARJAH" : plateSource || "UAE"}
@@ -1947,11 +1970,11 @@ export default function Home() {
                 </div>
                 <div className="flex items-center justify-center px-3 py-1">
                   <span className="text-base font-black text-gray-900" style={{ fontFamily: "'Arial Black', Arial, sans-serif", letterSpacing: "2px" }}>
-                    {plateNumber || "—"}
+                    {plateNumber || "â"}
                   </span>
                 </div>
               </div>
-              {/* نص مراجعة المخالفات + رقم اللوحة على اليمين */}
+              {/* ÙØµ ÙØ±Ø§Ø¬Ø¹Ø© Ø§ÙÙØ®Ø§ÙÙØ§Øª + Ø±ÙÙ Ø§ÙÙÙØ­Ø© Ø¹ÙÙ Ø§ÙÙÙÙÙ */}
               <div dir={isRTL ? "rtl" : "ltr"} className={isRTL ? "text-right" : "text-left"}>
                 <h2 className="text-lg font-black" style={{ color: "#111827", lineHeight: 1.2 }}>
                   {t.home.results.title}
@@ -2007,7 +2030,7 @@ export default function Home() {
             {!result.success && (
               <div className="flex items-center gap-3 p-4 rounded-xl" style={{ backgroundColor: "#fff3f3", border: "1px solid #fecaca" }}>
                 <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-700">{result.errorMessage || (lang === "ar" ? "لم يتم العثور على مخالفات" : "No fines found")}</p>
+                <p className="text-sm text-red-700">{result.errorMessage || (lang === "ar" ? "ÙÙ ÙØªÙ Ø§ÙØ¹Ø«ÙØ± Ø¹ÙÙ ÙØ®Ø§ÙÙØ§Øª" : "No fines found")}</p>
               </div>
             )}
 
@@ -2032,64 +2055,78 @@ export default function Home() {
           {/* Bottom summary bar - mobile STICKY */}
           <div
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-            style={{ backgroundColor: "#ffffff", borderTop: "1px solid #e8e8e8", boxShadow: "0 -2px 12px rgba(0,0,0,0.08)" }}
+            style={{
+              backgroundColor: "rgba(255,255,255,0.96)",
+              borderTopLeftRadius: "22px",
+              borderTopRightRadius: "22px",
+              borderTop: "1px solid #eceef0",
+              boxShadow: "0 -10px 30px rgba(0,0,0,0.10)",
+              backdropFilter: "blur(8px)",
+            }}
           >
-            {/* Stats row: المخالفات | إجمالي المبلغ */}
-            <div className="flex items-center px-4 pt-3 pb-2" style={{ direction: isRTL ? "rtl" : "ltr" }}>
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-gray-900">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
-                <span className="text-sm text-gray-500">{t.home.results.summary.fines}</span>
+            <div className="px-5 pt-4 pb-3">
+              <div className="flex items-center justify-between" style={{ direction: "rtl" }}>
+                <div className="flex-1 text-center">
+                  <div className="text-[15px] font-extrabold text-gray-900">
+                    {t.home.results.summary.fines} <span>{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
+                  </div>
+                </div>
+                <div className="w-px mx-3" style={{ height: "32px", backgroundColor: "#dfe3e6" }} />
+                <div className="flex-1 text-center">
+                  <div className="text-[15px] font-extrabold text-gray-900 flex items-center justify-center gap-1" dir="ltr">
+                    <span style={{ fontSize: "18px", fontWeight: 900, lineHeight: 1, fontFamily: "'Arial Black', Arial, sans-serif" }}>Ã</span>
+                    <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
+                    <span dir="rtl">{t.home.results.totalAmount}</span>
+                  </div>
+                </div>
               </div>
-              <div className="w-px bg-gray-300 mx-4" style={{ height: "20px" }} />
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-gray-900 flex items-center gap-1" dir="ltr">
-                  <span style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0, fontSize: "11px", fontWeight: 900, fontFamily: "'Arial Black', Arial, sans-serif", color: "#111", letterSpacing: "-0.5px", lineHeight: 1 }}>AED</span>
-                  <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
-                </span>
-              </div>
-              <button
-                disabled={selectedFines.size === 0}
-                className="flex-1 py-3 rounded-full text-sm font-semibold"
-                style={{
-                  backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
-                  color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
-                }}
-                onClick={goToPaymentPage}
-              >
-                {t.home.results.payButton}
-              </button>
-              {/* زر رجوع - أبيض بإطار رمادي */}
-              <button
-                onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                className="flex-1 py-3 rounded-full text-sm font-semibold"
-                style={{
-                  backgroundColor: "#f3f4f6",
-                  border: "1.5px solid #d1d5db",
-                  color: "#374151",
-                }}
-              >
-                {t.home.results.backButton}
-              </button>
-            </div>
 
-            {/* الدفع بالتقسيط عبر الخصم المباشر */}
-            <div className="flex items-center gap-2 px-4 pb-3" style={{ direction: isRTL ? "rtl" : "ltr" }}>
-              <input
-                type="checkbox"
-                className="w-4 h-4 cursor-pointer flex-shrink-0"
-                style={{ accentColor: "#008755" }}
-              />
-              <span className="text-xs text-gray-600">{t.home.results.payInstallment}</span>
-              <button
-                onClick={() => toast.info(lang === "ar" ? "خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية." : "DDA Instalments service allows you to pay fines in monthly installments.")}
-                className="flex-shrink-0"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="#9ca3af" strokeWidth="1.5"/>
-                  <path d="M12 11v6" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/>
-                  <circle cx="12" cy="7.5" r="0.75" fill="#9ca3af"/>
-                </svg>
-              </button>
+              <div className="flex items-center gap-3 mt-4" style={{ direction: "rtl" }}>
+                <button
+                  onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
+                  className="flex-1 py-3.5 rounded-full text-base font-semibold"
+                  style={{
+                    backgroundColor: "#ffffff",
+                    border: "1.6px solid #cfd4d8",
+                    color: "#2a2e33",
+                  }}
+                >
+                  {t.home.results.backButton}
+                </button>
+                <button
+                  disabled={selectedFines.size === 0}
+                  className="flex-1 py-3.5 rounded-full text-base font-bold transition-all"
+                  style={{
+                    backgroundColor: selectedFines.size > 0 ? "#008755" : "#e4e7eb",
+                    color: selectedFines.size > 0 ? "#ffffff" : "#9aa1a9",
+                  }}
+                  onClick={goToPaymentPage}
+                >
+                  {t.home.results.payButton}
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 mt-4" style={{ direction: "rtl" }}>
+                <button
+                  onClick={() => toast.info(lang === "ar" ? "Ø®Ø¯ÙØ© Ø§ÙØ¯ÙØ¹ Ø¨Ø§ÙØªÙØ³ÙØ· Ø¹Ø¨Ø± Ø§ÙØ®ØµÙ Ø§ÙÙØ¨Ø§Ø´Ø± ØªØªÙØ­ ÙÙ Ø³Ø¯Ø§Ø¯ Ø§ÙÙØ®Ø§ÙÙØ§Øª Ø¹ÙÙ Ø£ÙØ³Ø§Ø· Ø´ÙØ±ÙØ©." : "DDA Instalments service allows you to pay fines in monthly installments.")}
+                  className="flex-shrink-0"
+                >
+                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="15" cy="15" r="13" fill="#ffffff" stroke="#5E6166" strokeWidth="1.6"/>
+                    <path d="M15 13.2V20" stroke="#4A4B4E" strokeWidth="2.2" strokeLinecap="round"/>
+                    <circle cx="15" cy="9.5" r="1.4" fill="#4A4B4E"/>
+                  </svg>
+                </button>
+                <span className="text-[15px] text-gray-900 font-medium flex-1 text-right">{t.home.results.payInstallment}</span>
+                <button
+                  type="button"
+                  aria-label="Installment option"
+                  className="flex items-center justify-center flex-shrink-0"
+                  style={{ width: "36px", height: "36px", borderRadius: "10px", border: "2px solid #c7ccd1", backgroundColor: "#ffffff" }}
+                >
+                  <div style={{ width: "18px", height: "18px", borderRadius: "6px", border: "2px solid #c7ccd1" }} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2121,9 +2158,9 @@ export default function Home() {
           <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to left, rgba(240,244,242,0.15) 0%, transparent 40%)" }} />
           {/* Service title overlay */}
           <div className="absolute bottom-8 right-8 text-white">
-            <div className="text-xs font-semibold opacity-70 mb-1">خدمة إلكترونية</div>
-            <div className="text-2xl font-black">الاستعلام والدفع</div>
-            <div className="text-sm opacity-80 mt-1">عن المخالفات المرورية</div>
+            <div className="text-xs font-semibold opacity-70 mb-1">Ø®Ø¯ÙØ© Ø¥ÙÙØªØ±ÙÙÙØ©</div>
+            <div className="text-2xl font-black">Ø§ÙØ§Ø³ØªØ¹ÙØ§Ù ÙØ§ÙØ¯ÙØ¹</div>
+            <div className="text-sm opacity-80 mt-1">Ø¹Ù Ø§ÙÙØ®Ø§ÙÙØ§Øª Ø§ÙÙØ±ÙØ±ÙØ©</div>
           </div>
         </div>
 
@@ -2200,7 +2237,7 @@ export default function Home() {
               className="w-full py-3.5 rounded-2xl text-base font-bold flex items-center justify-center gap-3 transition-all hover:bg-gray-50"
               style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d1d5db" }}
             >
-            <span>{lang === "ar" ? "رجوع" : "Back"}</span><ArrowRight className="w-5 h-5" />
+            <span>{lang === "ar" ? "Ø±Ø¬ÙØ¹" : "Back"}</span><ArrowRight className="w-5 h-5" />
           </button>
         </div>
 
