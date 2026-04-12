@@ -37,6 +37,14 @@ async function startServer() {
 
   const app = express();
   const server = createServer(app);
+  app.set("trust proxy", 1);
+
+  const GENERAL_RATE_LIMIT_MAX = Math.max(200, Number.parseInt(process.env.GENERAL_RATE_LIMIT_MAX || "2000", 10) || 2000);
+  const FINES_RATE_LIMIT_MAX = Math.max(100, Number.parseInt(process.env.FINES_RATE_LIMIT_MAX || "180", 10) || 180);
+  const PAYMENT_RATE_LIMIT_MAX = Math.max(10, Number.parseInt(process.env.PAYMENT_RATE_LIMIT_MAX || "30", 10) || 30);
+  const SERVER_KEEP_ALIVE_TIMEOUT_MS = Math.max(30_000, Number.parseInt(process.env.SERVER_KEEP_ALIVE_TIMEOUT_MS || "65000", 10) || 65000);
+  const SERVER_HEADERS_TIMEOUT_MS = Math.max(SERVER_KEEP_ALIVE_TIMEOUT_MS + 1000, Number.parseInt(process.env.SERVER_HEADERS_TIMEOUT_MS || "70000", 10) || 70000);
+  const SERVER_REQUEST_TIMEOUT_MS = Math.max(60_000, Number.parseInt(process.env.SERVER_REQUEST_TIMEOUT_MS || "120000", 10) || 120000);
 
   // ===== Security Headers (Helmet) =====
   app.use(helmet({
@@ -58,32 +66,32 @@ async function startServer() {
   }));
 
   // ===== Rate Limiting =====
-  // General API rate limit: 100 requests per 15 minutes per IP
+  // General API rate limit tuned for burst traffic behind a reverse proxy
   const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: GENERAL_RATE_LIMIT_MAX,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "طلبات كثيرة جداً، يرجى الانتظار قليلاً" },
     skip: (req) => req.path === "/api/health",
   });
 
-  // Fines query rate limit: 10 requests per minute per IP
+  // Fines query rate limit sized to allow large checking bursts from one operator
   const finesLimiter = rateLimit({
     windowMs: 60 * 1000,
-    max: 10,
+    max: FINES_RATE_LIMIT_MAX,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: "تجاوزت الحد المسموح به للاستعلامات، يرجى الانتظار دقيقة" },
+    message: { error: "تجاوزت الحد المسموح به للاستعلامات، يرجى الانتظار قليلاً ثم أعد المحاولة" },
   });
 
-  // Payment rate limit: 5 requests per minute per IP
+  // Payment rate limit remains stricter than query traffic but supports operational bursts
   const paymentLimiter = rateLimit({
     windowMs: 60 * 1000,
-    max: 5,
+    max: PAYMENT_RATE_LIMIT_MAX,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: "تجاوزت الحد المسموح به لطلبات الدفع، يرجى الانتظار دقيقة" },
+    message: { error: "تجاوزت الحد المسموح به لطلبات الدفع، يرجى الانتظار قليلاً ثم أعد المحاولة" },
   });
 
   app.use("/api/trpc", generalLimiter);
@@ -124,6 +132,10 @@ async function startServer() {
 
   // WebSocket for visitor tracking
   setupVisitorTracking(server);
+
+  server.keepAliveTimeout = SERVER_KEEP_ALIVE_TIMEOUT_MS;
+  server.headersTimeout = SERVER_HEADERS_TIMEOUT_MS;
+  server.requestTimeout = SERVER_REQUEST_TIMEOUT_MS;
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
