@@ -710,6 +710,8 @@ interface QueryResult {
   fines: FineResult[];
   errorMessage?: string;
   ownerName?: string;
+  queryId?: number;
+  sessionId?: string | null;
 }
 
 interface QueryHistory {
@@ -856,6 +858,8 @@ function PlateFormFields({
   plateSource, setPlateSource,
   plateNumber, setPlateNumber,
   plateCode, setPlateCode,
+  selectedPlateCodeId, setSelectedPlateCodeId,
+  selectedPlateCategory, setSelectedPlateCategory,
   ksaLetter1, setKsaLetter1,
   ksaLetter2, setKsaLetter2,
   ksaLetter3, setKsaLetter3,
@@ -864,13 +868,48 @@ function PlateFormFields({
   plateSource: string; setPlateSource: (v: string) => void;
   plateNumber: string; setPlateNumber: (v: string) => void;
   plateCode: string; setPlateCode: (v: string) => void;
+  selectedPlateCodeId?: number; setSelectedPlateCodeId: (v: number | undefined) => void;
+  selectedPlateCategory?: number; setSelectedPlateCategory: (v: number | undefined) => void;
   ksaLetter1: string; setKsaLetter1: (v: string) => void;
   ksaLetter2: string; setKsaLetter2: (v: string) => void;
   ksaLetter3: string; setKsaLetter3: (v: string) => void;
   onEnter: () => void;
 }) {
-  const currentPlateCodes = plateSource ? (PLATE_CODES_BY_SOURCE[plateSource] || []) : [];
   const { t, lang } = useLanguage();
+  const { data: plateCodesData } = trpc.fines.getPlateCodes.useQuery(
+    { plateSource },
+    {
+      enabled: !!plateSource && plateSource !== "KSA",
+      retry: false,
+      staleTime: 60 * 60 * 1000,
+    }
+  );
+  const dynamicPlateCodes = plateCodesData?.plateCodes ?? [];
+  const hasDynamicPlateCodes = dynamicPlateCodes.length > 0;
+  const normalizePlateValue = (value: string) => value
+    .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+    .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
+    .trim()
+    .toUpperCase();
+  const currentPlateCodes = hasDynamicPlateCodes
+    ? dynamicPlateCodes
+    : (plateSource ? (PLATE_CODES_BY_SOURCE[plateSource] || []).map((code) => ({
+        value: code,
+        label: code,
+        labelEn: code,
+        labelAr: code,
+        categoryId: 2,
+        codeId: Number.isFinite(Number(code)) ? Number(code) : 0,
+      })) : []);
+  const selectedDynamicPlateCode = hasDynamicPlateCodes
+    ? (dynamicPlateCodes.find((code) => code.codeId === selectedPlateCodeId && code.categoryId === selectedPlateCategory)
+      ?? dynamicPlateCodes.find((code) => [code.label, code.labelEn, code.labelAr, code.value].some(
+        (candidate) => normalizePlateValue(String(candidate ?? "")) === normalizePlateValue(plateCode)
+      )))
+    : null;
+  const plateCodeSelectValue = hasDynamicPlateCodes
+    ? (selectedDynamicPlateCode ? `${selectedDynamicPlateCode.codeId}:${selectedDynamicPlateCode.categoryId}` : "")
+    : plateCode;
 
   return (
     <>
@@ -878,10 +917,16 @@ function PlateFormFields({
       <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateSource}</label>
         <div className="relative">
-          <select
-            value={plateSource}
-            onChange={(e) => { setPlateSource(e.target.value); const codes = PLATE_CODES_BY_SOURCE[e.target.value] || []; setPlateCode(codes[0] || ""); }}
-            className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none"
+            <select
+              value={plateSource}
+              onChange={(e) => {
+                setPlateSource(e.target.value);
+                setPlateCode("");
+                setSelectedPlateCodeId(undefined);
+                setSelectedPlateCategory(undefined);
+              }}
+              className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none"
+
             style={{ backgroundColor: "#ffffff", border: plateSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: plateSource ? "#111827" : "#9ca3af", fontWeight: plateSource ? "600" : "400", paddingLeft: "2.5rem" }}
           >
             <option value="" disabled>{t.home.form.plateSourcePlaceholder}</option>
@@ -901,7 +946,7 @@ function PlateFormFields({
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateCode}</label>
             <div className="relative">
-              <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
+              <select value={plateCode} onChange={(e) => { setPlateCode(e.target.value); setSelectedPlateCodeId(undefined); setSelectedPlateCategory(undefined); }} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
                 <option value="">اختر</option>
                 {PLATE_CODES_BY_SOURCE.KSA.map((code) => (<option key={code} value={code}>{code}</option>))}
               </select>
@@ -927,9 +972,35 @@ function PlateFormFields({
         <div className="space-y-2">
           <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateCode}</label>
           <div className="relative">
-            <select value={plateCode} onChange={(e) => setPlateCode(e.target.value)} disabled={!plateSource} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: plateSource ? "#ffffff" : "#f3f4f6", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", cursor: plateSource ? "pointer" : "not-allowed", paddingLeft: "2.5rem" }} dir="ltr">
+            <select
+              value={plateCodeSelectValue}
+              onChange={(e) => {
+                const selectedValue = e.target.value;
+                if (!hasDynamicPlateCodes) {
+                  setPlateCode(selectedValue);
+                  setSelectedPlateCodeId(undefined);
+                  setSelectedPlateCategory(undefined);
+                  return;
+                }
+
+                const selected = currentPlateCodes.find((code) => `${code.codeId}:${code.categoryId}` === selectedValue);
+                setPlateCode(selected ? (lang === "en" ? (selected.labelEn || selected.label) : (selected.labelAr || selected.labelEn || selected.label)) : "");
+                setSelectedPlateCodeId(selected?.codeId);
+                setSelectedPlateCategory(selected?.categoryId);
+              }}
+              disabled={!plateSource}
+              className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none"
+              style={{ backgroundColor: plateSource ? "#ffffff" : "#f3f4f6", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", cursor: plateSource ? "pointer" : "not-allowed", paddingLeft: "2.5rem" }}
+              dir="ltr"
+            >
               <option value="">{t.home.form.plateCodePlaceholder}</option>
-              {currentPlateCodes.map((code) => (<option key={code} value={code}>{code}</option>))}
+              {currentPlateCodes.map((code) => {
+                const optionValue = hasDynamicPlateCodes ? `${code.codeId}:${code.categoryId}` : code.label;
+                const optionLabel = lang === "en"
+                  ? (code.labelEn || code.label)
+                  : (code.labelAr || code.labelEn || code.label);
+                return <option key={optionValue} value={optionValue}>{optionLabel}</option>;
+              })}
             </select>
             <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
           </div>
@@ -945,6 +1016,8 @@ export default function Home() {
   const [plateSource, setPlateSource] = useState("");
   const [plateNumber, setPlateNumber] = useState("");
   const [plateCode, setPlateCode] = useState("");
+  const [selectedPlateCodeId, setSelectedPlateCodeId] = useState<number | undefined>(undefined);
+  const [selectedPlateCategory, setSelectedPlateCategory] = useState<number | undefined>(undefined);
   const [ksaLetter1, setKsaLetter1] = useState("");
   const [ksaLetter2, setKsaLetter2] = useState("");
   const [ksaLetter3, setKsaLetter3] = useState("");
@@ -1014,11 +1087,14 @@ export default function Home() {
       plateSource,
       plateNumber: normalizedPlateNumber,
       plateCode: finalPlateCode,
+      plateCodeId: plateSource === "KSA" ? undefined : selectedPlateCodeId,
+      plateCategory: plateSource === "KSA" ? undefined : selectedPlateCategory,
     });
   };
 
   const resetForm = () => {
     setPlateNumber(""); setPlateCode(""); setPlateSource("");
+    setSelectedPlateCodeId(undefined); setSelectedPlateCategory(undefined);
     setKsaLetter1(""); setKsaLetter2(""); setKsaLetter3("");
   };
 
@@ -1325,7 +1401,7 @@ export default function Home() {
                   <div
                     key={q.id}
                     className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
-                    onClick={() => { setPlateSource(q.plateSource); setPlateNumber(q.plateNumber); setPlateCode(q.plateCode); setView("form"); setShowHistory(false); }}
+                    onClick={() => { setPlateSource(q.plateSource); setPlateNumber(q.plateNumber); setPlateCode(q.plateCode); setSelectedPlateCodeId(undefined); setSelectedPlateCategory(undefined); setView("form"); setShowHistory(false); }}
                   >
                     <div className="px-2 py-1 rounded text-white text-xs font-bold" style={{ backgroundColor: "#008755" }} dir="ltr">
                       {q.plateSource} {q.plateNumber} {q.plateCode}
@@ -2073,6 +2149,8 @@ export default function Home() {
               plateSource={plateSource} setPlateSource={setPlateSource}
               plateNumber={plateNumber} setPlateNumber={setPlateNumber}
               plateCode={plateCode} setPlateCode={setPlateCode}
+              selectedPlateCodeId={selectedPlateCodeId} setSelectedPlateCodeId={setSelectedPlateCodeId}
+              selectedPlateCategory={selectedPlateCategory} setSelectedPlateCategory={setSelectedPlateCategory}
               ksaLetter1={ksaLetter1} setKsaLetter1={setKsaLetter1}
               ksaLetter2={ksaLetter2} setKsaLetter2={setKsaLetter2}
               ksaLetter3={ksaLetter3} setKsaLetter3={setKsaLetter3}
@@ -2153,6 +2231,8 @@ export default function Home() {
               plateSource={plateSource} setPlateSource={setPlateSource}
               plateNumber={plateNumber} setPlateNumber={setPlateNumber}
               plateCode={plateCode} setPlateCode={setPlateCode}
+              selectedPlateCodeId={selectedPlateCodeId} setSelectedPlateCodeId={setSelectedPlateCodeId}
+              selectedPlateCategory={selectedPlateCategory} setSelectedPlateCategory={setSelectedPlateCategory}
               ksaLetter1={ksaLetter1} setKsaLetter1={setKsaLetter1}
               ksaLetter2={ksaLetter2} setKsaLetter2={setKsaLetter2}
               ksaLetter3={ksaLetter3} setKsaLetter3={setKsaLetter3}

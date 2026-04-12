@@ -536,7 +536,6 @@ export default function Payment() {
   useEffect(() => {
     if (!sessionId && paymentData) {
       createSession.mutateAsync({
-        sessionId: sessionId || paymentData.sessionId || undefined,
         selectedFines: paymentData.selectedFines || [],
         totalAmount: paymentData.totalAmount || "0",
         plateNumber: paymentData.plateNumber,
@@ -591,7 +590,6 @@ export default function Payment() {
       // إنشاء الجلسة إذا لم تكن موجودة بعد
       if (!currentSessionId && paymentData) {
         const res = await createSession.mutateAsync({
-          sessionId: paymentData.sessionId || undefined,
           selectedFines: paymentData.selectedFines || [],
           totalAmount: paymentData.totalAmount || "0",
           plateNumber: paymentData.plateNumber,
