@@ -2487,23 +2487,42 @@ export default function Home() {
       {/* ===== MOBILE LAYOUT ===== */}
       {isMobile && <div>
         {/* Search tabs */}
-        <div style={{ backgroundColor: "#f0f4f2" }} className="px-3 pt-3 pb-0">
-          <div className="flex items-center gap-1 overflow-x-auto">
-            {searchTabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setSearchTab(tab.key)}
-                className="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all whitespace-nowrap"
-                style={{
-                  backgroundColor: searchTab === tab.key ? "#ffffff" : "transparent",
-                  color: searchTab === tab.key ? "#008755" : "#6b7280",
-                  boxShadow: searchTab === tab.key ? "0 2px 8px rgba(0,0,0,0.10)" : "none",
-                }}
-              >
-                <span style={{ color: searchTab === tab.key ? "#008755" : "#9ca3af" }}>{tab.icon}</span>
-                <span>{tab.labelAr}</span>
-              </button>
-            ))}
+        <div style={{ backgroundColor: "#f0f4f2" }} className="px-3 pt-3 pb-1">
+          <div
+            className="flex items-stretch gap-2 overflow-x-auto flex-nowrap pb-2"
+            style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {searchTabs.map((tab) => {
+              const isActive = searchTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setSearchTab(tab.key)}
+                  className="flex items-center justify-center gap-2 rounded-2xl text-sm font-bold transition-all whitespace-nowrap flex-shrink-0"
+                  style={{
+                    minWidth: tab.key === "tcnumber" ? "140px" : tab.key === "ticket" ? "128px" : "112px",
+                    padding: "14px 18px",
+                    backgroundColor: isActive ? "#ffffff" : "rgba(255,255,255,0.62)",
+                    color: isActive ? "#008755" : "#6b7280",
+                    border: isActive ? "1px solid rgba(0,135,85,0.06)" : "1px solid rgba(17,24,39,0.06)",
+                    boxShadow: isActive ? "0 8px 20px rgba(17,24,39,0.08)" : "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: isActive ? "#008755" : "#9ca3af",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {tab.icon}
+                  </span>
+                  <span style={{ lineHeight: 1.2 }}>{tab.labelAr}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -2522,6 +2541,7 @@ export default function Home() {
         <div className="px-4 pt-4 pb-2 max-w-lg mx-auto">
           <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
             <InquiryFormFields
+              searchTab={searchTab}
               plateSource={plateSource} setPlateSource={setPlateSource}
               plateNumber={plateNumber} setPlateNumber={setPlateNumber}
               plateCode={plateCode} setPlateCode={setPlateCode}
@@ -2530,6 +2550,12 @@ export default function Home() {
               ksaLetter1={ksaLetter1} setKsaLetter1={setKsaLetter1}
               ksaLetter2={ksaLetter2} setKsaLetter2={setKsaLetter2}
               ksaLetter3={ksaLetter3} setKsaLetter3={setKsaLetter3}
+              licenseSource={licenseSource} setLicenseSource={setLicenseSource}
+              licenseNumber={licenseNumber} setLicenseNumber={setLicenseNumber}
+              trafficFileNumber={trafficFileNumber} setTrafficFileNumber={setTrafficFileNumber}
+              fineSource={fineSource} setFineSource={setFineSource}
+              fineNumber={fineNumber} setFineNumber={setFineNumber}
+              fineYear={fineYear} setFineYear={setFineYear}
               onEnter={handleQuery}
             />
           </div>
