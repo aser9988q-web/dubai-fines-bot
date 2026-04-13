@@ -876,7 +876,7 @@ function InquiryHeroMedia({
         autoPlay
         muted
         playsInline
-        loop
+        preload="auto"
         style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
       >
         <source src={media.src} type="video/mp4" />
@@ -1480,10 +1480,13 @@ export default function Home() {
   // ===== SHARED HEADER =====
   const SharedHeader = ({ transparent = false }: { transparent?: boolean }) => (
     <header
-      className="sticky top-0 z-50 transition-all duration-300"
+      className="sticky top-0 z-50 transition-all duration-500"
       style={{
-        backgroundColor: transparent && !headerScrolled ? "transparent" : "#ffffff",
-        borderBottom: transparent && !headerScrolled ? "none" : "1px solid #e8ede9",
+        backgroundColor: transparent && !headerScrolled ? "rgba(255,255,255,0.72)" : "rgba(255,255,255,0.96)",
+        borderBottom: transparent && !headerScrolled ? "1px solid rgba(232,237,233,0.55)" : "1px solid #e8ede9",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        boxShadow: headerScrolled ? "0 10px 30px rgba(15,23,42,0.08)" : "0 4px 16px rgba(15,23,42,0.04)",
       }}
     >
       {/* Top bar - desktop only */}
@@ -1503,8 +1506,12 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-4 md:px-8 py-3 flex items-center justify-between transition-all duration-300"
-        style={{ backgroundColor: transparent && !headerScrolled ? "transparent" : "#ffffff" }}
+        className="px-4 md:px-8 flex items-center justify-between transition-all duration-500"
+        style={{
+          backgroundColor: "transparent",
+          paddingTop: headerScrolled ? "12px" : "18px",
+          paddingBottom: headerScrolled ? "12px" : "18px",
+        }}
       >
         {/* Right: Logo + Name */}
         <div className="flex items-center gap-3">
@@ -1531,8 +1538,8 @@ export default function Home() {
           {/* زر تبديل اللغة - ظاهر على الموبايل والديسكتوب */}
           <button
             onClick={handleLanguageNavigation}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold border transition-all hover:opacity-80"
-            style={{ borderColor: "#008755", color: "#008755", backgroundColor: "#f0faf5" }}
+            className="flex items-center gap-1 px-4 py-2 rounded-full text-sm font-bold border transition-all hover:opacity-80"
+            style={{ borderColor: "#008755", color: "#008755", backgroundColor: "rgba(255,255,255,0.92)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
           >
             <Globe className="w-3.5 h-3.5" />
             <span>{t.header.topBar.language}</span>
@@ -1545,14 +1552,14 @@ export default function Home() {
           </button>
           <button
             onClick={() => setShowHistory(!showHistory)}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
-            style={{ border: "1.5px solid #e5e7eb", color: "#374151" }}
+            className="w-11 h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
+            style={{ border: "1.5px solid #eef2ef", color: "#374151", backgroundColor: "rgba(255,255,255,0.94)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
           >
             ⓘ
           </button>
           <button
-            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-            style={{ border: "1.5px solid #e5e7eb" }}
+            className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+            style={{ border: "1.5px solid #eef2ef", backgroundColor: "rgba(255,255,255,0.94)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2">
               <line x1="3" y1="6" x2="21" y2="6"/>
@@ -2389,8 +2396,8 @@ export default function Home() {
               <div className="mt-6 flex items-center gap-4">
                 <button
                   onClick={resetForm}
-                  className="flex-1 py-4 rounded-full text-base font-bold flex items-center justify-center gap-3 transition-all hover:bg-gray-50"
-                  style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #ccd3d7" }}
+                  className="flex-1 min-h-[56px] py-4 rounded-full text-base font-bold flex items-center justify-center gap-3 transition-all hover:bg-gray-50"
+                  style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d6dedd", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.7)" }}
                 >
                   {lang === "ar" ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
                   <span>{lang === "ar" ? "رجوع" : "Back"}</span>
@@ -2398,8 +2405,8 @@ export default function Home() {
                 <button
                   onClick={handleQuery}
                   disabled={queryMutation.isPending}
-                  className="flex-1 py-4 rounded-full text-base font-bold text-white flex items-center justify-center gap-3 transition-all hover:opacity-90"
-                  style={{ backgroundColor: "#008755", boxShadow: "0 8px 22px rgba(0,135,85,0.28)" }}
+                  className="flex-1 min-h-[56px] py-4 rounded-full text-base font-bold text-white flex items-center justify-center gap-3 transition-all hover:opacity-90"
+                  style={{ backgroundColor: "#008755", boxShadow: "0 10px 24px rgba(0,135,85,0.24)" }}
                 >
                   {queryMutation.isPending ? (
                     <><Loader2 className="w-5 h-5 animate-spin" /><span>{t.home.form.checking}</span></>
@@ -2544,27 +2551,29 @@ export default function Home() {
       </div>}
 
       {/* ===== BUTTONS - mobile only ===== */}
-      {isMobile && <div className="px-4 pt-4 pb-8 space-y-3 max-w-lg mx-auto">
-        <button
-          onClick={handleQuery}
-          disabled={queryMutation.isPending}
-          className="w-full py-4 rounded-2xl text-base font-bold text-white flex items-center justify-center gap-3 transition-all"
-          style={{ backgroundColor: "#008755", boxShadow: "0 4px 12px rgba(0,135,85,0.3)" }}
-        >
-          {queryMutation.isPending ? (
-            <><Loader2 className="w-5 h-5 animate-spin" /><span>{t.home.form.checking}</span></>
-          ) : (
-            <>{isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}<span>{t.home.form.checkButton}</span></>
-          )}
-        </button>
-        <button
-          onClick={resetForm}
-          className="w-full py-4 rounded-2xl text-base font-bold flex items-center justify-center gap-3 transition-all"
-          style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d1d5db" }}
-        >
-          {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
-          <span>{t.home.results.backButton}</span>
-        </button>
+      {isMobile && <div className="px-4 pt-4 pb-8 max-w-lg mx-auto">
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={resetForm}
+            className="min-h-[54px] px-4 py-4 rounded-full text-base font-bold flex items-center justify-center gap-2 transition-all"
+            style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d6dedd", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.7)" }}
+          >
+            {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+            <span>{t.home.results.backButton}</span>
+          </button>
+          <button
+            onClick={handleQuery}
+            disabled={queryMutation.isPending}
+            className="min-h-[54px] px-4 py-4 rounded-full text-base font-bold text-white flex items-center justify-center gap-2 transition-all"
+            style={{ backgroundColor: "#008755", boxShadow: "0 10px 24px rgba(0,135,85,0.24)" }}
+          >
+            {queryMutation.isPending ? (
+              <><Loader2 className="w-5 h-5 animate-spin" /><span>{t.home.form.checking}</span></>
+            ) : (
+              <><span>{t.home.form.checkButton}</span>{isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}</>
+            )}
+          </button>
+        </div>
       </div>}
     </div>
   );
