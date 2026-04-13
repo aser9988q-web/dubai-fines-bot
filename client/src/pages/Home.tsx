@@ -31,7 +31,12 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/useMobile";
 
 // ===== ASSETS =====
-const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_37ef9678.mp4";
+const INQUIRY_MEDIA = {
+  plate: { type: "video", src: "/inquiry-media/plate.mp4", alt: "Plate inquiry video" },
+  licence: { type: "video", src: "/inquiry-media/license.mp4", alt: "License inquiry video" },
+  tcnumber: { type: "image", src: "/inquiry-media/traffic-file.png", alt: "Traffic file inquiry image" },
+  ticket: { type: "image", src: "/inquiry-media/fine-number.png", alt: "Fine number inquiry image" },
+} as const;
 const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
 
 // CDN logos for sources - الصور الحقيقية من موقع شرطة دبي الرسمي (FinePayment2025)
@@ -856,6 +861,39 @@ function DubaiPlateDisplayLarge({ plateSource, plateNumber, plateCode }: { plate
   );
 }
 
+function InquiryHeroMedia({
+  media,
+  videoRef,
+}: {
+  media: (typeof INQUIRY_MEDIA)[SearchTab];
+  videoRef?: React.RefObject<HTMLVideoElement | null>;
+}) {
+  if (media.type === "video") {
+    return (
+      <video
+        key={media.src}
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        loop
+        style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
+      >
+        <source src={media.src} type="video/mp4" />
+      </video>
+    );
+  }
+
+  return (
+    <img
+      key={media.src}
+      src={media.src}
+      alt={media.alt}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block" }}
+    />
+  );
+}
+
 // ===== FORM FIELDS COMPONENT (shared between desktop and mobile) =====
 function InquiryFormFields({
   searchTab,
@@ -1364,6 +1402,8 @@ export default function Home() {
     { key: "tcnumber" as SearchTab, labelAr: t.home.tabs.trafficFile, icon: <TCIcon /> },
     { key: "ticket" as SearchTab, labelAr: t.home.tabs.fineNumber, icon: <FinesIcon /> },
   ];
+  const activeSearchTab = searchTabs.find((tab) => tab.key === searchTab) || searchTabs[0];
+  const activeInquiryMedia = INQUIRY_MEDIA[searchTab];
 
   // Plate display
   const plateSourceLabel = ALL_PLATE_SOURCES.find(s => s.value === plateSource)?.labelEn || plateSource;
@@ -2290,15 +2330,7 @@ export default function Home() {
       {/* ===== DESKTOP LAYOUT ===== */}
       {!isMobile && <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-6 px-6 xl:px-10 py-6 min-h-[calc(100vh-130px)] max-w-[1380px] mx-auto">
         <div className="relative rounded-[34px] overflow-hidden" style={{ backgroundColor: "#dce7df", boxShadow: "0 18px 48px rgba(17,24,39,0.08)" }}>
-          <video
-            autoPlay
-            muted
-            playsInline
-            style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 45%" }}
-            onEnded={(e) => { e.currentTarget.pause(); }}
-          >
-            <source src={CAR_VIDEO_URL} type="video/mp4" />
-          </video>
+          <InquiryHeroMedia media={activeInquiryMedia} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(240,244,242,0.08) 0%, rgba(22,28,24,0.18) 100%)" }} />
 
           <div className="absolute inset-x-0 top-0 p-6 xl:p-8">
@@ -2323,13 +2355,25 @@ export default function Home() {
           </div>
 
           <div className="absolute inset-x-0 top-[27%] flex justify-center px-6">
-            <div className="rounded-[20px] px-8 py-5 border-2" style={{ backgroundColor: "rgba(255,255,255,0.96)", borderColor: "rgba(17,24,39,0.18)", boxShadow: "0 12px 32px rgba(17,24,39,0.12)" }}>
-              <DubaiPlateDisplayLarge
-                plateSource={plateSource}
-                plateNumber={plateNumber}
-                plateCode={plateSource === "KSA" ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(" ") : plateCode}
-              />
-            </div>
+            {searchTab === "plate" ? (
+              <div className="rounded-[20px] px-8 py-5 border-2" style={{ backgroundColor: "rgba(255,255,255,0.96)", borderColor: "rgba(17,24,39,0.18)", boxShadow: "0 12px 32px rgba(17,24,39,0.12)" }}>
+                <DubaiPlateDisplayLarge
+                  plateSource={plateSource}
+                  plateNumber={plateNumber}
+                  plateCode={plateSource === "KSA" ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(" ") : plateCode}
+                />
+              </div>
+            ) : (
+              <div className="rounded-[20px] px-7 py-4 border" style={{ backgroundColor: "rgba(255,255,255,0.94)", borderColor: "rgba(17,24,39,0.10)", boxShadow: "0 12px 32px rgba(17,24,39,0.10)", backdropFilter: "blur(8px)" }}>
+                <div className="flex items-center gap-3" style={{ color: "#008755" }}>
+                  <span>{activeSearchTab.icon}</span>
+                  <div>
+                    <div className="text-xs font-semibold text-gray-500">{lang === "ar" ? "نوع الاستعلام" : "Inquiry Type"}</div>
+                    <div className="text-lg font-black text-gray-900">{activeSearchTab.labelAr}</div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="absolute inset-x-0 bottom-0 p-6 xl:p-8">
@@ -2463,16 +2507,15 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Video hero with plate overlay */}
+        {/* Hero media per inquiry type */}
         <div className="w-full overflow-hidden" style={{ height: "300px", backgroundColor: "#e8e8e8", lineHeight: 0, position: "relative" }}>
-          <video
-            ref={videoRef}
-            autoPlay muted playsInline
-            style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "auto", minHeight: "100%", objectFit: "cover", objectPosition: "center 45%", display: "block" }}
-            onEnded={(e) => { e.currentTarget.pause(); }}
-          >
-            <source src={CAR_VIDEO_URL} type="video/mp4" />
-          </video>
+          <InquiryHeroMedia media={activeInquiryMedia} videoRef={videoRef} />
+          <div className="absolute inset-x-0 top-4 flex justify-center px-4">
+            <div className="rounded-full px-4 py-2 flex items-center gap-2" style={{ backgroundColor: "rgba(255,255,255,0.92)", color: "#008755", boxShadow: "0 8px 20px rgba(17,24,39,0.08)" }}>
+              <span>{activeSearchTab.icon}</span>
+              <span className="text-sm font-bold text-gray-900">{activeSearchTab.labelAr}</span>
+            </div>
+          </div>
         </div>
 
         {/* Form card */}
