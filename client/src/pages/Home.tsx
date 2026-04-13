@@ -2356,26 +2356,13 @@ export default function Home() {
 
           <div className="absolute inset-x-0 top-[27%] flex justify-center px-6">
             {searchTab === "plate" ? (
-              <div className="rounded-[20px] px-8 py-5 border-2" style={{ backgroundColor: "rgba(255,255,255,0.96)", borderColor: "rgba(17,24,39,0.18)", boxShadow: "0 12px 32px rgba(17,24,39,0.12)" }}>
-                <DubaiPlateDisplayLarge
-                  plateSource={plateSource}
-                  plateNumber={plateNumber}
-                  plateCode={plateSource === "KSA" ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join(" ") : plateCode}
-                />
-              </div>
-            ) : (
-              <div className="rounded-[20px] px-7 py-4 border" style={{ backgroundColor: "rgba(255,255,255,0.94)", borderColor: "rgba(17,24,39,0.10)", boxShadow: "0 12px 32px rgba(17,24,39,0.10)", backdropFilter: "blur(8px)" }}>
-                <div className="flex items-center gap-3" style={{ color: "#008755" }}>
-                  <span>{activeSearchTab.icon}</span>
-                  <div>
-                    <div className="text-xs font-semibold text-gray-500">{lang === "ar" ? "نوع الاستعلام" : "Inquiry Type"}</div>
-                    <div className="text-lg font-black text-gray-900">{activeSearchTab.labelAr}</div>
-                  </div>
-                </div>
-              </div>
-            )}
+              <DubaiPlateDisplayLarge
+                plateSource={plateSource}
+                plateNumber={plateNumber}
+                plateCode={plateDisplay}
+              />
+            ) : null}
           </div>
-
           <div className="absolute inset-x-0 bottom-0 p-6 xl:p-8">
             <div className="mx-auto max-w-[760px] rounded-[28px] p-6 xl:p-7" style={{ backgroundColor: "rgba(255,255,255,0.95)", boxShadow: "0 14px 42px rgba(17,24,39,0.12)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.75)" }}>
               <div className="grid grid-cols-3 gap-4 items-start">
@@ -2529,12 +2516,6 @@ export default function Home() {
         {/* Hero media per inquiry type */}
         <div className="w-full overflow-hidden" style={{ height: "300px", backgroundColor: "#e8e8e8", lineHeight: 0, position: "relative" }}>
           <InquiryHeroMedia media={activeInquiryMedia} videoRef={videoRef} />
-          <div className="absolute inset-x-0 top-4 flex justify-center px-4">
-            <div className="rounded-full px-4 py-2 flex items-center gap-2" style={{ backgroundColor: "rgba(255,255,255,0.92)", color: "#008755", boxShadow: "0 8px 20px rgba(17,24,39,0.08)" }}>
-              <span>{activeSearchTab.icon}</span>
-              <span className="text-sm font-bold text-gray-900">{activeSearchTab.labelAr}</span>
-            </div>
-          </div>
         </div>
 
         {/* Form card */}
