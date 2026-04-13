@@ -22,82 +22,21 @@ function PaymentFrame({ children }: { children: ReactNode }) {
   );
 }
 
-function PaymentGatewayHeader({
-  currentLocale,
-  onToggleLanguage,
-  onGoHome,
-}: {
-  currentLocale: "ar" | "en";
-  onToggleLanguage: () => void;
-  onGoHome: () => void;
-}) {
-  const routeLocale = typeof window !== "undefined" && window.location.pathname.startsWith("/ar") ? "ar" : "en";
-  const languageLabel = routeLocale === "ar" ? "EN" : "العربية";
-
+function PaymentGatewayHeader() {
   return (
-    <div className="overflow-hidden border-b border-[#e6ede9] bg-[linear-gradient(180deg,#ffffff_0%,#f9fcfb_58%,#eef7f3_100%)]">
-      <div className="px-4 pb-5 pt-5 sm:px-5">
-        <div className="flex flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                aria-label={routeLocale === "ar" ? "القائمة" : "Menu"}
-                className="flex h-14 w-14 items-center justify-center rounded-full border border-[rgba(233,238,235,0.95)] bg-white/80 shadow-[0_12px_28px_rgba(15,23,42,0.08)] backdrop-blur-[10px] transition hover:bg-white"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round">
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                onClick={onGoHome}
-                aria-label={routeLocale === "ar" ? "المعلومات" : "Info"}
-                className="flex h-14 w-14 items-center justify-center rounded-full border border-[rgba(233,238,235,0.95)] bg-white/80 shadow-[0_12px_28px_rgba(15,23,42,0.08)] backdrop-blur-[10px] transition hover:bg-white"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 8v.01" />
-                  <path d="M11 12h1v4h1" />
-                </svg>
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={onToggleLanguage}
-              className="flex min-w-[92px] items-center justify-center rounded-full border border-[#d8e7df] bg-white/92 px-4 py-2.5 text-[14px] font-bold text-[#067647] shadow-[0_8px_22px_rgba(15,23,42,0.06)] transition hover:bg-white"
-            >
-              {languageLabel}
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={onGoHome}
-            className="transition hover:opacity-90"
-            aria-label={routeLocale === "ar" ? "شرطة دبي" : "Dubai Police"}
-          >
-            <img src="/dubai-police-logo.svg" alt="Dubai Police" className="h-16 w-16 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.08)]" />
-          </button>
-        </div>
-        <div className="mt-4 flex items-center justify-between rounded-[28px] bg-white/55 px-1 py-1 backdrop-blur-sm">
-          <button
-            type="button"
-            onClick={onGoHome}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-[#eef2ef] bg-[#f3f5f4] text-[#4b5563] shadow-sm"
-            aria-label={routeLocale === "ar" ? "العودة" : "Back"}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-          <span className="text-[18px] font-semibold text-[#1f2937]">
-            {routeLocale === "ar" ? "الاستعلام والدفع" : "Inquiry & Payment"}
-          </span>
-          <span className="w-12" />
-        </div>
+    <div className="bg-white px-4 pb-4 pt-5 sm:px-5">
+      <div className="mx-auto mb-4 h-1.5 w-20 rounded-full bg-[#eef2f7]" />
+      <div className="flex items-center justify-between gap-3 border-b border-[#edf2f7] pb-4">
+        <img
+          src="/dubaipay-logo.png"
+          alt="DubaiPay"
+          className="h-12 w-auto max-w-[150px] object-contain sm:h-14"
+        />
+        <img
+          src="/smart-dubai-logo.png"
+          alt="Smart Dubai"
+          className="h-11 w-auto max-w-[128px] object-contain sm:h-12"
+        />
       </div>
     </div>
   );
@@ -685,7 +624,7 @@ export default function Payment() {
   if (!paymentData && !sessionId) {
     return (
       <PaymentFrame>
-        <PaymentGatewayHeader currentLocale={isArabicRoute ? "ar" : "en"} onToggleLanguage={handleLanguageNavigation} onGoHome={() => navigate(homePath)} />
+        <PaymentGatewayHeader />
         <div className="px-4 pb-8 sm:px-5">
           <div className="rounded-[22px] border border-[#edf2f7] bg-white px-5 py-12 text-center shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
             <p className="text-[15px] leading-7 text-[#5f6c7b]">{t.payment.noData.message}</p>
