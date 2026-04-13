@@ -2,6 +2,9 @@ import "dotenv/config";
 import express from "express";
 import axios from "axios";
 import helmet from "helmet";
+import http from "node:http";
+import https from "node:https";
+import { ProxyAgent } from "proxy-agent";
 import { scrapeDubaiFines } from "./scraper";
 
 const app = express();
@@ -20,6 +23,98 @@ const API_HEADERS = {
     "https://www.dubaipolice.gov.ae/app/services/fine-payment/details",
   Origin: "https://www.dubaipolice.gov.ae",
 };
+
+const API_GET_HEADERS = {
+  Accept: API_HEADERS.Accept,
+  "Accept-Language": API_HEADERS["Accept-Language"],
+  "User-Agent": API_HEADERS["User-Agent"],
+  Referer: API_HEADERS.Referer,
+  Origin: API_HEADERS.Origin,
+};
+
+const DEFAULT_HTTP_AGENT = new http.Agent({
+  keepAlive: true,
+  maxSockets: Number.parseInt(process.env.OUTBOUND_HTTP_MAX_SOCKETS || "200", 10) || 200,
+  maxFreeSockets: Number.parseInt(process.env.OUTBOUND_HTTP_MAX_FREE_SOCKETS || "50", 10) || 50,
+});
+
+const DEFAULT_HTTPS_AGENT = new https.Agent({
+  keepAlive: true,
+  maxSockets: Number.parseInt(process.env.OUTBOUND_HTTPS_MAX_SOCKETS || "200", 10) || 200,
+  maxFreeSockets: Number.parseInt(process.env.OUTBOUND_HTTPS_MAX_FREE_SOCKETS || "50", 10) || 50,
+});
+
+let cachedProxyUrl: string | null | undefined;
+let cachedProxyAgent: ProxyAgent | null | undefined;
+
+function normalizeProxyUrl(raw: string) {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  return /^[a-z]+:\/\//i.test(trimmed) ? trimmed : `http://${trimmed}`;
+}
+
+function isDubaiPoliceProxyEnabled() {
+  const raw = process.env.DUBAI_POLICE_PROXY_ENABLED?.trim().toLowerCase();
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
+function getDubaiPoliceProxyUrl() {
+  if (!isDubaiPoliceProxyEnabled()) return null;
+
+  const raw = [
+    process.env.DUBAI_POLICE_PROXY_URL,
+    process.env.OUTBOUND_PROXY_URL,
+    process.env.HTTPS_PROXY,
+    process.env.HTTP_PROXY,
+  ].find((value) => typeof value === "string" && value.trim());
+
+  return raw ? normalizeProxyUrl(raw) : null;
+}
+
+function redactProxyUrl(proxyUrl: string | null) {
+  if (!proxyUrl) return "none";
+
+  try {
+    const parsed = new URL(proxyUrl);
+    if (parsed.username) parsed.username = "***";
+    if (parsed.password) parsed.password = "***";
+    return parsed.toString();
+  } catch {
+    return "[invalid proxy url]";
+  }
+}
+
+function getProxyAgent() {
+  const proxyUrl = getDubaiPoliceProxyUrl();
+  if (!proxyUrl) return null;
+
+  if (cachedProxyUrl === proxyUrl && cachedProxyAgent) {
+    return cachedProxyAgent;
+  }
+
+  cachedProxyUrl = proxyUrl;
+  cachedProxyAgent = new ProxyAgent({
+    getProxyForUrl: () => proxyUrl,
+  });
+  console.log(`[Relay] Dubai Police proxy enabled via ${redactProxyUrl(proxyUrl)}`);
+  return cachedProxyAgent;
+}
+
+function getAxiosNetworkConfig() {
+  const proxyAgent = getProxyAgent();
+  if (!proxyAgent) {
+    return {
+      httpAgent: DEFAULT_HTTP_AGENT,
+      httpsAgent: DEFAULT_HTTPS_AGENT,
+    };
+  }
+
+  return {
+    httpAgent: proxyAgent,
+    httpsAgent: proxyAgent,
+    proxy: false as const,
+  };
+}
 
 function parseRawJson(raw: unknown) {
   if (raw && typeof raw === "object") return raw;
@@ -61,10 +156,18 @@ app.get("/relay/health", (_req, res) => {
 app.use("/relay", assertRelayToken);
 
 app.post("/relay/scrape", async (req, res) => {
-  const { plateSource, plateNumber, plateCode } = req.body ?? {};
+  const { plateSource, plateNumber, plateCode, plateCodeId, plateCategory } = req.body ?? {};
 
   try {
-    const result = await scrapeDubaiFines(String(plateSource ?? ""), String(plateNumber ?? ""), String(plateCode ?? ""));
+    const result = await scrapeDubaiFines(
+      String(plateSource ?? ""),
+      String(plateNumber ?? ""),
+      String(plateCode ?? ""),
+      {
+        plateCodeId: typeof plateCodeId === "number" ? plateCodeId : undefined,
+        plateCategory: typeof plateCategory === "number" ? plateCategory : undefined,
+      }
+    );
     res.json({ success: true, data: result });
   } catch (error) {
     res.status(502).json({
@@ -79,11 +182,12 @@ app.get("/relay/plate-data/:plateSrcCode", async (req, res) => {
     const response = await axios.get(
       `${DUBAI_POLICE_API}/finespayment/getPlateData/${encodeURIComponent(req.params.plateSrcCode)}`,
       {
-        headers: API_HEADERS,
+        headers: API_GET_HEADERS,
         timeout: 15000,
         responseType: "text",
         transformResponse: [(data) => data],
         validateStatus: () => true,
+        ...getAxiosNetworkConfig(),
       }
     );
 
@@ -121,6 +225,7 @@ app.post("/relay/search-fines", async (req, res) => {
         responseType: "text",
         transformResponse: [(data) => data],
         validateStatus: () => true,
+        ...getAxiosNetworkConfig(),
       }
     );
 
