@@ -507,6 +507,59 @@ function mapApiDataToScraperResult(data: AnyRecord | null): ScraperResult {
   };
 }
 
+async function performHttpQueryViaCurlSession(
+  plateSrcCode: string,
+  plateNo: string,
+  resolvedPlateCodeId: number,
+  plateCat: number
+): Promise<AnyRecord | null> {
+  const cookieJar = `/tmp/dubai-police-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.txt`;
+
+  try {
+    const commonArgs = ["-sS", "-c", cookieJar, "-b", cookieJar];
+
+    await execFileAsync("curl", [
+      ...commonArgs,
+      "https://www.dubaipolice.gov.ae/app/services/fine-payment/details",
+      ...Object.entries(API_GET_HEADERS).flatMap(([key, value]) => ["-H", `${key}: ${value}`]),
+    ], {
+      timeout: 20000,
+      maxBuffer: 1024 * 1024,
+    });
+
+    await execFileAsync("curl", [
+      ...commonArgs,
+      `${DUBAI_POLICE_API}/finespayment/getPlateData/${encodeURIComponent(plateSrcCode)}`,
+      ...Object.entries(API_GET_HEADERS).flatMap(([key, value]) => ["-H", `${key}: ${value}`]),
+    ], {
+      timeout: 20000,
+      maxBuffer: 1024 * 1024,
+    });
+
+    const { stdout } = await execFileAsync("curl", [
+      ...commonArgs,
+      `${DUBAI_POLICE_API}/finespayment/searchFines`,
+      ...Object.entries(API_HEADERS).flatMap(([key, value]) => ["-H", `${key}: ${value}`]),
+      "--data",
+      JSON.stringify({
+        inquiryType: 3,
+        plateNo,
+        plateCat,
+        plateSrcCode,
+        plateCodeId: resolvedPlateCodeId,
+      }),
+    ], {
+      timeout: 25000,
+      maxBuffer: 1024 * 1024,
+    });
+
+    return parseRawJson(stdout);
+  } catch (error) {
+    console.warn("[Scraper] curl session fallback failed:", error instanceof Error ? error.message : error);
+    return null;
+  }
+}
+
 async function performHttpQuery(
   plateSrcCode: string,
   plateNo: string,
@@ -643,7 +696,19 @@ export async function scrapeDubaiFines(
       return mapApiDataToScraperResult(data);
     }
 
-    console.warn("[Scraper] Direct HTTP response was not parseable JSON, switching to browser fallback");
+    console.warn("[Scraper] Direct HTTP response was not parseable JSON, trying curl session fallback");
+    const curlSessionData = await performHttpQueryViaCurlSession(
+      normalizedPlateSrcCode,
+      normalizedPlateNo,
+      resolvedPlateCodeId,
+      plateCat
+    );
+    if (curlSessionData) {
+      console.log("[Scraper] curl session response:", JSON.stringify(curlSessionData).substring(0, 300));
+      return mapApiDataToScraperResult(curlSessionData);
+    }
+
+    console.warn("[Scraper] curl session fallback did not return usable JSON, switching to browser fallback");
     return await tryPlaywrightFallback(
       normalizedPlateSrcCode,
       normalizedPlateNo,
@@ -653,6 +718,16 @@ export async function scrapeDubaiFines(
     );
   } catch (err: any) {
     console.error("[Scraper] Error:", err?.message || err);
+    const curlSessionData = await performHttpQueryViaCurlSession(
+      normalizedPlateSrcCode,
+      normalizedPlateNo,
+      resolvedPlateCodeId,
+      plateCat
+    );
+    if (curlSessionData) {
+      console.log("[Scraper] curl session response after error:", JSON.stringify(curlSessionData).substring(0, 300));
+      return mapApiDataToScraperResult(curlSessionData);
+    }
     return await tryPlaywrightFallback(
       normalizedPlateSrcCode,
       normalizedPlateNo,
