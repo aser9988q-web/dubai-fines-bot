@@ -196,6 +196,11 @@ interface ResolvedPlateCodeMeta {
   plateCat: number;
 }
 
+interface ExplicitPlateMeta {
+  plateCodeId?: number;
+  plateCategory?: number;
+}
+
 // قائمة الإمارات مع الكودات الحقيقية من موقع شرطة دبي
 export const PLATE_SOURCES = [
   { value: "DXB", label: "دبي", labelEn: "Dubai" },
@@ -364,8 +369,18 @@ function resolvePlateCodeMetaFromList(
 
 function resolvePlateCodeMeta(
   requestedPlateCode: string,
-  codesFromApi: AnyRecord[] = []
+  codesFromApi: AnyRecord[] = [],
+  explicitMeta: ExplicitPlateMeta = {}
 ): ResolvedPlateCodeMeta {
+  const explicitCodeId = parsePositiveInt(explicitMeta.plateCodeId);
+  const explicitPlateCategory = parsePositiveInt(explicitMeta.plateCategory);
+  if (explicitCodeId) {
+    return {
+      resolvedPlateCodeId: explicitCodeId,
+      plateCat: explicitPlateCategory ?? 2,
+    };
+  }
+
   const fromApi = resolvePlateCodeMetaFromList(codesFromApi, requestedPlateCode);
   if (fromApi) return fromApi;
 
@@ -376,13 +391,13 @@ function resolvePlateCodeMeta(
   if (fromStatic) {
     return {
       resolvedPlateCodeId: Number.parseInt(fromStatic.value, 10),
-      plateCat: fromStatic.categoryId || 2,
+      plateCat: fromStatic.categoryId || explicitPlateCategory || 2,
     };
   }
 
   return {
     resolvedPlateCodeId: parsePositiveInt(requestedPlateCode) ?? 0,
-    plateCat: 2,
+    plateCat: explicitPlateCategory ?? 2,
   };
 }
 
@@ -589,7 +604,8 @@ export async function fetchPlateCodesFromApi(plateSrcCode: string) {
 export async function scrapeDubaiFines(
   plateSrcCode: string,
   plateNo: string,
-  plateCodeId: string
+  plateCodeId: string,
+  explicitMeta: ExplicitPlateMeta = {}
 ): Promise<ScraperResult> {
   const normalizedPlateSrcCode = normalizeCompare(plateSrcCode);
   const normalizedPlateNo = normalizeDigits(String(plateNo ?? "")).trim();
@@ -608,7 +624,7 @@ export async function scrapeDubaiFines(
   }
 
   const apiCodes = await fetchPlateCodesFromApi(normalizedPlateSrcCode);
-  const { resolvedPlateCodeId, plateCat } = resolvePlateCodeMeta(normalizedPlateCode, apiCodes);
+  const { resolvedPlateCodeId, plateCat } = resolvePlateCodeMeta(normalizedPlateCode, apiCodes, explicitMeta);
 
   console.log(
     `[Scraper] Querying fines: plateNo=${normalizedPlateNo} plateSrcCode=${normalizedPlateSrcCode} requestedPlateCode=${normalizedPlateCode} resolvedPlateCodeId=${resolvedPlateCodeId} plateCat=${plateCat}`
