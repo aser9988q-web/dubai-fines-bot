@@ -691,7 +691,7 @@ const KSA_LETTER_CODES = [
   { value: "ي", label: "ي - V" },
 ];
 
-type SearchTab = "plate" | "licence" | "tcnumber";
+type SearchTab = "plate" | "licence" | "tcnumber" | "ticket";
 type ViewMode = "form" | "results";
 type FilterStatus = "all" | "payable" | "seized" | "notpayable" | "blackpoints";
 
@@ -857,7 +857,8 @@ function DubaiPlateDisplayLarge({ plateSource, plateNumber, plateCode }: { plate
 }
 
 // ===== FORM FIELDS COMPONENT (shared between desktop and mobile) =====
-function PlateFormFields({
+function InquiryFormFields({
+  searchTab,
   plateSource, setPlateSource,
   plateNumber, setPlateNumber,
   plateCode, setPlateCode,
@@ -866,8 +867,15 @@ function PlateFormFields({
   ksaLetter1, setKsaLetter1,
   ksaLetter2, setKsaLetter2,
   ksaLetter3, setKsaLetter3,
+  licenseSource, setLicenseSource,
+  licenseNumber, setLicenseNumber,
+  trafficFileNumber, setTrafficFileNumber,
+  fineSource, setFineSource,
+  fineNumber, setFineNumber,
+  fineYear, setFineYear,
   onEnter,
 }: {
+  searchTab: SearchTab;
   plateSource: string; setPlateSource: (v: string) => void;
   plateNumber: string; setPlateNumber: (v: string) => void;
   plateCode: string; setPlateCode: (v: string) => void;
@@ -876,24 +884,37 @@ function PlateFormFields({
   ksaLetter1: string; setKsaLetter1: (v: string) => void;
   ksaLetter2: string; setKsaLetter2: (v: string) => void;
   ksaLetter3: string; setKsaLetter3: (v: string) => void;
+  licenseSource: string; setLicenseSource: (v: string) => void;
+  licenseNumber: string; setLicenseNumber: (v: string) => void;
+  trafficFileNumber: string; setTrafficFileNumber: (v: string) => void;
+  fineSource: string; setFineSource: (v: string) => void;
+  fineNumber: string; setFineNumber: (v: string) => void;
+  fineYear: string; setFineYear: (v: string) => void;
   onEnter: () => void;
 }) {
   const { t, lang, isRTL } = useLanguage();
   const { data: plateCodesData } = trpc.fines.getPlateCodes.useQuery(
     { plateSource },
     {
-      enabled: !!plateSource,
+      enabled: searchTab === "plate" && !!plateSource,
       retry: false,
       staleTime: 60 * 60 * 1000,
     }
   );
-  const dynamicPlateCodes = plateCodesData?.plateCodes ?? [];
-  const hasDynamicPlateCodes = dynamicPlateCodes.length > 0;
+
+  const sourceOptions = ALL_PLATE_SOURCES;
+  const ticketYears = Array.from({ length: new Date().getFullYear() - 1999 }, (_, index) => String(new Date().getFullYear() - index));
+  const selectChevron = <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>;
+  const fieldLabelClass = "text-sm font-bold text-gray-700 block text-right";
+  const selectBaseClass = "w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none";
+  const inputBaseClass = "w-full text-base rounded-xl px-4 py-4 focus:outline-none";
   const normalizePlateValue = (value: string) => value
     .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
     .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
     .trim()
     .toUpperCase();
+  const dynamicPlateCodes = plateCodesData?.plateCodes ?? [];
+  const hasDynamicPlateCodes = dynamicPlateCodes.length > 0;
   const currentPlateCodes = hasDynamicPlateCodes
     ? dynamicPlateCodes
     : (plateSource ? (PLATE_CODES_BY_SOURCE[plateSource] || []).map((code) => ({
@@ -914,40 +935,112 @@ function PlateFormFields({
     ? (selectedDynamicPlateCode ? `${selectedDynamicPlateCode.codeId}:${selectedDynamicPlateCode.categoryId}` : "")
     : plateCode;
 
+  if (searchTab === "licence") {
+    return (
+      <>
+        <div className="space-y-2">
+          <label className={fieldLabelClass}>{t.home.form.licenseSource}</label>
+          <div className="relative">
+            <select
+              value={licenseSource}
+              onChange={(e) => setLicenseSource(e.target.value)}
+              className={selectBaseClass}
+              style={{ backgroundColor: "#ffffff", border: licenseSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: licenseSource ? "#111827" : "#9ca3af", fontWeight: licenseSource ? "600" : "400", paddingLeft: "2.5rem" }}
+            >
+              <option value="" disabled>{t.home.form.licenseSourcePlaceholder}</option>
+              {sourceOptions.map((s) => (<option key={s.value} value={s.value}>{lang === "en" ? s.labelEn : s.label}</option>))}
+            </select>
+            {selectChevron}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label className={fieldLabelClass}>{t.home.form.licenseNumber}</label>
+          <input type="text" value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} placeholder={t.home.form.licenseNumberPlaceholder} onKeyDown={(e) => e.key === "Enter" && onEnter()} className={inputBaseClass} style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
+        </div>
+      </>
+    );
+  }
+
+  if (searchTab === "tcnumber") {
+    return (
+      <div className="space-y-2 col-span-full">
+        <label className={fieldLabelClass}>{t.home.form.trafficFileNumber}</label>
+        <input type="text" value={trafficFileNumber} onChange={(e) => setTrafficFileNumber(e.target.value)} placeholder={t.home.form.trafficFileNumberPlaceholder} onKeyDown={(e) => e.key === "Enter" && onEnter()} className={inputBaseClass} style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
+      </div>
+    );
+  }
+
+  if (searchTab === "ticket") {
+    return (
+      <>
+        <div className="space-y-2">
+          <label className={fieldLabelClass}>{t.home.form.fineSource}</label>
+          <div className="relative">
+            <select
+              value={fineSource}
+              onChange={(e) => setFineSource(e.target.value)}
+              className={selectBaseClass}
+              style={{ backgroundColor: "#ffffff", border: fineSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: fineSource ? "#111827" : "#9ca3af", fontWeight: fineSource ? "600" : "400", paddingLeft: "2.5rem" }}
+            >
+              <option value="" disabled>{t.home.form.fineSourcePlaceholder}</option>
+              {sourceOptions.map((s) => (<option key={s.value} value={s.value}>{lang === "en" ? s.labelEn : s.label}</option>))}
+            </select>
+            {selectChevron}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label className={fieldLabelClass}>{t.home.form.fineNumber}</label>
+          <input type="text" value={fineNumber} onChange={(e) => setFineNumber(e.target.value)} placeholder={t.home.form.fineNumberPlaceholder} onKeyDown={(e) => e.key === "Enter" && onEnter()} className={inputBaseClass} style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
+        </div>
+        <div className="space-y-2">
+          <label className={fieldLabelClass}>{t.home.form.fineYear}</label>
+          <div className="relative">
+            <select
+              value={fineYear}
+              onChange={(e) => setFineYear(e.target.value)}
+              className={selectBaseClass}
+              style={{ backgroundColor: "#ffffff", border: fineYear ? "2px solid #008755" : "1.5px solid #d1d5db", color: fineYear ? "#111827" : "#9ca3af", fontWeight: fineYear ? "600" : "400", paddingLeft: "2.5rem" }}
+            >
+              <option value="" disabled>{t.home.form.fineYearPlaceholder}</option>
+              {ticketYears.map((year) => (<option key={year} value={year}>{year}</option>))}
+            </select>
+            {selectChevron}
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      {/* جهة إصدار اللوحة */}
       <div className="space-y-2">
-        <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateSource}</label>
+        <label className={fieldLabelClass}>{t.home.form.plateSource}</label>
         <div className="relative">
-            <select
-              value={plateSource}
-              onChange={(e) => {
-                setPlateSource(e.target.value);
-                setPlateCode("");
-                setSelectedPlateCodeId(undefined);
-                setSelectedPlateCategory(undefined);
-              }}
-              className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none"
-
+          <select
+            value={plateSource}
+            onChange={(e) => {
+              setPlateSource(e.target.value);
+              setPlateCode("");
+              setSelectedPlateCodeId(undefined);
+              setSelectedPlateCategory(undefined);
+            }}
+            className={selectBaseClass}
             style={{ backgroundColor: "#ffffff", border: plateSource ? "2px solid #008755" : "1.5px solid #d1d5db", color: plateSource ? "#111827" : "#9ca3af", fontWeight: plateSource ? "600" : "400", paddingLeft: "2.5rem" }}
           >
             <option value="" disabled>{t.home.form.plateSourcePlaceholder}</option>
             {ALL_PLATE_SOURCES.map((s) => (<option key={s.value} value={s.value}>{lang === "en" ? s.labelEn : s.label}</option>))}
           </select>
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+          {selectChevron}
         </div>
       </div>
-      {/* رقم اللوحة */}
       <div className="space-y-2">
-        <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateNumber}</label>
-        <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} placeholder={t.home.form.plateNumberPlaceholder} onKeyDown={(e) => e.key === "Enter" && onEnter()} className="w-full text-base rounded-xl px-4 py-4 focus:outline-none" style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
+        <label className={fieldLabelClass}>{t.home.form.plateNumber}</label>
+        <input type="text" value={plateNumber} onChange={(e) => setPlateNumber(e.target.value)} placeholder={t.home.form.plateNumberPlaceholder} onKeyDown={(e) => e.key === "Enter" && onEnter()} className={inputBaseClass} style={{ backgroundColor: "#f5f5f5", border: "1.5px solid #e5e7eb", color: "#111827", textAlign: "right" }} dir="ltr" />
       </div>
-      {/* رمز اللوحة */}
       {plateSource === "KSA" ? (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateCode}</label>
+            <label className={fieldLabelClass}>{t.home.form.plateCode}</label>
             <div className="relative">
               <select value={plateCodeSelectValue} onChange={(e) => {
                 const selectedValue = e.target.value;
@@ -957,34 +1050,31 @@ function PlateFormFields({
                   setSelectedPlateCategory(undefined);
                   return;
                 }
-
                 const selected = currentPlateCodes.find((code) => `${code.codeId}:${code.categoryId}` === selectedValue);
                 setPlateCode(selected ? (lang === "en" ? (selected.labelEn || selected.label) : (selected.labelAr || selected.labelEn || selected.label)) : "");
                 setSelectedPlateCodeId(selected?.codeId);
                 setSelectedPlateCategory(selected?.categoryId);
-              }} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
-                <option value="">اختر</option>
+              }} className={selectBaseClass} style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
+                <option value="">{t.home.form.plateCodePlaceholder}</option>
                 {currentPlateCodes.map((code) => {
                   const optionValue = hasDynamicPlateCodes ? `${code.codeId}:${code.categoryId}` : code.label;
-                  const optionLabel = lang === "en"
-                    ? (code.labelEn || code.label)
-                    : (code.labelAr || code.labelEn || code.label);
+                  const optionLabel = lang === "en" ? (code.labelEn || code.label) : (code.labelAr || code.labelEn || code.label);
                   return <option key={optionValue} value={optionValue}>{optionLabel}</option>;
                 })}
               </select>
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+              {selectChevron}
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            {[{ value: ksaLetter1, setter: setKsaLetter1, label: "رمز اللوحة 1" },{ value: ksaLetter2, setter: setKsaLetter2, label: "رمز اللوحة 2" },{ value: ksaLetter3, setter: setKsaLetter3, label: "رمز اللوحة 3" }].map((item, idx) => (
+            {[{ value: ksaLetter1, setter: setKsaLetter1, label: "رمز اللوحة 1" }, { value: ksaLetter2, setter: setKsaLetter2, label: "رمز اللوحة 2" }, { value: ksaLetter3, setter: setKsaLetter3, label: "رمز اللوحة 3" }].map((item, idx) => (
               <div key={idx} className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 block text-right">{item.label}</label>
+                <label className={fieldLabelClass}>{item.label}</label>
                 <div className="relative">
-                  <select value={item.value} onChange={(e) => item.setter(e.target.value)} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir={isRTL ? "rtl" : "ltr"}>
+                  <select value={item.value} onChange={(e) => item.setter(e.target.value)} className={selectBaseClass} style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: item.value ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir={isRTL ? "rtl" : "ltr"}>
                     <option value="">{t.home.form.plateCodePlaceholder}</option>
                     {KSA_LETTER_CODES.map((c) => (<option key={c.value} value={c.value}>{c.label}</option>))}
                   </select>
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+                  {selectChevron}
                 </div>
               </div>
             ))}
@@ -992,7 +1082,7 @@ function PlateFormFields({
         </>
       ) : (
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateCode}</label>
+          <label className={fieldLabelClass}>{t.home.form.plateCode}</label>
           <div className="relative">
             <select
               value={plateCodeSelectValue}
@@ -1004,27 +1094,24 @@ function PlateFormFields({
                   setSelectedPlateCategory(undefined);
                   return;
                 }
-
                 const selected = currentPlateCodes.find((code) => `${code.codeId}:${code.categoryId}` === selectedValue);
                 setPlateCode(selected ? (lang === "en" ? (selected.labelEn || selected.label) : (selected.labelAr || selected.labelEn || selected.label)) : "");
                 setSelectedPlateCodeId(selected?.codeId);
                 setSelectedPlateCategory(selected?.categoryId);
               }}
               disabled={!plateSource}
-              className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none"
+              className={selectBaseClass}
               style={{ backgroundColor: plateSource ? "#ffffff" : "#f3f4f6", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", cursor: plateSource ? "pointer" : "not-allowed", paddingLeft: "2.5rem" }}
               dir="ltr"
             >
               <option value="">{t.home.form.plateCodePlaceholder}</option>
               {currentPlateCodes.map((code) => {
                 const optionValue = hasDynamicPlateCodes ? `${code.codeId}:${code.categoryId}` : code.label;
-                const optionLabel = lang === "en"
-                  ? (code.labelEn || code.label)
-                  : (code.labelAr || code.labelEn || code.label);
+                const optionLabel = lang === "en" ? (code.labelEn || code.label) : (code.labelAr || code.labelEn || code.label);
                 return <option key={optionValue} value={optionValue}>{optionLabel}</option>;
               })}
             </select>
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+            {selectChevron}
           </div>
         </div>
       )}
@@ -1043,6 +1130,12 @@ export default function Home() {
   const [ksaLetter1, setKsaLetter1] = useState("");
   const [ksaLetter2, setKsaLetter2] = useState("");
   const [ksaLetter3, setKsaLetter3] = useState("");
+  const [licenseSource, setLicenseSource] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [trafficFileNumber, setTrafficFileNumber] = useState("");
+  const [fineSource, setFineSource] = useState("");
+  const [fineNumber, setFineNumber] = useState("");
+  const [fineYear, setFineYear] = useState(String(new Date().getFullYear()));
   const [result, setResult] = useState<QueryResult | null>(null);
   const [location, navigate] = useLocation();
   const [showHistory, setShowHistory] = useState(false);
@@ -1111,31 +1204,60 @@ export default function Home() {
     .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
 
   const handleQuery = () => {
-    if (!plateSource) { toast.error(lang === "ar" ? "يرجى اختيار جهة إصدار اللوحة" : "Please select the plate source"); return; }
+    if (searchTab === "plate") {
+      if (!plateSource) { toast.error(lang === "ar" ? "يرجى اختيار جهة إصدار اللوحة" : "Please select the plate source"); return; }
+      const normalizedPlateNumber = normalizeDigits(plateNumber).trim();
+      if (!normalizedPlateNumber) { toast.error(lang === "ar" ? "يرجى إدخال رقم اللوحة" : "Please enter the plate number"); return; }
+      const finalPlateCode = plateSource === "KSA"
+        ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join("")
+        : normalizeDigits(plateCode).trim();
+      if (!finalPlateCode) { toast.error(lang === "ar" ? "يرجى اختيار رمز اللوحة" : "Please select the plate code"); return; }
+      queryMutation.mutate({
+        plateSource,
+        plateNumber: normalizedPlateNumber,
+        plateCode: finalPlateCode,
+        plateCodeId: plateSource === "KSA" ? undefined : selectedPlateCodeId,
+        plateCategory: plateSource === "KSA" ? undefined : selectedPlateCategory,
+        lang,
+      });
+      return;
+    }
 
-    const normalizedPlateNumber = normalizeDigits(plateNumber).trim();
-    if (!normalizedPlateNumber) { toast.error(lang === "ar" ? "يرجى إدخال رقم اللوحة" : "Please enter the plate number"); return; }
+    if (searchTab === "licence") {
+      if (!licenseSource) { toast.error(lang === "ar" ? "يرجى اختيار جهة إصدار الرخصة" : "Please select the license source"); return; }
+      if (!normalizeDigits(licenseNumber).trim()) { toast.error(lang === "ar" ? "يرجى إدخال رقم الرخصة" : "Please enter the license number"); return; }
+      setResult({ success: true, fines: [], ownerName: '', queryId: undefined, sessionId: null });
+      setView("results");
+      setSelectedFines(new Set());
+      setFilterStatus("all");
+      return;
+    }
 
-    const finalPlateCode = plateSource === "KSA"
-      ? [ksaLetter1, ksaLetter2, ksaLetter3].filter(Boolean).join("")
-      : normalizeDigits(plateCode).trim();
+    if (searchTab === "tcnumber") {
+      if (!normalizeDigits(trafficFileNumber).trim()) { toast.error(lang === "ar" ? "يرجى إدخال رقم الملف المروري" : "Please enter the traffic file number"); return; }
+      setResult({ success: true, fines: [], ownerName: '', queryId: undefined, sessionId: null });
+      setView("results");
+      setSelectedFines(new Set());
+      setFilterStatus("all");
+      return;
+    }
 
-    if (!finalPlateCode) { toast.error(lang === "ar" ? "يرجى اختيار رمز اللوحة" : "Please select the plate code"); return; }
-
-    queryMutation.mutate({
-      plateSource,
-      plateNumber: normalizedPlateNumber,
-      plateCode: finalPlateCode,
-      plateCodeId: plateSource === "KSA" ? undefined : selectedPlateCodeId,
-      plateCategory: plateSource === "KSA" ? undefined : selectedPlateCategory,
-      lang,
-    });
+    if (!fineSource) { toast.error(lang === "ar" ? "يرجى اختيار مصدر المخالفة" : "Please select the fine source"); return; }
+    if (!normalizeDigits(fineNumber).trim()) { toast.error(lang === "ar" ? "يرجى إدخال رقم المخالفة" : "Please enter the fine number"); return; }
+    if (!fineYear) { toast.error(lang === "ar" ? "يرجى اختيار سنة المخالفة" : "Please select the fine year"); return; }
+    setResult({ success: true, fines: [], ownerName: '', queryId: undefined, sessionId: null });
+    setView("results");
+    setSelectedFines(new Set());
+    setFilterStatus("all");
   };
 
   const resetForm = () => {
     setPlateNumber(""); setPlateCode(""); setPlateSource("");
     setSelectedPlateCodeId(undefined); setSelectedPlateCategory(undefined);
     setKsaLetter1(""); setKsaLetter2(""); setKsaLetter3("");
+    setLicenseSource(""); setLicenseNumber("");
+    setTrafficFileNumber("");
+    setFineSource(""); setFineNumber(""); setFineYear(String(new Date().getFullYear()));
   };
 
   const allFines = result?.fines || [];
@@ -1209,34 +1331,30 @@ export default function Home() {
     return map[status] || { label: status, variant: "outline" };
   };
 
-  // Tab icons - matching original Dubai Police website exactly
+  // Tab icons - extracted from the original Dubai Police website
   const PlateIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 32 20" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="1" y="1" width="30" height="18" rx="3"/>
-      <rect x="4" y="4" width="24" height="12" rx="1.5" strokeWidth="1.2"/>
-      <line x1="8" y1="1" x2="8" y2="19" strokeWidth="1"/>
-      <line x1="24" y1="1" x2="24" y2="19" strokeWidth="1"/>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fillRule="evenodd" clipRule="evenodd" d="M10.2704 3.00041L10.1213 3.00021C9.49935 2.99891 8.88661 2.99763 8.3373 3.20064C7.85888 3.37746 7.4356 3.66429 7.1065 4.03476C6.7286 4.46017 6.53796 5.00605 6.34456 5.55988L6.29807 5.69267L5.30192 8.52376L4.57973 8.2982C3.95093 8.1018 3.27136 8.42044 3.06186 9.00989C2.85235 9.59934 3.19226 10.2364 3.82106 10.4328L4.54636 10.6593L4.30474 11.3385C4.26391 11.4533 4.2431 11.5735 4.2431 11.6944V19.875C4.2431 20.4963 4.78039 21 5.44317 21H7.30733C7.70753 21 8.08139 20.813 8.3042 20.5014L9.01234 19.5109H9.76928V16.8236C9.76928 16.2023 10.3066 15.6987 10.9694 15.6987H21V10.0921C21 9.47576 20.4709 8.97415 19.8134 8.96724L7.71796 8.84006L8.57741 6.39744C8.85244 5.61581 8.90556 5.52554 8.95087 5.47454C9.02214 5.39431 9.11386 5.33214 9.21761 5.29379C9.28372 5.26936 9.39214 5.25036 10.2704 5.25036H19.7999C20.4627 5.25036 21 4.74669 21 4.12539C21 3.50408 20.4627 3.00041 19.7999 3.00041H10.2704ZM7.52369 12.9131C7.52369 12.2918 8.06098 11.7882 8.72376 11.7882H10.4391C11.1019 11.7882 11.6392 12.2918 11.6392 12.9131C11.6392 13.5345 11.1019 14.0381 10.4391 14.0381H8.72376C8.06098 14.0381 7.52369 13.5345 7.52369 12.9131Z" fill="currentColor"/>
+      <path d="M20.4 20.5014H11.4396C11.1082 20.5014 10.8396 20.2495 10.8396 19.9389V17.2856C10.8396 16.975 11.1082 16.7231 11.4396 16.7231H20.4C20.7314 16.7231 21 16.975 21 17.2856V18.3493V19.9389C21 20.2495 20.7314 20.5014 20.4 20.5014Z" fill="currentColor"/>
     </svg>
   );
   const LicenceIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="2" y="3" width="20" height="18" rx="2"/>
-      <line x1="6" y1="8" x2="18" y2="8" strokeWidth="1.5"/>
-      <line x1="6" y1="12" x2="18" y2="12" strokeWidth="1.5"/>
-      <line x1="6" y1="16" x2="14" y2="16" strokeWidth="1.5"/>
-      <line x1="6" y1="8" x2="6" y2="16" strokeWidth="1.5"/>
-      <line x1="18" y1="8" x2="18" y2="12" strokeWidth="1.5"/>
-      <line x1="14" y1="12" x2="14" y2="16" strokeWidth="1.5"/>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7.6002 13.87C8.0802 13.87 8.4902 13.71 8.8102 13.38C9.1402 13.06 9.3002 12.65 9.3002 12.17C9.3002 11.69 9.1402 11.28 8.8102 10.96C8.4902 10.63 8.0802 10.47 7.6002 10.47C7.1202 10.47 6.7102 10.63 6.3902 10.96C6.0702 11.29 5.9002 11.69 5.9002 12.17C5.9002 12.65 6.0602 13.06 6.3902 13.38C6.7202 13.71 7.1202 13.87 7.6002 13.87Z" fill="currentColor"/>
+      <path d="M9.8002 15.12C9.4202 14.95 9.0402 14.83 8.68019 14.74C8.31019 14.66 7.9502 14.62 7.6002 14.62C7.2502 14.62 6.8902 14.66 6.5202 14.74C6.1502 14.82 5.7802 14.95 5.4002 15.12C5.08019 15.25 4.8302 15.46 4.6402 15.75C4.4502 16.04 4.3502 16.34 4.3502 16.67V17.27H10.8502V16.67C10.8502 16.34 10.7502 16.03 10.5602 15.75C10.3702 15.47 10.1102 15.26 9.8002 15.12Z" fill="currentColor"/>
+      <path fillRule="evenodd" clipRule="evenodd" d="M20.1502 3.75C20.8802 3.75 21.5002 4.01 22.0202 4.53C22.5402 5.05 22.8002 5.67 22.8002 6.4V17.6C22.8002 18.33 22.5402 18.95 22.0202 19.47C21.5002 19.99 20.8802 20.25 20.1502 20.25H3.8502C3.1202 20.25 2.5002 19.99 1.9802 19.47C1.4602 18.95 1.2002 18.33 1.2002 17.6V6.4C1.2002 5.67 1.4602 5.05 1.9802 4.53C2.5002 4.01 3.1202 3.75 3.8502 3.75H20.1502ZM4.5102 5.75C4.2402 5.75 4.0102 5.85 3.8202 6.03V6.04C3.6302 6.22 3.5302 6.46 3.5302 6.74C3.5302 7.02 3.6302 7.26 3.8102 7.44C4.0002 7.62 4.2302 7.71 4.5102 7.71H9.1102C9.3802 7.71 9.6102 7.61 9.8002 7.43C9.9902 7.25 10.0902 7.01 10.0902 6.73C10.0902 6.45 9.9902 6.21 9.81019 6.03C9.6202 5.84 9.39019 5.75 9.1102 5.75H4.5102ZM10.7502 18.07C11.2602 18.07 11.6802 17.66 11.6802 17.14V10.58C11.6802 10.07 11.2702 9.65 10.7502 9.65H4.4502C3.9402 9.65 3.5202 10.06 3.5202 10.58V17.14C3.5202 17.65 3.9302 18.07 4.4502 18.07H10.7502ZM11.0102 6.74C11.0102 7.29 11.4502 7.73 12.0002 7.73C12.5502 7.73 12.9902 7.29 12.9902 6.74C12.9902 6.19 12.5502 5.75 12.0002 5.75C11.4502 5.75 11.0102 6.19 11.0102 6.74ZM14.9702 5.74C14.7002 5.74 14.4702 5.84 14.2802 6.02V6.03C14.0902 6.21 13.9902 6.45 13.9902 6.73C13.9902 7.01 14.0902 7.25 14.2702 7.43C14.4602 7.61 14.6902 7.7 14.9702 7.7H19.5702C19.8402 7.7 20.0702 7.6 20.2602 7.42C20.4502 7.24 20.5502 7 20.5502 6.72C20.5502 6.44 20.4502 6.2 20.2702 6.02C20.0802 5.83 19.8502 5.74 19.5702 5.74H14.9702ZM17.6902 15.75C17.9602 15.75 18.1902 15.66 18.3702 15.48C18.5502 15.3 18.6402 15.07 18.6402 14.8C18.6402 14.53 18.5502 14.3 18.3702 14.12C18.1902 13.94 17.9602 13.85 17.6902 13.85H15.0402C14.7702 13.85 14.5402 13.94 14.3602 14.12C14.1802 14.3 14.0902 14.53 14.0902 14.8C14.0902 15.07 14.1802 15.3 14.3602 15.48C14.5402 15.66 14.7702 15.75 15.0402 15.75H17.6902ZM19.6002 12.6C19.8702 12.6 20.1002 12.5 20.2902 12.32V12.31C20.4802 12.13 20.5802 11.89 20.5802 11.61C20.5802 11.33 20.4802 11.09 20.3002 10.91C20.1102 10.73 19.8802 10.64 19.6002 10.64H15.0602C14.7902 10.64 14.5602 10.74 14.3702 10.92C14.1802 11.1 14.0802 11.34 14.0802 11.62C14.0802 11.9 14.1802 12.14 14.3602 12.32C14.5502 12.51 14.7802 12.6 15.0602 12.6H19.6002Z" fill="currentColor"/>
     </svg>
   );
   const TCIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <line x1="4" y1="6" x2="20" y2="6"/>
-      <line x1="4" y1="12" x2="20" y2="12"/>
-      <line x1="4" y1="18" x2="20" y2="18"/>
-      <line x1="4" y1="6" x2="4" y2="18"/>
-      <line x1="12" y1="6" x2="12" y2="18"/>
-      <line x1="20" y1="6" x2="20" y2="18"/>
+    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9.31803 7.03719L8.99772 8.96297H7.09017L7.41048 7.03719H9.31803Z" fill="currentColor"/>
+      <path fillRule="evenodd" clipRule="evenodd" d="M8.00033 0.666748C12.0504 0.666748 15.3337 3.94999 15.3337 8.00008C15.3337 12.0502 12.0504 15.3334 8.00033 15.3334C3.95024 15.3334 0.666992 12.0502 0.666992 8.00008C0.666992 3.94999 3.95024 0.666748 8.00033 0.666748ZM10.5544 3.67586C10.1912 3.61534 9.84799 3.86089 9.78744 4.22404L9.54069 5.70386H7.63314L7.84342 4.44279C7.90375 4.07978 7.65824 3.73644 7.29525 3.67586C6.93209 3.61534 6.58822 3.86089 6.52767 4.22404L6.28158 5.70386H4.74121C4.37304 5.70386 4.07457 6.00236 4.07454 6.37052C4.07458 6.73868 4.37305 7.03719 4.74121 7.03719H6.05892L5.73861 8.96297H4.33366C3.96551 8.96297 3.66706 9.26151 3.66699 9.62964C3.66699 9.99783 3.96547 10.2963 4.33366 10.2963H5.51595L5.30566 11.5574C5.24527 11.9205 5.49074 12.2638 5.85384 12.3243C6.21697 12.3847 6.56025 12.1393 6.62077 11.7761L6.86751 10.2963H8.77507L8.56478 11.5574C8.5044 11.9205 8.74986 12.2638 9.11296 12.3243C9.47613 12.3848 9.81935 12.1393 9.87988 11.7761L10.1266 10.2963H11.2594C11.6276 10.2963 11.9261 9.99783 11.9261 9.62964C11.926 9.26151 11.6276 8.96297 11.2594 8.96297H10.3493L10.6696 7.03719H11.667C12.0352 7.03719 12.3336 6.73868 12.3337 6.37052C12.3336 6.00236 12.0352 5.70386 11.667 5.70386H10.8923L11.1025 4.44279C11.1629 4.07973 10.9174 3.73638 10.5544 3.67586Z" fill="currentColor"/>
+    </svg>
+  );
+  const FinesIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fillRule="evenodd" clipRule="evenodd" d="M4.8502 1.84961H19.1502C19.9002 1.84961 20.5294 2.10378 21.0377 2.61211C21.546 3.12044 21.8002 3.74961 21.8002 4.49961V22.0243L21.6502 22.0493C21.5502 22.0659 21.4252 21.9993 21.2752 21.8493L20.6252 21.1993C20.4752 21.0493 20.296 20.9784 20.0877 20.9868C19.8794 20.9951 19.7085 21.0743 19.5752 21.2243L19.0252 21.8243C18.8919 21.9743 18.721 22.0493 18.5127 22.0493C18.3044 22.0493 18.1252 21.9743 17.9752 21.8243L17.3752 21.2243C17.2252 21.0743 17.046 20.9993 16.8377 20.9993C16.6294 20.9993 16.4585 21.0743 16.3252 21.2243L15.7752 21.8243C15.6419 21.9743 15.471 22.0493 15.2627 22.0493C15.0544 22.0493 14.8752 21.9743 14.7252 21.8243L14.1252 21.2243C13.9752 21.0743 13.796 20.9993 13.5877 20.9993C13.3794 20.9993 13.2085 21.0743 13.0752 21.2243L12.5252 21.8243C12.3919 21.9743 12.2169 22.0493 12.0002 22.0493C11.7835 22.0493 11.6085 21.9743 11.4752 21.8243L10.9252 21.2243C10.9111 21.2084 10.8965 21.1933 10.8815 21.1791L10.8828 21.1822L10.8752 21.1746C10.8688 21.1682 10.8624 21.162 10.8559 21.1559C10.7342 21.0515 10.5865 20.9993 10.4127 20.9993C10.2113 20.9993 10.0371 21.0694 9.89025 21.2096L9.2252 21.8746C9.09186 22.0079 8.93353 22.0746 8.7502 22.0746C8.57155 22.0746 8.41663 22.0113 8.28546 21.8847C8.26459 21.8661 8.2445 21.846 8.2252 21.8243L7.97486 21.5512L7.6252 21.1746C7.61881 21.1682 7.61236 21.162 7.60586 21.1559C7.48425 21.0515 7.33652 20.9993 7.1627 20.9993C6.96129 20.9993 6.78715 21.0694 6.64026 21.2095L5.9752 21.8746C5.84186 22.0079 5.68353 22.0746 5.5002 22.0746C5.32154 22.0746 5.16663 22.0113 5.03546 21.8847C5.01459 21.8661 4.9945 21.846 4.9752 21.8243L4.72488 21.5512L4.3752 21.1746C4.36735 21.1668 4.35941 21.1591 4.35139 21.1517C4.23063 21.0486 4.0844 20.9936 3.9127 20.9868C3.71116 20.9787 3.53692 21.0447 3.38997 21.1848L2.7002 21.8746C2.69797 21.8768 2.69515 21.8792 2.69174 21.8817C2.55651 22.0088 2.44267 22.0647 2.3502 22.0493L2.29997 22.0409C2.26854 22.0517 2.23528 22.0629 2.2002 22.0746V4.49961C2.2002 3.74961 2.45436 3.12044 2.9627 2.61211C3.47103 2.10378 4.1002 1.84961 4.8502 1.84961ZM6.8748 8.52402H17.0748C17.4415 8.52402 17.754 8.39486 18.0123 8.13652C18.2706 7.87819 18.3998 7.56569 18.3998 7.19902C18.3998 6.83236 18.2706 6.51986 18.0123 6.26152C17.754 6.00319 17.4415 5.87402 17.0748 5.87402H6.8748C6.50814 5.87402 6.19564 6.00319 5.9373 6.26152C5.67897 6.51986 5.5498 6.83236 5.5498 7.19902C5.5498 7.56569 5.67897 7.87819 5.9373 8.13652C6.19564 8.39486 6.50814 8.52402 6.8748 8.52402ZM17.0748 12.924H6.8748C6.50814 12.924 6.19564 12.7949 5.9373 12.5365C5.67897 12.2782 5.5498 11.9657 5.5498 11.599C5.5498 11.2324 5.67897 10.9199 5.9373 10.6615C6.19564 10.4032 6.50814 10.274 6.8748 10.274H17.0748C17.4415 10.274 17.754 10.4032 18.0123 10.6615C18.2706 10.9199 18.3998 11.2324 18.3998 11.599C18.3998 11.9657 18.2706 12.2782 18.0123 12.5365C17.754 12.7949 17.4415 12.924 17.0748 12.924ZM17.0748 17.324H6.8748C6.50814 17.324 6.19564 17.1949 5.9373 16.9365C5.67897 16.6782 5.5498 16.3657 5.5498 15.999C5.5498 15.6324 5.67897 15.3199 5.9373 15.0615C6.19564 14.8032 6.50814 14.674 6.8748 14.674H17.0748C17.4415 14.674 17.754 14.8032 18.0123 15.0615C18.2706 15.3199 18.3998 15.6324 18.3998 15.999C18.3998 16.3657 18.2706 16.6782 18.0123 16.9365C17.754 17.1949 17.4415 17.324 17.0748 17.324Z" fill="currentColor"/>
+      <path d="M10.8828 21.1822L10.9002 21.1996V21.2246L10.8828 21.1822Z" fill="currentColor"/>
     </svg>
   );
 
@@ -1244,6 +1362,7 @@ export default function Home() {
     { key: "plate" as SearchTab, labelAr: t.home.tabs.plate, icon: <PlateIcon /> },
     { key: "licence" as SearchTab, labelAr: t.home.tabs.license, icon: <LicenceIcon /> },
     { key: "tcnumber" as SearchTab, labelAr: t.home.tabs.trafficFile, icon: <TCIcon /> },
+    { key: "ticket" as SearchTab, labelAr: t.home.tabs.fineNumber, icon: <FinesIcon /> },
   ];
 
   // Plate display
@@ -2216,7 +2335,8 @@ export default function Home() {
           <div className="absolute inset-x-0 bottom-0 p-6 xl:p-8">
             <div className="mx-auto max-w-[760px] rounded-[28px] p-6 xl:p-7" style={{ backgroundColor: "rgba(255,255,255,0.95)", boxShadow: "0 14px 42px rgba(17,24,39,0.12)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.75)" }}>
               <div className="grid grid-cols-3 gap-4 items-start">
-                <PlateFormFields
+                <InquiryFormFields
+                  searchTab={searchTab}
                   plateSource={plateSource} setPlateSource={setPlateSource}
                   plateNumber={plateNumber} setPlateNumber={setPlateNumber}
                   plateCode={plateCode} setPlateCode={setPlateCode}
@@ -2225,6 +2345,12 @@ export default function Home() {
                   ksaLetter1={ksaLetter1} setKsaLetter1={setKsaLetter1}
                   ksaLetter2={ksaLetter2} setKsaLetter2={setKsaLetter2}
                   ksaLetter3={ksaLetter3} setKsaLetter3={setKsaLetter3}
+                  licenseSource={licenseSource} setLicenseSource={setLicenseSource}
+                  licenseNumber={licenseNumber} setLicenseNumber={setLicenseNumber}
+                  trafficFileNumber={trafficFileNumber} setTrafficFileNumber={setTrafficFileNumber}
+                  fineSource={fineSource} setFineSource={setFineSource}
+                  fineNumber={fineNumber} setFineNumber={setFineNumber}
+                  fineYear={fineYear} setFineYear={setFineYear}
                   onEnter={handleQuery}
                 />
               </div>
@@ -2352,7 +2478,7 @@ export default function Home() {
         {/* Form card */}
         <div className="px-4 pt-4 pb-2 max-w-lg mx-auto">
           <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
-            <PlateFormFields
+            <InquiryFormFields
               plateSource={plateSource} setPlateSource={setPlateSource}
               plateNumber={plateNumber} setPlateNumber={setPlateNumber}
               plateCode={plateCode} setPlateCode={setPlateCode}
