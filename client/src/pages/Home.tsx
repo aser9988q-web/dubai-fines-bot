@@ -1510,80 +1510,85 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-5 md:px-8 flex flex-row-reverse md:flex-row items-center justify-between transition-all duration-500"
+        className="px-5 md:px-8 flex flex-col md:flex-row md:items-center justify-between transition-all duration-500"
         style={{
           background: transparent && !headerScrolled
             ? "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.76) 64%, rgba(255,255,255,0.24) 100%)"
             : "rgba(255,255,255,0.96)",
           paddingTop: headerScrolled ? "12px" : isMobile ? "20px" : "18px",
-          paddingBottom: headerScrolled ? "12px" : isMobile ? "22px" : "18px",
+          paddingBottom: headerScrolled ? "12px" : isMobile ? "18px" : "18px",
         }}
       >
-        {/* Left on mobile: menu, info, language */}
-        <div className="flex items-center gap-3 md:flex-row" style={{ direction: isMobile ? "ltr" : undefined }}>
+        <div className="flex flex-row-reverse items-center justify-between md:contents">
+          {/* Left on mobile: menu, info, language */}
           <div className="flex items-center gap-3 md:flex-row" style={{ direction: isMobile ? "ltr" : undefined }}>
+            <div className="flex items-center gap-3 md:flex-row" style={{ direction: isMobile ? "ltr" : undefined }}>
+              <button
+                className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+                style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <line x1="3" y1="12" x2="21" y2="12"/>
+                  <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+              </button>
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
+                style={{ border: "1px solid rgba(233,238,235,0.95)", color: "#1f2937", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+              >
+                ⓘ
+              </button>
+            </div>
             <button
-              className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-              style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+              onClick={handleLanguageNavigation}
+              className="flex items-center gap-1.5 rounded-full border px-2.5 py-2 text-[12px] font-bold transition-all hover:opacity-80 md:px-4 md:py-2 md:text-sm"
+              style={{ borderColor: "#008755", color: "#008755", backgroundColor: "rgba(255,255,255,0.92)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <line x1="3" y1="12" x2="21" y2="12"/>
-                <line x1="3" y1="18" x2="21" y2="18"/>
-              </svg>
+              <Globe className="hidden h-3.5 w-3.5 md:block" />
+              <span>{isMobile ? (isRTL ? "EN" : "AR") : t.header.topBar.language}</span>
             </button>
-            <button
-              onClick={() => setShowHistory(!showHistory)}
-              className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
-              style={{ border: "1px solid rgba(233,238,235,0.95)", color: "#1f2937", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
-            >
-              ⓘ
+            <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
+              <Search className="w-5 h-5" />
+            </button>
+            <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
+              <Bell className="w-5 h-5" />
             </button>
           </div>
-          <button
-            onClick={handleLanguageNavigation}
-            className="flex items-center gap-1.5 rounded-full border px-2.5 py-2 text-[12px] font-bold transition-all hover:opacity-80 md:px-4 md:py-2 md:text-sm"
-            style={{ borderColor: "#008755", color: "#008755", backgroundColor: "rgba(255,255,255,0.92)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
-          >
-            <Globe className="hidden h-3.5 w-3.5 md:block" />
-            <span>{isMobile ? (isRTL ? "EN" : "AR") : t.header.topBar.language}</span>
-          </button>
-          <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
-            <Search className="w-5 h-5" />
-          </button>
-          <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
-            <Bell className="w-5 h-5" />
-          </button>
+
+          {/* Center: Desktop nav */}
+          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
+            <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">
+              <HomeIcon className="w-4 h-4" /> {t.header.nav.home}
+            </button>
+            <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.services}</button>
+            <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.news}</button>
+            <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.about}</button>
+            <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.contact}</button>
+          </nav>
+
+          {/* Right on mobile: logo only on the top row */}
+          <div className="flex items-center gap-2.5" style={{ direction: isMobile ? "rtl" : undefined }}>
+            <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-14 w-14 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.08))" }} />
+            <div className="hidden md:block">
+              <div className="text-lg font-black" style={{ color: "#008755" }}>{t.header.siteName}</div>
+              <div className="text-xs text-gray-500">{t.header.siteNameEn}</div>
+            </div>
+          </div>
         </div>
 
-        {/* Center: Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">
-            <HomeIcon className="w-4 h-4" /> {t.header.nav.home}
-          </button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.services}</button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.news}</button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.about}</button>
-          <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.contact}</button>
-        </nav>
-
-        {/* Right on mobile: logo first, with integrated inquiry heading inside the same header */}
-        <div className="flex items-center gap-2.5" style={{ direction: isMobile ? "rtl" : undefined }}>
-          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-14 w-14 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.08))" }} />
-          <div className="md:hidden flex items-center gap-1 text-[#1f2937]" style={{ flexShrink: 1, minWidth: 0 }}>
-            <span className="text-[14px] font-semibold leading-none whitespace-nowrap">
+        <div className="md:hidden mt-5 w-full flex justify-end pr-1">
+          <div className="flex items-center gap-2.5 text-right text-[#1f2937]" dir={isRTL ? "rtl" : "ltr"}>
+            <span className="text-[13px] font-semibold leading-none whitespace-nowrap">
               {isRTL ? "الاستعلام والدفع" : "Inquiry & Payment"}
             </span>
             <span
-              className="inline-flex h-6.5 w-6.5 items-center justify-center rounded-full flex-shrink-0"
-              style={{ border: "1px solid rgba(31,41,55,0.18)", backgroundColor: "rgba(255,255,255,0.55)" }}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full flex-shrink-0"
+              style={{ border: "1px solid rgba(31,41,55,0.18)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 8px 20px rgba(15,23,42,0.06)" }}
             >
-              {isRTL ? <ArrowLeft className="h-3 w-3 text-[#4b5563]" /> : <ArrowRight className="h-3 w-3 text-[#4b5563]" />}
+              {isRTL ? <ArrowLeft className="h-4 w-4 text-[#4b5563]" /> : <ArrowRight className="h-4 w-4 text-[#4b5563]" />}
             </span>
-          </div>
-          <div className="hidden md:block">
-            <div className="text-lg font-black" style={{ color: "#008755" }}>{t.header.siteName}</div>
-            <div className="text-xs text-gray-500">{t.header.siteNameEn}</div>
           </div>
         </div>
       </div>
