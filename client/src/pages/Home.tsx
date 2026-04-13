@@ -1519,17 +1519,26 @@ export default function Home() {
         }}
       >
         {/* Right on mobile: header controls */}
-        <div className="flex flex-row-reverse md:flex-row items-center gap-3">
-          <button
-            className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-            style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <line x1="3" y1="12" x2="21" y2="12"/>
-              <line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </button>
+        <div className="flex items-center gap-3 md:flex-row">
+          <div className="flex items-center gap-3">
+            <button
+              className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+              style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
+              style={{ border: "1px solid rgba(233,238,235,0.95)", color: "#1f2937", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+            >
+              ⓘ
+            </button>
+          </div>
           <button
             onClick={handleLanguageNavigation}
             className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-[13px] font-bold transition-all hover:opacity-80 md:px-4 md:py-2 md:text-sm"
@@ -1537,13 +1546,6 @@ export default function Home() {
           >
             <Globe className="h-3.5 w-3.5" />
             <span>{t.header.topBar.language}</span>
-          </button>
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
-            style={{ border: "1px solid rgba(233,238,235,0.95)", color: "#1f2937", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
-          >
-            ⓘ
           </button>
           <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
             <Search className="w-5 h-5" />
@@ -1592,15 +1594,16 @@ export default function Home() {
         </div>
       )}
 
-      {/* Breadcrumb - mobile */}
-      {!transparent && (
-        <div className="md:hidden px-4 pb-3 pt-1 flex items-center justify-end gap-2 text-sm">
-          <span className="font-semibold text-gray-700">{t.breadcrumb.finesLookup}</span>
-          <button className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#f0f0f0", border: "1px solid #e5e7eb" }}>
-            <ChevronLeft className="w-4 h-4 text-gray-500" />
+      {/* Mobile service heading */}
+      <div className="md:hidden px-4 pb-3 pt-1">
+        <div className="flex items-center justify-between rounded-[28px] bg-white/55 px-1 py-1 backdrop-blur-sm">
+          <button className="flex h-12 w-12 items-center justify-center rounded-full border border-[#eef2ef] bg-[#f3f5f4] text-[#4b5563] shadow-sm">
+            <ChevronLeft className="h-5 w-5" />
           </button>
+          <span className="text-[18px] font-semibold text-[#1f2937]">{isRTL ? "الاستعلام والدفع" : "Inquiry & Payment"}</span>
+          <span className="w-12" />
         </div>
-      )}
+      </div>
 
       {/* History dropdown */}
       {showHistory && (
@@ -2571,26 +2574,33 @@ export default function Home() {
 
       {/* ===== BUTTONS - mobile only ===== */}
       {isMobile && <div className="px-4 pt-4 pb-8 max-w-lg mx-auto">
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={resetForm}
-            className="min-h-[54px] px-4 py-4 rounded-full text-base font-bold flex items-center justify-center gap-2 transition-all"
-            style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d6dedd", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.7)" }}
-          >
-            {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
-            <span>{t.home.results.backButton}</span>
-          </button>
+        <div className="flex flex-col gap-4">
           <button
             onClick={handleQuery}
             disabled={queryMutation.isPending}
-            className="min-h-[54px] px-4 py-4 rounded-full text-base font-bold text-white flex items-center justify-center gap-2 transition-all"
-            style={{ backgroundColor: "#008755", boxShadow: "0 10px 24px rgba(0,135,85,0.24)" }}
+            className="min-h-[72px] w-full px-6 py-5 rounded-full text-[18px] font-extrabold text-white flex items-center justify-center gap-3 transition-all"
+            style={{ backgroundColor: "#008755", boxShadow: "0 12px 26px rgba(0,135,85,0.24)" }}
           >
             {queryMutation.isPending ? (
               <><Loader2 className="w-5 h-5 animate-spin" /><span>{t.home.form.checking}</span></>
             ) : (
-              <><span>{t.home.form.checkButton}</span>{isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}</>
+              <>
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#0b9960] shadow-sm">
+                  {isRTL ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
+                </span>
+                <span>{t.home.form.checkButton}</span>
+              </>
             )}
+          </button>
+          <button
+            onClick={resetForm}
+            className="min-h-[72px] w-full px-6 py-5 rounded-full text-[18px] font-extrabold flex items-center justify-center gap-3 transition-all"
+            style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d6dedd", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.7)" }}
+          >
+            <span className="flex h-10 w-10 items-center justify-center rounded-full text-white" style={{ backgroundColor: "#4b5563" }}>
+              {isRTL ? <ArrowRight className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
+            </span>
+            <span>{t.home.results.backButton}</span>
           </button>
         </div>
       </div>}
