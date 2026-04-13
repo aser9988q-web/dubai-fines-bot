@@ -547,10 +547,13 @@ export default function Payment() {
   });
 
   const [sessionId, setSessionId] = useState<string | null>(() => {
+    const urlSessionId = getPaymentContextFromUrl().sessionId;
+    if (urlSessionId) return urlSessionId;
+
     try {
-      return sessionStorage.getItem("paymentSessionId") || getPaymentContextFromUrl().sessionId;
+      return sessionStorage.getItem("paymentSessionId");
     } catch {
-      return getPaymentContextFromUrl().sessionId;
+      return null;
     }
   });
 
