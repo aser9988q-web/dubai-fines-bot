@@ -288,13 +288,12 @@ function CardForm({
       <div className="rounded-[22px] border border-[#edf2f7] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)] sm:px-5">
         <div className="flex items-center gap-3">
           <input type="checkbox" className="h-5 w-5 shrink-0 rounded border-[#cbd5e1] text-[#0d67be] focus:ring-[#0d67be]" />
-          <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-semibold leading-6 text-[#1d3568]">Donate for charity “Dirham Alkhair”</p>
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-semibold leading-6 text-[#1d3568] sm:text-[14px]">Donate for charity “Dirham Alkhair”</p>
             <button type="button" className="mt-1 text-[14px] text-[#0d67be] underline underline-offset-2">
               Learn More
             </button>
           </div>
-          <DonateIcon />
         </div>
       </div>
 
@@ -567,8 +566,8 @@ export default function Payment() {
   const statusQuery = trpc.payment.getStatus.useQuery(
     { sessionId: sessionId || "" },
     {
-      enabled: !!sessionId && (stage === "card_pending" || stage === "otp_pending" || stage === "atm_pending"),
-      refetchInterval: 3000,
+      enabled: !!sessionId && stage !== "success" && stage !== "failed",
+      refetchInterval: stage === "success" || stage === "failed" ? false : 3000,
       refetchIntervalInBackground: true,
     }
   );
