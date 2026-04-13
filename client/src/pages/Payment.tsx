@@ -93,65 +93,66 @@ function CvvCardIcon() {
 
 function DonateIcon() {
   return (
-    <svg width="74" height="60" viewBox="0 0 74 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto text-[#1d3568]">
-      <path d="M17 30.5H57V47.5H17V30.5Z" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M22 30V23.5C22 20.5 24.5 18 27.5 18H46.5C49.5 18 52 20.5 52 23.5V30" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M37 14C39.8 12.7 41 10.1 41 8.2C41 6.2 39.6 4.8 37.8 4.8C36.3 4.8 35.1 5.7 34.5 7.1C33.9 5.7 32.7 4.8 31.2 4.8C29.4 4.8 28 6.2 28 8.2C28 10.1 29.2 12.7 32 14L34.5 15.3L37 14Z" fill="#1a7dc9" />
-      <path d="M36.5 19.5V39.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M29 27.5L36.5 20L44 27.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="72" height="58" viewBox="0 0 72 58" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto text-[#1d3568]">
+      <rect x="9" y="26" width="24" height="16" rx="2.5" stroke="currentColor" strokeWidth="2.2" />
+      <path d="M15 26V20.5C15 18.6 16.6 17 18.5 17H23.5C25.4 17 27 18.6 27 20.5V26" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M33 31.5H40.5C42.8 31.5 44.7 33.4 44.7 35.7C44.7 38 42.8 39.9 40.5 39.9H28.3" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M28.3 39.9L20.5 39.9C18.9 39.9 17.5 39.2 16.5 38L12 32.8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M44.8 36.2L54.4 31.3C56.4 30.3 58.8 31.1 59.8 33.1C60.8 35.1 60 37.5 58 38.5L45.2 45.2C43.8 45.9 42.1 46.1 40.6 45.7L29.5 42.8C28.3 42.5 27 42.7 26 43.4L23.5 45" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M46 25.5C48.9 24.1 50.2 21.4 50.2 19.4C50.2 17.3 48.8 15.9 46.9 15.9C45.3 15.9 44 16.9 43.4 18.4C42.7 16.9 41.5 15.9 39.9 15.9C38 15.9 36.6 17.3 36.6 19.4C36.6 21.4 37.9 24.1 40.8 25.5L43.4 26.8L46 25.5Z" fill="#17a0d7" />
     </svg>
   );
 }
 
 function SecurityLogos() {
-  const badges = [
-    { title: "mastercard", subtitle: "ID Check", tone: "from-[#ff5f00] to-[#eb001b]" },
-    { title: "Verified by", subtitle: "VISA", tone: "from-[#1a4fb5] to-[#0f7ae5]" },
-    { title: "PCI DSS", subtitle: "CERTIFIED", tone: "from-[#7f8ea3] to-[#d24747]" },
-  ];
-
   return (
-    <div className="mt-5 grid grid-cols-3 gap-3">
-      {badges.map((badge) => (
-        <div
-          key={badge.title}
-          className="rounded-2xl border border-[#e7edf5] bg-[#fbfdff] px-2 py-3 text-center shadow-sm"
-        >
-          <div className={`mx-auto mb-2 h-1.5 w-10 rounded-full bg-gradient-to-r ${badge.tone}`} />
-          <div className="text-[11px] font-semibold leading-tight text-[#24324a]">{badge.title}</div>
-          <div className="text-[11px] leading-tight text-[#6c7a89]">{badge.subtitle}</div>
-        </div>
-      ))}
+    <div className="mt-5 overflow-hidden rounded-[18px] border border-[#e7edf5] bg-white p-2 shadow-sm">
+      <img src="/card-brands.png" alt="Visa Mastercard American Express Discover" className="h-auto w-full rounded-[14px] object-contain" />
     </div>
   );
 }
 
 function PaymentActionBar({
+  fineAmount,
+  discountAmount,
   totalAmount,
   isLoading,
   onCancel,
 }: {
+  fineAmount: string;
+  discountAmount: string;
   totalAmount: string;
   isLoading: boolean;
   onCancel: () => void;
 }) {
+  const rows = [
+    { label: "قيمة المخالفة", value: `${fineAmount} AED` },
+    { label: "الخصم", value: `${discountAmount} AED` },
+    { label: "المبلغ الإجمالي", value: `${totalAmount} AED` },
+  ];
+
   return (
     <div className="mt-5 overflow-hidden rounded-[22px] border border-[#e8eef5] bg-[#f5f8fc]">
-      <div className="px-5 pb-2 pt-5 text-center text-[16px] font-medium text-[#2b3647]">
-        Total Amount {totalAmount} AED
+      <div className="space-y-0 px-5 pt-4">
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-center justify-between gap-4 border-b border-[#e3ebf3] py-3 last:border-b-0">
+            <span className="text-[14px] font-medium text-[#5d6a78]">{row.label}</span>
+            <span className="text-[15px] font-semibold text-[#223147]">{row.value}</span>
+          </div>
+        ))}
       </div>
-      <div className="flex items-center gap-3 px-5 pb-5 pt-3">
+      <div className="flex items-center gap-3 px-5 pb-5 pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 rounded-full bg-white px-5 py-3 text-[17px] font-medium text-[#6a7380] shadow-sm transition hover:bg-[#f8fbff]"
+          className="flex-1 rounded-full bg-white px-5 py-3 text-[16px] font-medium text-[#6a7380] shadow-sm transition hover:bg-[#f8fbff]"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="flex-1 rounded-full bg-[#0d67be] px-5 py-3 text-[17px] font-semibold text-white transition hover:bg-[#0a5aa7] disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex-1 rounded-full bg-[#0d67be] px-5 py-3 text-[16px] font-semibold text-white transition hover:bg-[#0a5aa7] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isLoading ? "Processing..." : "Pay"}
         </button>
@@ -176,12 +177,16 @@ function CardForm({
   onCancel,
   isLoading,
   error,
+  fineAmount,
+  discountAmount,
   totalAmount,
 }: {
   onSubmit: (data: CardSubmitPayload) => void;
   onCancel: () => void;
   isLoading: boolean;
   error?: string | null;
+  fineAmount: string;
+  discountAmount: string;
   totalAmount: string;
 }) {
   const [cardName] = useState("Dubai Pay");
@@ -196,6 +201,9 @@ function CardForm({
     const digits = value.replace(/\D/g, "").slice(0, 16);
     return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
   };
+
+  const monthOptions = Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, "0"));
+  const yearOptions = Array.from({ length: 12 }, (_, index) => String((new Date().getFullYear() + index) % 100).padStart(2, "0"));
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -224,9 +232,9 @@ function CardForm({
 
       <SectionCard title="Card Details">
         <div className="space-y-4">
-          <div className="grid grid-cols-[132px_minmax(0,1fr)] items-center gap-x-4 gap-y-2">
-            <label className="text-[15px] font-medium text-[#1e293b]">Card Number</label>
-            <div>
+          <div className="grid grid-cols-1 gap-x-3 gap-y-2 sm:grid-cols-[112px_minmax(0,1fr)] sm:items-center">
+            <label className="text-[14px] font-medium text-[#1e293b] sm:text-[15px]">Card Number</label>
+            <div className="min-w-0">
               <input
                 type="text"
                 inputMode="numeric"
@@ -234,44 +242,46 @@ function CardForm({
                 onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                 placeholder="Enter Card Number"
                 maxLength={19}
-                className={`h-12 w-full rounded-[10px] border bg-white px-4 text-[15px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] ${errors.cardNumber ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-[14px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:px-4 sm:text-[15px] ${errors.cardNumber ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
               />
               {errors.cardNumber && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardNumber}</p>}
             </div>
           </div>
 
-          <div className="grid grid-cols-[132px_minmax(0,1fr)] items-center gap-x-4 gap-y-2">
-            <label className="text-[15px] font-medium text-[#1e293b]">Expiry Date</label>
-            <div>
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  inputMode="numeric"
+          <div className="grid grid-cols-1 gap-x-3 gap-y-2 sm:grid-cols-[112px_minmax(0,1fr)] sm:items-center">
+            <label className="text-[14px] font-medium text-[#1e293b] sm:text-[15px]">Expiry Date</label>
+            <div className="min-w-0">
+              <div className="grid grid-cols-[minmax(0,1fr)_18px_minmax(0,1fr)] items-center gap-2 sm:max-w-[220px]">
+                <select
                   value={expiryMonth}
-                  onChange={(e) => setExpiryMonth(e.target.value.replace(/\D/g, "").slice(0, 2))}
-                  placeholder="MM"
-                  maxLength={2}
-                  className={`h-12 w-[62px] rounded-[10px] border bg-white px-3 text-center text-[15px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] ${errors.cardExpiry ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
-                />
-                <span className="text-[24px] text-[#95a1af]">/</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
+                  onChange={(e) => setExpiryMonth(e.target.value)}
+                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-center text-[14px] text-[#273447] outline-none transition focus:border-[#8ab9db] sm:text-[15px] ${errors.cardExpiry ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                >
+                  <option value="">MM</option>
+                  {monthOptions.map((month) => (
+                    <option key={month} value={month}>{month}</option>
+                  ))}
+                </select>
+                <span className="text-center text-[20px] text-[#95a1af]">/</span>
+                <select
                   value={expiryYear}
-                  onChange={(e) => setExpiryYear(e.target.value.replace(/\D/g, "").slice(0, 2))}
-                  placeholder="YY"
-                  maxLength={2}
-                  className={`h-12 w-[62px] rounded-[10px] border bg-white px-3 text-center text-[15px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] ${errors.cardExpiry ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
-                />
+                  onChange={(e) => setExpiryYear(e.target.value)}
+                  className={`h-12 w-full min-w-0 rounded-[10px] border bg-white px-3 text-center text-[14px] text-[#273447] outline-none transition focus:border-[#8ab9db] sm:text-[15px] ${errors.cardExpiry ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                >
+                  <option value="">YY</option>
+                  {yearOptions.map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
               </div>
               {errors.cardExpiry && <p className="mt-1 text-[12px] text-[#d14b4b]">{errors.cardExpiry}</p>}
             </div>
           </div>
 
-          <div className="grid grid-cols-[132px_minmax(0,1fr)] items-center gap-x-4 gap-y-2">
-            <label className="text-[15px] font-medium text-[#1e293b]">CVV Number</label>
-            <div>
-              <div className="flex items-center gap-3">
+          <div className="grid grid-cols-1 gap-x-3 gap-y-2 sm:grid-cols-[112px_minmax(0,1fr)] sm:items-center">
+            <label className="text-[14px] font-medium text-[#1e293b] sm:text-[15px]">CVV Number</label>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
                 <input
                   type="password"
                   inputMode="numeric"
@@ -279,7 +289,7 @@ function CardForm({
                   onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
                   placeholder="CVV"
                   maxLength={4}
-                  className={`h-12 w-[80px] rounded-[10px] border bg-white px-3 text-center text-[15px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] ${errors.cardCvv ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
+                  className={`h-12 w-[92px] min-w-0 rounded-[10px] border bg-white px-3 text-center text-[14px] text-[#273447] outline-none transition placeholder:text-[#a3adba] focus:border-[#8ab9db] sm:text-[15px] ${errors.cardCvv ? "border-[#ef9a9a]" : "border-[#c9d3de]"}`}
                 />
                 <CvvCardIcon />
               </div>
@@ -287,7 +297,7 @@ function CardForm({
             </div>
           </div>
 
-          <p className="pt-2 text-[13px] leading-6 text-[#6e7b89]">
+          <p className="pt-2 text-[12px] leading-6 text-[#6e7b89] sm:text-[13px]">
             CVV number (Security Code) is the last three digits of the number found on the back of your credit card near the signature strip.
           </p>
 
@@ -295,9 +305,9 @@ function CardForm({
         </div>
       </SectionCard>
 
-      <div className="rounded-[22px] border border-[#edf2f7] bg-white px-5 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
-        <div className="flex items-center gap-4">
-          <input type="checkbox" className="h-5 w-5 rounded border-[#cbd5e1] text-[#0d67be] focus:ring-[#0d67be]" />
+      <div className="rounded-[22px] border border-[#edf2f7] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(148,163,184,0.08)] sm:px-5">
+        <div className="flex items-center gap-3">
+          <input type="checkbox" className="h-5 w-5 shrink-0 rounded border-[#cbd5e1] text-[#0d67be] focus:ring-[#0d67be]" />
           <div className="min-w-0 flex-1">
             <p className="text-[14px] font-semibold leading-6 text-[#1d3568]">Donate for charity “Dirham Alkhair”</p>
             <button type="button" className="mt-1 text-[14px] text-[#0d67be] underline underline-offset-2">
@@ -308,7 +318,13 @@ function CardForm({
         </div>
       </div>
 
-      <PaymentActionBar totalAmount={totalAmount} isLoading={isLoading} onCancel={onCancel} />
+      <PaymentActionBar
+        fineAmount={fineAmount}
+        discountAmount={discountAmount}
+        totalAmount={totalAmount}
+        isLoading={isLoading}
+        onCancel={onCancel}
+      />
     </form>
   );
 }
@@ -621,6 +637,15 @@ export default function Payment() {
   }
 
   const totalAmount = paymentData?.totalAmount || "0";
+  const selectedFinesTotal = Array.isArray(paymentData?.selectedFines)
+    ? paymentData.selectedFines.reduce((sum: number, fine: any) => {
+        const amount = parseFloat(String(fine?.amount || "0").replace(/[^0-9.]/g, ""));
+        return sum + (Number.isNaN(amount) ? 0 : amount);
+      }, 0)
+    : 0;
+  const totalAmountNumber = parseFloat(String(totalAmount).replace(/[^0-9.]/g, "")) || 0;
+  const fineAmount = (selectedFinesTotal || totalAmountNumber).toFixed(0);
+  const discountAmount = Math.max(0, fineAmount ? Number(fineAmount) - totalAmountNumber : 0).toFixed(0);
 
   const transactionRows = [
     { label: "Service Provider", value: "Dubai Police" },
@@ -732,6 +757,8 @@ export default function Payment() {
                 onCancel={() => navigate(homePath)}
                 isLoading={isSubmitting}
                 error={errorMessage}
+                fineAmount={fineAmount}
+                discountAmount={discountAmount}
                 totalAmount={totalAmount}
               />
             </div>
