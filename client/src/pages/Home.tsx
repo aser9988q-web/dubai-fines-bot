@@ -1519,9 +1519,9 @@ export default function Home() {
           paddingBottom: headerScrolled ? "12px" : isMobile ? "22px" : "18px",
         }}
       >
-        {/* Right on mobile: header controls */}
-        <div className="flex items-center gap-3 md:flex-row">
-          <div className="flex items-center gap-3 md:flex-row">
+        {/* Left on mobile: menu, info, language */}
+        <div className="flex items-center gap-3 md:flex-row" style={{ direction: isMobile ? "ltr" : undefined }}>
+          <div className="flex items-center gap-3 md:flex-row" style={{ direction: isMobile ? "ltr" : undefined }}>
             <button
               className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
               style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
@@ -1542,11 +1542,11 @@ export default function Home() {
           </div>
           <button
             onClick={handleLanguageNavigation}
-            className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-[13px] font-bold transition-all hover:opacity-80 md:px-4 md:py-2 md:text-sm"
+            className="flex items-center gap-1.5 rounded-full border px-2.5 py-2 text-[12px] font-bold transition-all hover:opacity-80 md:px-4 md:py-2 md:text-sm"
             style={{ borderColor: "#008755", color: "#008755", backgroundColor: "rgba(255,255,255,0.92)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
           >
-            <Globe className="h-3.5 w-3.5" />
-            <span>{t.header.topBar.language}</span>
+            <Globe className="hidden h-3.5 w-3.5 md:block" />
+            <span>{isMobile ? (isRTL ? "EN" : "AR") : t.header.topBar.language}</span>
           </button>
           <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
             <Search className="w-5 h-5" />
@@ -1567,9 +1567,20 @@ export default function Home() {
           <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.contact}</button>
         </nav>
 
-        {/* Right on mobile: Logo + Name */}
-        <div className="flex items-center gap-3">
-          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-16 w-16 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.08))" }} />
+        {/* Right on mobile: logo first, with integrated inquiry heading inside the same header */}
+        <div className="flex items-center gap-2.5" style={{ direction: isMobile ? "rtl" : undefined }}>
+          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-14 w-14 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.08))" }} />
+          <div className="md:hidden flex items-center gap-1 text-[#1f2937]" style={{ flexShrink: 1, minWidth: 0 }}>
+            <span className="text-[14px] font-semibold leading-none whitespace-nowrap">
+              {isRTL ? "الاستعلام والدفع" : "Inquiry & Payment"}
+            </span>
+            <span
+              className="inline-flex h-6.5 w-6.5 items-center justify-center rounded-full flex-shrink-0"
+              style={{ border: "1px solid rgba(31,41,55,0.18)", backgroundColor: "rgba(255,255,255,0.55)" }}
+            >
+              {isRTL ? <ArrowLeft className="h-3 w-3 text-[#4b5563]" /> : <ArrowRight className="h-3 w-3 text-[#4b5563]" />}
+            </span>
+          </div>
           <div className="hidden md:block">
             <div className="text-lg font-black" style={{ color: "#008755" }}>{t.header.siteName}</div>
             <div className="text-xs text-gray-500">{t.header.siteNameEn}</div>
@@ -1594,18 +1605,6 @@ export default function Home() {
           <span className="font-semibold" style={{ color: "#008755" }}>{t.breadcrumb.finesLookup}</span>
         </div>
       )}
-
-      {/* Mobile service heading */}
-      <div className="md:hidden px-5 pb-3 -mt-2">
-        <div className="flex items-center justify-end">
-          <div className="flex items-center gap-2.5 rounded-[28px] bg-white/55 pl-3 py-1.5 backdrop-blur-sm">
-            <button className="flex h-12 w-12 items-center justify-center rounded-full border border-[#eef2ef] bg-[#f3f5f4] text-[#4b5563] shadow-sm">
-              <ChevronRight className="h-5 w-5" />
-            </button>
-            <span className="text-[18px] font-semibold text-[#1f2937]">{isRTL ? "الاستعلام والدفع" : "Inquiry & Payment"}</span>
-          </div>
-        </div>
-      </div>
 
       {/* History dropdown */}
       {showHistory && (
@@ -2580,7 +2579,7 @@ export default function Home() {
           <button
             onClick={handleQuery}
             disabled={queryMutation.isPending}
-            className="min-h-[56px] w-full px-4 py-3.5 rounded-full text-[15px] font-extrabold text-white flex items-center justify-center gap-2.5 transition-all"
+            className="min-h-[52px] w-full px-4 py-3 rounded-full text-[14px] font-extrabold text-white flex items-center justify-center gap-2.5 transition-all"
             style={{ backgroundColor: "#008755", boxShadow: "0 12px 26px rgba(0,135,85,0.24)" }}
           >
             {queryMutation.isPending ? (
@@ -2596,7 +2595,7 @@ export default function Home() {
           </button>
           <button
             onClick={resetForm}
-            className="min-h-[56px] w-full px-4 py-3.5 rounded-full text-[15px] font-extrabold flex items-center justify-center gap-2.5 transition-all"
+            className="min-h-[52px] w-full px-4 py-3 rounded-full text-[14px] font-extrabold flex items-center justify-center gap-2.5 transition-all"
             style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d6dedd", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.7)" }}
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-full text-white" style={{ backgroundColor: "#4b5563" }}>
