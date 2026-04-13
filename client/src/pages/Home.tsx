@@ -881,7 +881,7 @@ function PlateFormFields({
   const { data: plateCodesData } = trpc.fines.getPlateCodes.useQuery(
     { plateSource },
     {
-      enabled: !!plateSource && plateSource !== "KSA",
+      enabled: !!plateSource,
       retry: false,
       staleTime: 60 * 60 * 1000,
     }
@@ -948,9 +948,28 @@ function PlateFormFields({
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 block text-right">{t.home.form.plateCode}</label>
             <div className="relative">
-              <select value={plateCode} onChange={(e) => { setPlateCode(e.target.value); setSelectedPlateCodeId(undefined); setSelectedPlateCategory(undefined); }} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
+              <select value={plateCodeSelectValue} onChange={(e) => {
+                const selectedValue = e.target.value;
+                if (!hasDynamicPlateCodes) {
+                  setPlateCode(selectedValue);
+                  setSelectedPlateCodeId(undefined);
+                  setSelectedPlateCategory(undefined);
+                  return;
+                }
+
+                const selected = currentPlateCodes.find((code) => `${code.codeId}:${code.categoryId}` === selectedValue);
+                setPlateCode(selected ? (lang === "en" ? (selected.labelEn || selected.label) : (selected.labelAr || selected.labelEn || selected.label)) : "");
+                setSelectedPlateCodeId(selected?.codeId);
+                setSelectedPlateCategory(selected?.categoryId);
+              }} className="w-full text-base rounded-xl px-4 py-4 appearance-none focus:outline-none" style={{ backgroundColor: "#ffffff", border: "1.5px solid #d1d5db", color: plateCode ? "#111827" : "#9ca3af", paddingLeft: "2.5rem" }} dir="ltr">
                 <option value="">اختر</option>
-                {PLATE_CODES_BY_SOURCE.KSA.map((code) => (<option key={code} value={code}>{code}</option>))}
+                {currentPlateCodes.map((code) => {
+                  const optionValue = hasDynamicPlateCodes ? `${code.codeId}:${code.categoryId}` : code.label;
+                  const optionLabel = lang === "en"
+                    ? (code.labelEn || code.label)
+                    : (code.labelAr || code.labelEn || code.label);
+                  return <option key={optionValue} value={optionValue}>{optionLabel}</option>;
+                })}
               </select>
               <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
             </div>

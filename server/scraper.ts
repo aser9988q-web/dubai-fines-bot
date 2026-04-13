@@ -269,7 +269,29 @@ export const PLATE_SOURCES = [
   { value: "UMQ", label: "أم القيوين", labelEn: "Umm Al Quwain" },
   { value: "RAK", label: "رأس الخيمة", labelEn: "Ras Al Khaimah" },
   { value: "FUJ", label: "الفجيرة", labelEn: "Fujairah" },
+  { value: "OMN", label: "عُمان", labelEn: "Oman" },
+  { value: "QAT", label: "قطر", labelEn: "Qatar" },
+  { value: "KWT", label: "الكويت", labelEn: "Kuwait" },
+  { value: "BAH", label: "البحرين", labelEn: "Bahrain" },
+  { value: "KSA", label: "السعودية", labelEn: "Saudi Arabia" },
 ];
+
+const OFFICIAL_PLATE_SOURCE_IDS: Record<string, number> = {
+  BAH: 35,
+  KSA: 84,
+  OMN: 103,
+  QAT: 118,
+  KWT: 129,
+};
+
+function resolvePlateSourceApiValue(plateSrcCode: string): string {
+  const normalizedPlateSrcCode = normalizeCompare(plateSrcCode);
+  const staticSourceId = parsePositiveInt(getStaticPlateSourceData(normalizedPlateSrcCode)?.sourceId);
+  if (staticSourceId) return String(staticSourceId);
+
+  const mappedSourceId = OFFICIAL_PLATE_SOURCE_IDS[normalizedPlateSrcCode];
+  return mappedSourceId ? String(mappedSourceId) : normalizedPlateSrcCode;
+}
 
 // كودات دبي المعروفة محليًا كمرجع سريع عندما ينجح المطابقة المباشرة
 export const PLATE_CODES = [
@@ -512,7 +534,7 @@ async function fetchPlateCodesViaCurl(plateSrcCode: string): Promise<AnyRecord[]
   try {
     const curlArgs = [
       "-sS",
-      `${DUBAI_POLICE_API}/finespayment/getPlateData/${encodeURIComponent(plateSrcCode)}`,
+      `${DUBAI_POLICE_API}/finespayment/getPlateData/${encodeURIComponent(resolvePlateSourceApiValue(plateSrcCode))}`,
       ...Object.entries(API_GET_HEADERS).flatMap(([key, value]) => ["-H", `${key}: ${value}`]),
     ];
 
@@ -689,12 +711,14 @@ async function performHttpQuery(
   resolvedPlateCodeId: number,
   plateCat: number
 ): Promise<AnyRecord | null> {
+  const apiPlateSource = resolvePlateSourceApiValue(plateSrcCode);
+
   if (isDubaiPoliceRelayEnabled()) {
     return await requestViaRelay<AnyRecord>("POST", "/relay/search-fines", {
       inquiryType: 3,
       plateNo,
       plateCat,
-      plateSrcCode,
+      plateSrcCode: apiPlateSource,
       plateCodeId: resolvedPlateCodeId,
     });
   }
@@ -705,7 +729,7 @@ async function performHttpQuery(
       inquiryType: 3,
       plateNo,
       plateCat,
-      plateSrcCode,
+      plateSrcCode: apiPlateSource,
       plateCodeId: resolvedPlateCodeId,
     },
     {
@@ -738,14 +762,14 @@ export async function fetchPlateCodesFromApi(plateSrcCode: string, options?: { f
     if (isDubaiPoliceRelayEnabled()) {
       const relayData = await requestViaRelay<AnyRecord>(
         "GET",
-        `/relay/plate-data/${encodeURIComponent(normalizedPlateSrcCode)}`
+        `/relay/plate-data/${encodeURIComponent(resolvePlateSourceApiValue(normalizedPlateSrcCode))}`
       );
       codes = extractCodes(relayData);
     }
 
     if (!codes.length) {
       const response = await axios.get(
-        `${DUBAI_POLICE_API}/finespayment/getPlateData/${normalizedPlateSrcCode}`,
+        `${DUBAI_POLICE_API}/finespayment/getPlateData/${resolvePlateSourceApiValue(normalizedPlateSrcCode)}`,
         {
           headers: API_GET_HEADERS,
           timeout: 10000,
@@ -983,7 +1007,9 @@ async function tryPlaywrightFallback(
 
       let codes: any[] = [];
       try {
-        const codesResponse = await fetch(`/dpapp/finespayment/getPlateData/${plateSrcCode}`, {
+        const sourceIdMap: Record<string, number> = { BAH: 35, KSA: 84, OMN: 103, QAT: 118, KWT: 129 };
+        const apiPlateSource = sourceIdMap[normalizeCompare(plateSrcCode)] ? String(sourceIdMap[normalizeCompare(plateSrcCode)]) : plateSrcCode;
+        const codesResponse = await fetch(`/dpapp/finespayment/getPlateData/${apiPlateSource}`, {
           headers: { Accept: "application/json, text/plain, */*" },
           credentials: "include",
         });
