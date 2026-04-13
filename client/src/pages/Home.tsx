@@ -1509,7 +1509,7 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-5 md:px-8 flex items-center justify-between transition-all duration-500"
+        className="px-5 md:px-8 flex flex-row-reverse md:flex-row items-center justify-between transition-all duration-500"
         style={{
           background: transparent && !headerScrolled
             ? "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.76) 64%, rgba(255,255,255,0.24) 100%)"
@@ -1519,7 +1519,7 @@ export default function Home() {
         }}
       >
         {/* Right on mobile: header controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-row-reverse md:flex-row items-center gap-3">
           <button
             className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
             style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
