@@ -1510,7 +1510,7 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-5 md:px-8 flex flex-row md:flex-row items-center justify-between transition-all duration-500"
+        className="px-5 md:px-8 flex flex-row-reverse md:flex-row items-center justify-between transition-all duration-500"
         style={{
           background: transparent && !headerScrolled
             ? "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.76) 64%, rgba(255,255,255,0.24) 100%)"
@@ -1596,9 +1596,9 @@ export default function Home() {
       )}
 
       {/* Mobile service heading */}
-      <div className="md:hidden px-4 pb-3 pt-1">
-        <div className="flex items-center justify-center rounded-[28px] bg-white/55 px-3 py-1.5 backdrop-blur-sm">
-          <div className="flex items-center gap-2.5">
+      <div className="md:hidden px-5 pb-3 -mt-2">
+        <div className="flex items-center justify-end">
+          <div className="flex items-center gap-2.5 rounded-[28px] bg-white/55 pl-3 py-1.5 backdrop-blur-sm">
             <button className="flex h-12 w-12 items-center justify-center rounded-full border border-[#eef2ef] bg-[#f3f5f4] text-[#4b5563] shadow-sm">
               <ChevronRight className="h-5 w-5" />
             </button>
