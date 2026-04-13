@@ -239,6 +239,7 @@ interface ExplicitPlateMeta {
 }
 
 interface StaticPlateSourceEntry {
+  sourceId?: number;
   codes?: AnyRecord[];
 }
 
@@ -625,12 +626,42 @@ function resolvePlateCodeMeta(
   };
 }
 
+function isDubaiPoliceNoFinesLikeResponse(data: AnyRecord) {
+  const errorCode = String(data?.errorCode ?? data?.code ?? "").trim();
+  const errorMessage = String(data?.errorMessage ?? data?.message ?? "").trim().toLowerCase();
+  const results = data?.results && typeof data.results === "object" ? data.results : {};
+  const tickets = Array.isArray(results?.tickets) ? results.tickets : [];
+
+  if (tickets.length > 0) return false;
+
+  return (
+    errorCode === "DP_Ex_Code_000"
+    || errorMessage.includes("no outstanding fines")
+    || errorMessage.includes("no fines")
+  );
+}
+
 function mapApiDataToScraperResult(data: AnyRecord | null): ScraperResult {
   if (!data) {
     return {
       success: false,
       fines: [],
       errorMessage: "تعذّر قراءة استجابة خدمة شرطة دبي. يرجى المحاولة مرة أخرى.",
+    };
+  }
+
+  const results = data.results && typeof data.results === "object" ? data.results : {};
+  const tickets: AnyRecord[] = Array.isArray(results.tickets) ? results.tickets : [];
+  const ownerInfo = results.ownerInfo;
+
+  if (!data.resCode && isDubaiPoliceNoFinesLikeResponse(data)) {
+    return {
+      success: true,
+      fines: [],
+      totalAmount: "0.00",
+      ownerInfo: ownerInfo
+        ? { maskedMobileNumber: ownerInfo.maskedMobileNumber }
+        : undefined,
     };
   }
 
@@ -642,9 +673,6 @@ function mapApiDataToScraperResult(data: AnyRecord | null): ScraperResult {
     };
   }
 
-  const results = data.results || {};
-  const tickets: AnyRecord[] = Array.isArray(results.tickets) ? results.tickets : [];
-  const ownerInfo = results.ownerInfo;
 
   const fines: FineResult[] = tickets.map((ticket) => {
     const dateTime = ticket.ticketDate && ticket.ticketTime

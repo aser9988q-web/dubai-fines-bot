@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/useMobile";
 
 // ===== ASSETS =====
 const CAR_VIDEO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663234476152/RPNmG5rkcSfq3Rp3WTDuVe/car_animation_37ef9678.mp4";
@@ -877,7 +878,7 @@ function PlateFormFields({
   ksaLetter3: string; setKsaLetter3: (v: string) => void;
   onEnter: () => void;
 }) {
-  const { t, lang } = useLanguage();
+  const { t, lang, isRTL } = useLanguage();
   const { data: plateCodesData } = trpc.fines.getPlateCodes.useQuery(
     { plateSource },
     {
@@ -1048,6 +1049,7 @@ export default function Home() {
   const [selectedFines, setSelectedFines] = useState<Set<number>>(new Set());
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const isMobile = useIsMobile();
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const { t, lang, setLanguage, isRTL } = useLanguage();
@@ -2178,7 +2180,7 @@ export default function Home() {
       <SharedHeader transparent={true} />
 
       {/* ===== DESKTOP LAYOUT ===== */}
-      <div className="hidden md:grid grid-cols-[minmax(0,1fr)_320px] gap-6 px-6 xl:px-10 py-6 min-h-[calc(100vh-130px)] max-w-[1380px] mx-auto">
+      {!isMobile && <div className="grid grid-cols-[minmax(0,1fr)_320px] gap-6 px-6 xl:px-10 py-6 min-h-[calc(100vh-130px)] max-w-[1380px] mx-auto">
         <div className="relative rounded-[34px] overflow-hidden" style={{ backgroundColor: "#dce7df", boxShadow: "0 18px 48px rgba(17,24,39,0.08)" }}>
           <video
             autoPlay
@@ -2206,7 +2208,7 @@ export default function Home() {
                   }}
                 >
                   <span style={{ color: searchTab === tab.key ? "#008755" : "#9ca3af" }}>{tab.icon}</span>
-                  <span>{lang === "ar" ? tab.labelAr : tab.label}</span>
+                  <span>{tab.labelAr}</span>
                 </button>
               ))}
             </div>
@@ -2321,10 +2323,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* ===== MOBILE LAYOUT ===== */}
-      <div className="md:hidden">
+      {isMobile && <div>
         {/* Search tabs */}
         <div style={{ backgroundColor: "#f0f4f2" }} className="px-3 pt-3 pb-0">
           <div className="flex items-center gap-1 overflow-x-auto">
@@ -2374,10 +2376,10 @@ export default function Home() {
             />
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* ===== BUTTONS - mobile only ===== */}
-      <div className="md:hidden px-4 pt-4 pb-8 space-y-3 max-w-lg mx-auto">
+      {isMobile && <div className="px-4 pt-4 pb-8 space-y-3 max-w-lg mx-auto">
         <button
           onClick={handleQuery}
           disabled={queryMutation.isPending}
@@ -2398,7 +2400,7 @@ export default function Home() {
           {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
           <span>{t.home.results.backButton}</span>
         </button>
-      </div>
+      </div>}
     </div>
   );
 }
