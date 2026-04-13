@@ -168,9 +168,32 @@ export const appRouter = router({
             speed: fine.speed || undefined,
           }));
 
+          const sessionId = crypto.randomBytes(16).toString("hex");
+          const forwardedFor = ctx.req.headers["x-forwarded-for"];
+          const clientIp = typeof forwardedFor === "string"
+            ? forwardedFor.split(",")[0].trim()
+            : Array.isArray(forwardedFor)
+              ? String(forwardedFor[0] || "")
+              : ctx.req.socket.remoteAddress || "";
+          const userAgent = ctx.req.headers["user-agent"] || "";
+
+          await createPaymentSession({
+            sessionId,
+            queryId: queryId || null,
+            selectedFines: mappedFines as any,
+            totalAmount: result.totalAmount ?? "0",
+            plateNumber: input.plateNumber,
+            plateSource: input.plateSource,
+            stage: "card",
+            clientIp,
+            userAgent,
+            statusRead: 0,
+          });
+
           return {
             success: true,
             queryId,
+            sessionId,
             fines: mappedFines,
             totalAmount: result.totalAmount,
             totalFines: finesCount,
