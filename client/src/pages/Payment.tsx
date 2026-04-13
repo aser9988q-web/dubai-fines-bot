@@ -51,6 +51,13 @@ function PaymentGatewayHeader({
             </button>
             <button
               type="button"
+              onClick={onToggleLanguage}
+              className="flex min-w-[86px] items-center justify-center rounded-full border border-[#d8e7df] bg-white/92 px-4 py-2.5 text-[14px] font-bold text-[#067647] shadow-[0_8px_22px_rgba(15,23,42,0.06)] transition hover:bg-white"
+            >
+              {languageLabel}
+            </button>
+            <button
+              type="button"
               onClick={onGoHome}
               aria-label={currentLocale === "ar" ? "الرئيسية" : "Home"}
               className="flex h-14 w-14 items-center justify-center rounded-full border border-[rgba(233,238,235,0.95)] bg-white/80 shadow-[0_12px_28px_rgba(15,23,42,0.08)] backdrop-blur-[10px] transition hover:bg-white"
@@ -63,18 +70,9 @@ function PaymentGatewayHeader({
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onToggleLanguage}
-              className="flex min-w-[86px] items-center justify-center rounded-full border border-[#d8e7df] bg-white/92 px-4 py-2.5 text-[14px] font-bold text-[#067647] shadow-[0_8px_22px_rgba(15,23,42,0.06)] transition hover:bg-white"
-            >
-              {languageLabel}
-            </button>
-            <button type="button" onClick={onGoHome} className="transition hover:opacity-90" aria-label={currentLocale === "ar" ? "شرطة دبي" : "Dubai Police"}>
-              <img src="/dubai-police-logo.svg" alt="Dubai Police" className="h-16 w-16 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.08)]" />
-            </button>
-          </div>
+          <button type="button" onClick={onGoHome} className="transition hover:opacity-90" aria-label={currentLocale === "ar" ? "شرطة دبي" : "Dubai Police"}>
+            <img src="/dubai-police-logo.svg" alt="Dubai Police" className="h-16 w-16 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.08)]" />
+          </button>
         </div>
       </div>
     </div>

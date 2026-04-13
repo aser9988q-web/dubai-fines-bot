@@ -1518,13 +1518,39 @@ export default function Home() {
           paddingBottom: headerScrolled ? "12px" : isMobile ? "22px" : "18px",
         }}
       >
-        {/* Right: Logo + Name */}
+        {/* Right on mobile: header controls */}
         <div className="flex items-center gap-3">
-          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-16 w-16 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.08))" }} />
-          <div className="hidden md:block">
-            <div className="text-lg font-black" style={{ color: "#008755" }}>{t.header.siteName}</div>
-            <div className="text-xs text-gray-500">{t.header.siteNameEn}</div>
-          </div>
+          <button
+            className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+            style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <button
+            onClick={handleLanguageNavigation}
+            className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-[13px] font-bold transition-all hover:opacity-80 md:px-4 md:py-2 md:text-sm"
+            style={{ borderColor: "#008755", color: "#008755", backgroundColor: "rgba(255,255,255,0.92)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
+          >
+            <Globe className="h-3.5 w-3.5" />
+            <span>{t.header.topBar.language}</span>
+          </button>
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
+            style={{ border: "1px solid rgba(233,238,235,0.95)", color: "#1f2937", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+          >
+            ⓘ
+          </button>
+          <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
+            <Search className="w-5 h-5" />
+          </button>
+          <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
+            <Bell className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Center: Desktop nav */}
@@ -1538,39 +1564,13 @@ export default function Home() {
           <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.contact}</button>
         </nav>
 
-        {/* Left: Icons */}
+        {/* Left on mobile: Logo + Name */}
         <div className="flex items-center gap-3">
-          <button
-            className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-            style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <line x1="3" y1="12" x2="21" y2="12"/>
-              <line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </button>
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
-            style={{ border: "1px solid rgba(233,238,235,0.95)", color: "#1f2937", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
-          >
-            ⓘ
-          </button>
-          <button
-            onClick={handleLanguageNavigation}
-            className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-[13px] font-bold transition-all hover:opacity-80 md:px-4 md:py-2 md:text-sm"
-            style={{ borderColor: "#008755", color: "#008755", backgroundColor: "rgba(255,255,255,0.92)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
-          >
-            <Globe className="h-3.5 w-3.5" />
-            <span>{t.header.topBar.language}</span>
-          </button>
-          <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
-            <Search className="w-5 h-5" />
-          </button>
-          <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
-            <Bell className="w-5 h-5" />
-          </button>
+          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-16 w-16 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.08))" }} />
+          <div className="hidden md:block">
+            <div className="text-lg font-black" style={{ color: "#008755" }}>{t.header.siteName}</div>
+            <div className="text-xs text-gray-500">{t.header.siteNameEn}</div>
+          </div>
         </div>
       </div>
 
@@ -2399,12 +2399,12 @@ export default function Home() {
                 />
               </div>
 
-              <div className="mt-8 flex flex-col gap-5">
+              <div className="mt-8 grid grid-cols-1 gap-5">
                 <button
                   onClick={handleQuery}
                   disabled={queryMutation.isPending}
                   dir="ltr"
-                  className="min-h-[76px] rounded-full px-6 py-5 text-[18px] font-extrabold text-white transition-all hover:opacity-95"
+                  className="block w-full min-h-[76px] rounded-full px-6 py-5 text-[18px] font-extrabold text-white transition-all hover:opacity-95"
                   style={{ backgroundColor: "#0b9960", boxShadow: "0 12px 26px rgba(0,135,85,0.24), 0 2px 8px rgba(15,23,42,0.08)" }}
                 >
                   <span className="flex items-center justify-center gap-4">
@@ -2423,7 +2423,7 @@ export default function Home() {
                 <button
                   onClick={resetForm}
                   dir="ltr"
-                  className="min-h-[76px] rounded-full px-6 py-5 text-[18px] font-extrabold transition-all hover:bg-gray-50"
+                  className="block w-full min-h-[76px] rounded-full px-6 py-5 text-[18px] font-extrabold transition-all hover:bg-gray-50"
                   style={{ backgroundColor: "#ffffff", color: "#2f3743", border: "1.5px solid #cfd8d3", boxShadow: "0 6px 18px rgba(15,23,42,0.04), inset 0 0 0 1px rgba(255,255,255,0.75)" }}
                 >
                   <span className="flex items-center justify-center gap-4">
