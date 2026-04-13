@@ -22,21 +22,60 @@ function PaymentFrame({ children }: { children: ReactNode }) {
   );
 }
 
-function PaymentGatewayHeader() {
+function PaymentGatewayHeader({
+  currentLocale,
+  onToggleLanguage,
+  onGoHome,
+}: {
+  currentLocale: "ar" | "en";
+  onToggleLanguage: () => void;
+  onGoHome: () => void;
+}) {
+  const languageLabel = currentLocale === "ar" ? "EN" : "العربية";
+
   return (
-    <div className="bg-white px-4 pb-4 pt-5 sm:px-5">
-      <div className="mx-auto mb-4 h-1.5 w-20 rounded-full bg-[#eef2f7]" />
-      <div className="flex items-center justify-between gap-3 border-b border-[#edf2f7] pb-4">
-        <img
-          src="/dubaipay-logo.png"
-          alt="DubaiPay"
-          className="h-12 w-auto max-w-[150px] object-contain sm:h-14"
-        />
-        <img
-          src="/smart-dubai-logo.png"
-          alt="Smart Dubai"
-          className="h-11 w-auto max-w-[128px] object-contain sm:h-12"
-        />
+    <div className="overflow-hidden border-b border-[#e6ede9] bg-[linear-gradient(180deg,#ffffff_0%,#f9fcfb_58%,#eef7f3_100%)]">
+      <div className="px-4 pb-5 pt-5 sm:px-5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              aria-label={currentLocale === "ar" ? "القائمة" : "Menu"}
+              className="flex h-14 w-14 items-center justify-center rounded-full border border-[rgba(233,238,235,0.95)] bg-white/80 shadow-[0_12px_28px_rgba(15,23,42,0.08)] backdrop-blur-[10px] transition hover:bg-white"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={onGoHome}
+              aria-label={currentLocale === "ar" ? "الرئيسية" : "Home"}
+              className="flex h-14 w-14 items-center justify-center rounded-full border border-[rgba(233,238,235,0.95)] bg-white/80 shadow-[0_12px_28px_rgba(15,23,42,0.08)] backdrop-blur-[10px] transition hover:bg-white"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8v.01" />
+                <path d="M11 12h1v4h1" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onToggleLanguage}
+              className="flex min-w-[86px] items-center justify-center rounded-full border border-[#d8e7df] bg-white/92 px-4 py-2.5 text-[14px] font-bold text-[#067647] shadow-[0_8px_22px_rgba(15,23,42,0.06)] transition hover:bg-white"
+            >
+              {languageLabel}
+            </button>
+            <button type="button" onClick={onGoHome} className="transition hover:opacity-90" aria-label={currentLocale === "ar" ? "شرطة دبي" : "Dubai Police"}>
+              <img src="/dubai-police-logo.svg" alt="Dubai Police" className="h-16 w-16 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.08)]" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -513,6 +552,17 @@ export default function Payment() {
     setLanguage(isArabicRoute ? "ar" : "en");
   }, [isArabicRoute, setLanguage]);
 
+  const buildLocalizedPaymentPath = (targetLang: "ar" | "en") => {
+    const params = window.location.search || "";
+    return targetLang === "ar" ? `/ar/payment${params}` : `/payment${params}`;
+  };
+
+  const handleLanguageNavigation = () => {
+    const nextLang = isArabicRoute ? "en" : "ar";
+    setLanguage(nextLang);
+    navigate(buildLocalizedPaymentPath(nextLang));
+  };
+
   const getPaymentContextFromUrl = () => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -613,7 +663,7 @@ export default function Payment() {
   if (!paymentData && !sessionId) {
     return (
       <PaymentFrame>
-        <PaymentGatewayHeader />
+        <PaymentGatewayHeader currentLocale={isArabicRoute ? "ar" : "en"} onToggleLanguage={handleLanguageNavigation} onGoHome={() => navigate(homePath)} />
         <div className="px-4 pb-8 sm:px-5">
           <div className="rounded-[22px] border border-[#edf2f7] bg-white px-5 py-12 text-center shadow-[0_8px_24px_rgba(148,163,184,0.08)]">
             <p className="text-[15px] leading-7 text-[#5f6c7b]">{t.payment.noData.message}</p>

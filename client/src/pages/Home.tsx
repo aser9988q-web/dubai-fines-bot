@@ -1559,10 +1559,10 @@ export default function Home() {
           </button>
           <button
             onClick={handleLanguageNavigation}
-            className="hidden md:flex items-center gap-1 px-4 py-2 rounded-full text-sm font-bold border transition-all hover:opacity-80"
+            className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-[13px] font-bold transition-all hover:opacity-80 md:px-4 md:py-2 md:text-sm"
             style={{ borderColor: "#008755", color: "#008755", backgroundColor: "rgba(255,255,255,0.92)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
           >
-            <Globe className="w-3.5 h-3.5" />
+            <Globe className="h-3.5 w-3.5" />
             <span>{t.header.topBar.language}</span>
           </button>
           <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
@@ -2399,35 +2399,39 @@ export default function Home() {
                 />
               </div>
 
-              <div className="mt-8 flex flex-col gap-4">
+              <div className="mt-8 flex flex-col gap-5">
                 <button
                   onClick={handleQuery}
                   disabled={queryMutation.isPending}
                   dir="ltr"
-                  className="min-h-[72px] py-5 px-6 rounded-full text-[18px] font-extrabold text-white flex items-center justify-center gap-4 transition-all hover:opacity-95"
-                  style={{ backgroundColor: "#0b9960", boxShadow: "0 10px 24px rgba(0,135,85,0.24), 0 2px 6px rgba(15,23,42,0.08)" }}
+                  className="min-h-[76px] rounded-full px-6 py-5 text-[18px] font-extrabold text-white transition-all hover:opacity-95"
+                  style={{ backgroundColor: "#0b9960", boxShadow: "0 12px 26px rgba(0,135,85,0.24), 0 2px 8px rgba(15,23,42,0.08)" }}
                 >
-                  {queryMutation.isPending ? (
-                    <><Loader2 className="w-6 h-6 animate-spin" /><span>{t.home.form.checking}</span></>
-                  ) : (
-                    <>
-                      <span className="w-10 h-10 rounded-full flex items-center justify-center bg-white/95 text-[#0b9960] shadow-sm">
-                        {lang === "ar" ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
-                      </span>
-                      <span>{t.home.form.checkButton}</span>
-                    </>
-                  )}
+                  <span className="flex items-center justify-center gap-4">
+                    {queryMutation.isPending ? (
+                      <><Loader2 className="h-6 w-6 animate-spin" /><span>{t.home.form.checking}</span></>
+                    ) : (
+                      <>
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#0b9960] shadow-sm">
+                          {lang === "ar" ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
+                        </span>
+                        <span>{lang === "ar" ? "التحقق من المخالفات" : t.home.form.checkButton}</span>
+                      </>
+                    )}
+                  </span>
                 </button>
                 <button
                   onClick={resetForm}
                   dir="ltr"
-                  className="min-h-[72px] py-5 px-6 rounded-full text-[18px] font-extrabold flex items-center justify-center gap-4 transition-all hover:bg-gray-50"
-                  style={{ backgroundColor: "#ffffff", color: "#1f2937", border: "1.5px solid #d6dedd", boxShadow: "0 4px 14px rgba(15,23,42,0.04), inset 0 0 0 1px rgba(255,255,255,0.7)" }}
+                  className="min-h-[76px] rounded-full px-6 py-5 text-[18px] font-extrabold transition-all hover:bg-gray-50"
+                  style={{ backgroundColor: "#ffffff", color: "#2f3743", border: "1.5px solid #cfd8d3", boxShadow: "0 6px 18px rgba(15,23,42,0.04), inset 0 0 0 1px rgba(255,255,255,0.75)" }}
                 >
-                  <span className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: "#4b5563" }}>
-                    {lang === "ar" ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+                  <span className="flex items-center justify-center gap-4">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full text-white" style={{ backgroundColor: "#4b5563" }}>
+                      {lang === "ar" ? <ArrowRight className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
+                    </span>
+                    <span>{lang === "ar" ? "رجوع" : "Back"}</span>
                   </span>
-                  <span>{lang === "ar" ? "رجوع" : "Back"}</span>
                 </button>
               </div>
             </div>
