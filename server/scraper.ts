@@ -190,6 +190,7 @@ export interface FineResult {
   amount?: string;
   blackPoints?: number;
   isPaid?: "paid" | "unpaid" | "partial";
+  fineType?: "payable" | "blackpoints" | "unpayable" | "impound";
   location?: string;
   locationAr?: string;
   ticketNo?: string;
@@ -631,14 +632,114 @@ function isDubaiPoliceNoFinesLikeResponse(data: AnyRecord) {
   const errorMessage = String(data?.errorMessage ?? data?.message ?? "").trim().toLowerCase();
   const results = data?.results && typeof data.results === "object" ? data.results : {};
   const tickets = Array.isArray(results?.tickets) ? results.tickets : [];
+  const confisticated = Array.isArray(results?.confisticated)
+    ? results.confisticated
+    : Array.isArray(results?.confiscated)
+      ? results.confiscated
+      : [];
 
-  if (tickets.length > 0) return false;
+  if (tickets.length > 0 || confisticated.length > 0) return false;
 
   return (
     errorCode === "DP_Ex_Code_000"
     || errorMessage.includes("no outstanding fines")
     || errorMessage.includes("no fines")
   );
+}
+
+function resolveTicketFineType(ticket: AnyRecord): FineResult["fineType"] {
+  if (ticket?.isPayable === 2) return "payable";
+  if (ticket?.isPayable === 1 && ticket?.licenseShouldbePresented) return "blackpoints";
+  if (ticket?.isPayable === 1 && !ticket?.licenseShouldbePresented) return "unpayable";
+  return "impound";
+}
+
+function mapTicketToFineResult(ticket: AnyRecord): FineResult {
+  const dateTime = ticket.ticketDate && ticket.ticketTime
+    ? `${ticket.ticketDate} ${ticket.ticketTime}`
+    : ticket.ticketDate || ticket.date || "";
+
+  const violation = ticket.ticketViolation
+    || ticket.violationDescriptionAr
+    || ticket.violationDescriptionEn
+    || ticket.description
+    || "";
+
+  const sourceText = ticket.beneficiary
+    || ticket.trafficDepartmentEn
+    || ticket.trafficDepartment
+    || "";
+
+  const speedValue = ticket.ticketSpeed?.toString()
+    || ticket.vehicleSpeed?.toString()
+    || ticket.measuredSpeed?.toString()
+    || ticket.speed?.toString()
+    || "";
+
+  return {
+    fineNumber: ticket.ticketNo?.toString(),
+    fineDate: dateTime,
+    description: violation,
+    descriptionAr: ticket.violationDescriptionAr || ticket.ticketViolation,
+    amount: ticket.ticketTotalFine?.toString()
+      || ticket.ticketFine?.toString()
+      || ticket.totalFine?.toString()
+      || ticket.amount?.toString(),
+    blackPoints: ticket.offenseBlackPionts || ticket.offenseBlackPoints || ticket.blackPoints || 0,
+    isPaid: ticket.isPaid ? "paid" : "unpaid",
+    fineType: resolveTicketFineType(ticket),
+    location: ticket.location || ticket.locationEn || "",
+    locationAr: ticket.location || "",
+    ticketNo: ticket.ticketNo?.toString(),
+    trafficDepartment: sourceText,
+    trafficDepartmentAr: ticket.beneficiary || "",
+    violationCode: ticket.violationCode?.toString(),
+    source: sourceText,
+    sourceAr: ticket.beneficiary || "",
+    speed: speedValue || undefined,
+  };
+}
+
+function mapConfisticatedToFineResult(item: AnyRecord): FineResult {
+  const sourceText = item.beneficiary
+    || item.trafficDepartmentEn
+    || item.trafficDepartment
+    || "";
+
+  return {
+    fineNumber: item.ticketNo?.toString() || item.vehicleConfiscationId?.toString(),
+    fineDate: item.bookingDate || item.ticketDate || item.date || "",
+    description: item.violationRglDescription
+      || item.ticketViolation
+      || item.violationDescriptionEn
+      || item.description
+      || item.descEn
+      || item.descAr
+      || "",
+    descriptionAr: item.violationRglDescription
+      || item.ticketViolation
+      || item.violationDescriptionAr
+      || item.descAr
+      || item.description
+      || "",
+    amount: item.ticketTotalFine?.toString()
+      || item.totalFine?.toString()
+      || item.confiscationAmount?.toString()
+      || item.amount?.toString()
+      || "0",
+    blackPoints: item.offenseBlackPionts || item.offenseBlackPoints || item.blackPoints || 0,
+    isPaid: item.isPaid ? "paid" : "unpaid",
+    fineType: "impound",
+    location: item.location || item.locationEn || item.impoundLocation || "",
+    locationAr: item.location || item.impoundLocation || "",
+    ticketNo: item.ticketNo?.toString() || item.vehicleConfiscationId?.toString(),
+    trafficDepartment: sourceText || item.branchEn || item.trafficDepartment?.toString() || "",
+    trafficDepartmentAr: item.beneficiary || item.branchAr || "",
+    violationCode: item.violationCode?.toString() || item.vehicleConfiscationId?.toString(),
+    source: sourceText || item.branchEn || item.trafficDepartment?.toString() || "",
+    sourceAr: item.beneficiary || item.branchAr || "",
+    speed: item.vehicleSpeed?.toString() || item.ticketSpeed?.toString() || undefined,
+  };
 }
 
 function mapApiDataToScraperResult(data: AnyRecord | null): ScraperResult {
@@ -652,6 +753,11 @@ function mapApiDataToScraperResult(data: AnyRecord | null): ScraperResult {
 
   const results = data.results && typeof data.results === "object" ? data.results : {};
   const tickets: AnyRecord[] = Array.isArray(results.tickets) ? results.tickets : [];
+  const confisticated: AnyRecord[] = Array.isArray(results.confisticated)
+    ? results.confisticated
+    : Array.isArray(results.confiscated)
+      ? results.confiscated
+      : [];
   const ownerInfo = results.ownerInfo;
 
   if (!data.resCode && isDubaiPoliceNoFinesLikeResponse(data)) {
@@ -674,50 +780,10 @@ function mapApiDataToScraperResult(data: AnyRecord | null): ScraperResult {
   }
 
 
-  const fines: FineResult[] = tickets.map((ticket) => {
-    const dateTime = ticket.ticketDate && ticket.ticketTime
-      ? `${ticket.ticketDate} ${ticket.ticketTime}`
-      : ticket.ticketDate || ticket.date || "";
-
-    const violation = ticket.ticketViolation
-      || ticket.violationDescriptionAr
-      || ticket.violationDescriptionEn
-      || ticket.description
-      || "";
-
-    const sourceText = ticket.beneficiary
-      || ticket.trafficDepartmentEn
-      || ticket.trafficDepartment
-      || "";
-
-    const speedValue = ticket.ticketSpeed?.toString()
-      || ticket.vehicleSpeed?.toString()
-      || ticket.measuredSpeed?.toString()
-      || ticket.speed?.toString()
-      || "";
-
-    return {
-      fineNumber: ticket.ticketNo?.toString(),
-      fineDate: dateTime,
-      description: violation,
-      descriptionAr: ticket.violationDescriptionAr || ticket.ticketViolation,
-      amount: ticket.ticketTotalFine?.toString()
-        || ticket.ticketFine?.toString()
-        || ticket.totalFine?.toString()
-        || ticket.amount?.toString(),
-      blackPoints: ticket.offenseBlackPionts || ticket.offenseBlackPoints || ticket.blackPoints || 0,
-      isPaid: ticket.isPaid ? "paid" : "unpaid",
-      location: ticket.location || ticket.locationEn || "",
-      locationAr: ticket.location || "",
-      ticketNo: ticket.ticketNo?.toString(),
-      trafficDepartment: sourceText,
-      trafficDepartmentAr: ticket.beneficiary || "",
-      violationCode: ticket.violationCode?.toString(),
-      source: sourceText,
-      sourceAr: ticket.beneficiary || "",
-      speed: speedValue || undefined,
-    };
-  });
+  const fines: FineResult[] = [
+    ...tickets.map(mapTicketToFineResult),
+    ...confisticated.map(mapConfisticatedToFineResult),
+  ];
 
   const totalAmount = fines.reduce((sum, fine) => {
     return sum + Number.parseFloat(fine.amount?.replace(/[^0-9.]/g, "") || "0");
