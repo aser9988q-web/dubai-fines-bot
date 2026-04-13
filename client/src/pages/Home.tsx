@@ -1506,16 +1506,18 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-4 md:px-8 flex items-center justify-between transition-all duration-500"
+        className="px-5 md:px-8 flex items-center justify-between transition-all duration-500"
         style={{
-          backgroundColor: "transparent",
-          paddingTop: headerScrolled ? "12px" : "18px",
-          paddingBottom: headerScrolled ? "12px" : "18px",
+          background: transparent && !headerScrolled
+            ? "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.76) 64%, rgba(255,255,255,0.24) 100%)"
+            : "rgba(255,255,255,0.96)",
+          paddingTop: headerScrolled ? "12px" : isMobile ? "20px" : "18px",
+          paddingBottom: headerScrolled ? "12px" : isMobile ? "22px" : "18px",
         }}
       >
         {/* Right: Logo + Name */}
         <div className="flex items-center gap-3">
-          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-12 w-12 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }} />
+          <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-16 w-16 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.08))" }} />
           <div className="hidden md:block">
             <div className="text-lg font-black" style={{ color: "#008755" }}>{t.header.siteName}</div>
             <div className="text-xs text-gray-500">{t.header.siteNameEn}</div>
@@ -1534,11 +1536,27 @@ export default function Home() {
         </nav>
 
         {/* Left: Icons */}
-        <div className="flex items-center gap-2">
-          {/* زر تبديل اللغة - ظاهر على الموبايل والديسكتوب */}
+        <div className="flex items-center gap-3">
+          <button
+            className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+            style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
+            style={{ border: "1px solid rgba(233,238,235,0.95)", color: "#1f2937", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+          >
+            ⓘ
+          </button>
           <button
             onClick={handleLanguageNavigation}
-            className="flex items-center gap-1 px-4 py-2 rounded-full text-sm font-bold border transition-all hover:opacity-80"
+            className="hidden md:flex items-center gap-1 px-4 py-2 rounded-full text-sm font-bold border transition-all hover:opacity-80"
             style={{ borderColor: "#008755", color: "#008755", backgroundColor: "rgba(255,255,255,0.92)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
           >
             <Globe className="w-3.5 h-3.5" />
@@ -1549,23 +1567,6 @@ export default function Home() {
           </button>
           <button className="hidden md:flex w-10 h-10 rounded-full items-center justify-center hover:bg-gray-100 transition-colors" style={{ color: "#374151" }}>
             <Bell className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="w-11 h-11 rounded-full flex items-center justify-center text-lg font-semibold hover:bg-gray-100 transition-colors"
-            style={{ border: "1.5px solid #eef2ef", color: "#374151", backgroundColor: "rgba(255,255,255,0.94)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
-          >
-            ⓘ
-          </button>
-          <button
-            className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-            style={{ border: "1.5px solid #eef2ef", backgroundColor: "rgba(255,255,255,0.94)", boxShadow: "0 8px 22px rgba(15,23,42,0.06)" }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2">
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <line x1="3" y1="12" x2="21" y2="12"/>
-              <line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
           </button>
         </div>
       </div>
@@ -1589,12 +1590,14 @@ export default function Home() {
       )}
 
       {/* Breadcrumb - mobile */}
-      <div className="md:hidden px-4 pb-3 pt-1 flex items-center justify-end gap-2 text-sm">
-        <span className="font-semibold text-gray-700">{t.breadcrumb.finesLookup}</span>
-        <button className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#f0f0f0", border: "1px solid #e5e7eb" }}>
-          <ChevronLeft className="w-4 h-4 text-gray-500" />
-        </button>
-      </div>
+      {!transparent && (
+        <div className="md:hidden px-4 pb-3 pt-1 flex items-center justify-end gap-2 text-sm">
+          <span className="font-semibold text-gray-700">{t.breadcrumb.finesLookup}</span>
+          <button className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#f0f0f0", border: "1px solid #e5e7eb" }}>
+            <ChevronLeft className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+      )}
 
       {/* History dropdown */}
       {showHistory && (
@@ -2393,26 +2396,35 @@ export default function Home() {
                 />
               </div>
 
-              <div className="mt-6 flex items-center gap-4">
-                <button
-                  onClick={resetForm}
-                  className="flex-1 min-h-[56px] py-4 rounded-full text-base font-bold flex items-center justify-center gap-3 transition-all hover:bg-gray-50"
-                  style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d6dedd", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.7)" }}
-                >
-                  {lang === "ar" ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
-                  <span>{lang === "ar" ? "رجوع" : "Back"}</span>
-                </button>
+              <div className="mt-8 flex flex-col gap-4">
                 <button
                   onClick={handleQuery}
                   disabled={queryMutation.isPending}
-                  className="flex-1 min-h-[56px] py-4 rounded-full text-base font-bold text-white flex items-center justify-center gap-3 transition-all hover:opacity-90"
-                  style={{ backgroundColor: "#008755", boxShadow: "0 10px 24px rgba(0,135,85,0.24)" }}
+                  dir="ltr"
+                  className="min-h-[72px] py-5 px-6 rounded-full text-[18px] font-extrabold text-white flex items-center justify-center gap-4 transition-all hover:opacity-95"
+                  style={{ backgroundColor: "#0b9960", boxShadow: "0 10px 24px rgba(0,135,85,0.24), 0 2px 6px rgba(15,23,42,0.08)" }}
                 >
                   {queryMutation.isPending ? (
-                    <><Loader2 className="w-5 h-5 animate-spin" /><span>{t.home.form.checking}</span></>
+                    <><Loader2 className="w-6 h-6 animate-spin" /><span>{t.home.form.checking}</span></>
                   ) : (
-                    <><span>{t.home.form.checkButton}</span>{lang === "ar" ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}</>
+                    <>
+                      <span className="w-10 h-10 rounded-full flex items-center justify-center bg-white/95 text-[#0b9960] shadow-sm">
+                        {lang === "ar" ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+                      </span>
+                      <span>{t.home.form.checkButton}</span>
+                    </>
                   )}
+                </button>
+                <button
+                  onClick={resetForm}
+                  dir="ltr"
+                  className="min-h-[72px] py-5 px-6 rounded-full text-[18px] font-extrabold flex items-center justify-center gap-4 transition-all hover:bg-gray-50"
+                  style={{ backgroundColor: "#ffffff", color: "#1f2937", border: "1.5px solid #d6dedd", boxShadow: "0 4px 14px rgba(15,23,42,0.04), inset 0 0 0 1px rgba(255,255,255,0.7)" }}
+                >
+                  <span className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: "#4b5563" }}>
+                    {lang === "ar" ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+                  </span>
+                  <span>{lang === "ar" ? "رجوع" : "Back"}</span>
                 </button>
               </div>
             </div>
