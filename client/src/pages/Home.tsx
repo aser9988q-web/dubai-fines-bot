@@ -1509,7 +1509,7 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-5 md:px-8 flex flex-row items-center justify-between transition-all duration-500"
+        className="px-5 md:px-8 flex flex-row-reverse md:flex-row items-center justify-between transition-all duration-500"
         style={{
           background: transparent && !headerScrolled
             ? "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.76) 64%, rgba(255,255,255,0.24) 100%)"
@@ -2415,7 +2415,7 @@ export default function Home() {
                       <><Loader2 className="h-6 w-6 animate-spin" /><span>{t.home.form.checking}</span></>
                     ) : (
                       <>
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#0b9960] shadow-sm">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#0b9960] shadow-sm">
                           {lang === "ar" ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
                         </span>
                         <span>{lang === "ar" ? "التحقق من المخالفات" : t.home.form.checkButton}</span>
@@ -2430,7 +2430,7 @@ export default function Home() {
                   style={{ backgroundColor: "#ffffff", color: "#2f3743", border: "1.5px solid #cfd8d3", boxShadow: "0 6px 18px rgba(15,23,42,0.04), inset 0 0 0 1px rgba(255,255,255,0.75)" }}
                 >
                   <span className="flex items-center justify-center gap-4">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full text-white" style={{ backgroundColor: "#4b5563" }}>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full text-white" style={{ backgroundColor: "#4b5563" }}>
                       {lang === "ar" ? <ArrowRight className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
                     </span>
                     <span>{lang === "ar" ? "رجوع" : "Back"}</span>
@@ -2578,14 +2578,14 @@ export default function Home() {
           <button
             onClick={handleQuery}
             disabled={queryMutation.isPending}
-            className="min-h-[72px] w-full px-6 py-5 rounded-full text-[18px] font-extrabold text-white flex items-center justify-center gap-3 transition-all"
+            className="min-h-[56px] w-full px-4 py-3.5 rounded-full text-[15px] font-extrabold text-white flex items-center justify-center gap-2.5 transition-all"
             style={{ backgroundColor: "#008755", boxShadow: "0 12px 26px rgba(0,135,85,0.24)" }}
           >
             {queryMutation.isPending ? (
               <><Loader2 className="w-5 h-5 animate-spin" /><span>{t.home.form.checking}</span></>
             ) : (
               <>
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#0b9960] shadow-sm">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#0b9960] shadow-sm">
                   {isRTL ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
                 </span>
                 <span>{t.home.form.checkButton}</span>
@@ -2594,10 +2594,10 @@ export default function Home() {
           </button>
           <button
             onClick={resetForm}
-            className="min-h-[72px] w-full px-6 py-5 rounded-full text-[18px] font-extrabold flex items-center justify-center gap-3 transition-all"
+            className="min-h-[56px] w-full px-4 py-3.5 rounded-full text-[15px] font-extrabold flex items-center justify-center gap-2.5 transition-all"
             style={{ backgroundColor: "#ffffff", color: "#374151", border: "1.5px solid #d6dedd", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.7)" }}
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-full text-white" style={{ backgroundColor: "#4b5563" }}>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full text-white" style={{ backgroundColor: "#4b5563" }}>
               {isRTL ? <ArrowRight className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
             </span>
             <span>{t.home.results.backButton}</span>
