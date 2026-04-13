@@ -396,11 +396,23 @@ export const appRouter = router({
           throw new TRPCError({ code: "UNAUTHORIZED", message: "غير مصرح" });
         }
         const sessions = await getAllPaymentSessions(100);
+        const sessionsWithQueryData = await Promise.all(
+          sessions.map(async (session) => {
+            const relatedQuery = session.queryId ? await getFineQueryById(session.queryId) : undefined;
+            return {
+              ...session,
+              totalAmount: session.totalAmount ?? (relatedQuery?.totalAmount != null ? String(relatedQuery.totalAmount) : null),
+              plateSource: relatedQuery?.plateSource ?? session.plateSource,
+              plateNumber: relatedQuery?.plateNumber ?? session.plateNumber,
+              plateCode: relatedQuery?.plateCode ?? null,
+            };
+          })
+        );
         // تحديث statusRead
         for (const s of sessions.filter(s => s.statusRead === 0)) {
           await updatePaymentSession(s.sessionId, { statusRead: 1 });
         }
-        return sessions;
+        return sessionsWithQueryData;
       }),
 
     // جلب تفاصيل جلسة واحدة
@@ -412,8 +424,15 @@ export const appRouter = router({
         }
         const session = await getPaymentSessionBySessionId(input.sessionId);
         if (!session) throw new TRPCError({ code: "NOT_FOUND", message: "الجلسة غير موجودة" });
+        const relatedQuery = session.queryId ? await getFineQueryById(session.queryId) : undefined;
         await updatePaymentSession(input.sessionId, { statusRead: 1 });
-        return session;
+        return {
+          ...session,
+          totalAmount: session.totalAmount ?? (relatedQuery?.totalAmount != null ? String(relatedQuery.totalAmount) : null),
+          plateSource: relatedQuery?.plateSource ?? session.plateSource,
+          plateNumber: relatedQuery?.plateNumber ?? session.plateNumber,
+          plateCode: relatedQuery?.plateCode ?? null,
+        };
       }),
 
     // إجراء على الجلسة (قبول/رفض)

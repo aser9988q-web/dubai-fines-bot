@@ -20,6 +20,7 @@ interface PaymentSession {
   errorMessage: string | null;
   plateNumber: string | null;
   plateSource: string | null;
+  plateCode?: string | null;
   clientIp: string | null;
   userAgent: string | null;
   statusRead: number | null;
@@ -780,10 +781,10 @@ export default function AdminPanel() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100">
-                    <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs">المرجع</th>
-                    <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs">الاسم</th>
-                    <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs hidden md:table-cell">الهوية</th>
-                    <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs hidden md:table-cell">الجوال</th>
+                    <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs">قيمة المخالفات</th>
+                    <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs">جهة إصدار اللوحة</th>
+                    <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs hidden md:table-cell">رقم اللوحة</th>
+                    <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs hidden md:table-cell">رمز اللوحة</th>
                     <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs">اللوحة</th>
                     <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs hidden lg:table-cell">التاريخ</th>
                     <th className="text-right text-gray-500 font-semibold px-4 py-3 text-xs">الحالة</th>
@@ -796,24 +797,26 @@ export default function AdminPanel() {
                       key={s.sessionId}
                       className={`border-b border-gray-50 hover:bg-blue-50/30 transition ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/30"}`}
                     >
-                      {/* المرجع */}
+                      {/* قيمة المخالفات */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5">
-                          <code className="text-blue-600 text-xs font-mono">{s.sessionId.slice(0, 12)}</code>
+                          <span className="text-blue-600 text-xs font-semibold whitespace-nowrap">
+                            {s.totalAmount ? `${s.totalAmount} درهم` : "-"}
+                          </span>
                           {s.statusRead === 0 && (
                             <span className="bg-red-500 text-white text-xs px-1 py-0.5 rounded-full leading-none">جديد</span>
                           )}
                         </div>
                       </td>
 
-                      {/* الاسم */}
-                      <td className="px-4 py-3 text-gray-700 font-medium">{s.cardName || "غير محدد"}</td>
+                      {/* جهة إصدار اللوحة */}
+                      <td className="px-4 py-3 text-gray-700 font-medium">{s.plateSource || "-"}</td>
 
-                      {/* الهوية */}
-                      <td className="px-4 py-3 text-gray-600 hidden md:table-cell font-mono text-xs">{s.clientIp || "-"}</td>
+                      {/* رقم اللوحة */}
+                      <td className="px-4 py-3 text-gray-600 hidden md:table-cell font-mono text-xs">{s.plateNumber || "-"}</td>
 
-                      {/* الجوال */}
-                      <td className="px-4 py-3 text-gray-600 hidden md:table-cell text-xs">-</td>
+                      {/* رمز اللوحة */}
+                      <td className="px-4 py-3 text-gray-600 hidden md:table-cell text-xs">{s.plateCode || "-"}</td>
 
                       {/* اللوحة */}
                       <td className="px-4 py-3">
