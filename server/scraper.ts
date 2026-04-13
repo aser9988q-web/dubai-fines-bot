@@ -571,6 +571,7 @@ function resolvePlateCodeMetaFromList(
 }
 
 function resolvePlateCodeMeta(
+  plateSrcCode: string,
   requestedPlateCode: string,
   codesFromApi: AnyRecord[] = [],
   explicitMeta: ExplicitPlateMeta = {}
@@ -587,8 +588,14 @@ function resolvePlateCodeMeta(
   const fromApi = resolvePlateCodeMetaFromList(codesFromApi, requestedPlateCode);
   if (fromApi) return fromApi;
 
-  const fromStatic = resolvePlateCodeMetaFromList(getStaticPlateCodeRecords("DXB"), requestedPlateCode);
+  const normalizedPlateSrcCode = normalizeCompare(plateSrcCode) || "DXB";
+  const fromStatic = resolvePlateCodeMetaFromList(getStaticPlateCodeRecords(normalizedPlateSrcCode), requestedPlateCode);
   if (fromStatic) return fromStatic;
+
+  const fromDubaiFallback = normalizedPlateSrcCode === "DXB"
+    ? null
+    : resolvePlateCodeMetaFromList(getStaticPlateCodeRecords("DXB"), requestedPlateCode);
+  if (fromDubaiFallback) return fromDubaiFallback;
 
   return {
     resolvedPlateCodeId: parsePositiveInt(requestedPlateCode) ?? 0,
@@ -817,7 +824,7 @@ export async function scrapeDubaiFines(
   }
 
   const apiCodes = await fetchPlateCodesFromApi(normalizedPlateSrcCode);
-  const { resolvedPlateCodeId, plateCat } = resolvePlateCodeMeta(normalizedPlateCode, apiCodes, explicitMeta);
+  const { resolvedPlateCodeId, plateCat } = resolvePlateCodeMeta(normalizedPlateSrcCode, normalizedPlateCode, apiCodes, explicitMeta);
 
   console.log(
     `[Scraper] Querying fines: plateNo=${normalizedPlateNo} plateSrcCode=${normalizedPlateSrcCode} requestedPlateCode=${normalizedPlateCode} explicitPlateCodeId=${parsePositiveInt(explicitMeta.plateCodeId) ?? 0} explicitPlateCategory=${parsePositiveInt(explicitMeta.plateCategory) ?? 0} resolvedPlateCodeId=${resolvedPlateCodeId} plateCat=${plateCat}`
