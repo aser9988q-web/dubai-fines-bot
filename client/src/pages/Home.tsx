@@ -24,6 +24,7 @@ import {
   Bell,
   User,
   Home as HomeIcon,
+  CreditCard,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
