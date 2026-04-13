@@ -25,6 +25,7 @@ import {
   User,
   Home as HomeIcon,
   CreditCard,
+  X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
