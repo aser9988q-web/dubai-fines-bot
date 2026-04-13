@@ -34,7 +34,7 @@ import { useIsMobile } from "@/hooks/useMobile";
 const INQUIRY_MEDIA = {
   plate: { type: "video", src: "/inquiry-media/plate.mp4", alt: "Plate inquiry video" },
   licence: { type: "video", src: "/inquiry-media/license.mp4", alt: "License inquiry video" },
-  tcnumber: { type: "image", src: "/inquiry-media/traffic-file.png", alt: "Traffic file inquiry image" },
+  tcnumber: { type: "video", src: "/inquiry-media/traffic-file.mp4", alt: "Traffic file inquiry video" },
   ticket: { type: "image", src: "/inquiry-media/fine-number.png", alt: "Fine number inquiry image" },
 } as const;
 const DUBAI_POLICE_HEADER_LOGO = "/dubai-police-logo.svg";
