@@ -1325,6 +1325,9 @@ export default function Home() {
 
     return {
       selectedFines: selectedFinesData,
+      fineAmount: total,
+      discountAmount: "0",
+      dueAmount: total,
       totalAmount: total,
       plateNumber,
       plateSource,

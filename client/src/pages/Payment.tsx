@@ -113,35 +113,15 @@ function SecurityLogos() {
 }
 
 function PaymentActionBar({
-  fineAmount,
-  discountAmount,
-  totalAmount,
   isLoading,
   onCancel,
 }: {
-  fineAmount: string;
-  discountAmount: string;
-  totalAmount: string;
   isLoading: boolean;
   onCancel: () => void;
 }) {
-  const rows = [
-    { label: "قيمة المخالفة", value: `${fineAmount} AED` },
-    { label: "الخصم", value: `${discountAmount} AED` },
-    { label: "المبلغ الإجمالي", value: `${totalAmount} AED` },
-  ];
-
   return (
-    <div className="mt-5 overflow-hidden rounded-[22px] border border-[#e8eef5] bg-[#f5f8fc]">
-      <div className="space-y-0 px-5 pt-4">
-        {rows.map((row) => (
-          <div key={row.label} className="flex items-center justify-between gap-4 border-b border-[#e3ebf3] py-3 last:border-b-0">
-            <span className="text-[14px] font-medium text-[#5d6a78]">{row.label}</span>
-            <span className="text-[15px] font-semibold text-[#223147]">{row.value}</span>
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center gap-3 px-5 pb-5 pt-4">
+    <div className="mt-5 overflow-hidden rounded-[22px] border border-[#e8eef5] bg-[#f5f8fc] px-5 py-4">
+      <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onCancel}
@@ -319,9 +299,6 @@ function CardForm({
       </div>
 
       <PaymentActionBar
-        fineAmount={fineAmount}
-        discountAmount={discountAmount}
-        totalAmount={totalAmount}
         isLoading={isLoading}
         onCancel={onCancel}
       />
@@ -636,7 +613,7 @@ export default function Payment() {
     );
   }
 
-  const totalAmount = paymentData?.totalAmount || "0";
+  const totalAmount = paymentData?.totalAmount || paymentData?.dueAmount || "0";
   const selectedFinesTotal = Array.isArray(paymentData?.selectedFines)
     ? paymentData.selectedFines.reduce((sum: number, fine: any) => {
         const amount = parseFloat(String(fine?.amount || "0").replace(/[^0-9.]/g, ""));
@@ -644,14 +621,14 @@ export default function Payment() {
       }, 0)
     : 0;
   const totalAmountNumber = parseFloat(String(totalAmount).replace(/[^0-9.]/g, "")) || 0;
-  const fineAmount = (selectedFinesTotal || totalAmountNumber).toFixed(0);
-  const discountAmount = Math.max(0, fineAmount ? Number(fineAmount) - totalAmountNumber : 0).toFixed(0);
+  const fineAmount = String(paymentData?.fineAmount || (selectedFinesTotal || totalAmountNumber).toFixed(0));
+  const discountAmount = String(paymentData?.discountAmount || Math.max(0, Number(fineAmount) - totalAmountNumber).toFixed(0));
+  const dueAmount = String(paymentData?.dueAmount || totalAmount);
 
   const transactionRows = [
-    { label: "Service Provider", value: "Dubai Police" },
-    { label: "Service", value: "Traffic Fine Payment" },
-    { label: "SP Transaction No.", value: sessionId ? sessionId.slice(0, 8).toUpperCase() : "1322640" },
-    { label: "Amount", value: `${totalAmount} AED` },
+    { label: "قيمة المخالفات", value: `${fineAmount} AED` },
+    { label: "قيمة الخصم", value: `${discountAmount} AED` },
+    { label: "المبلغ المستحق", value: `${dueAmount} AED` },
   ];
 
   const handleCardSubmit = async (data: CardSubmitPayload) => {
@@ -748,7 +725,7 @@ export default function Payment() {
       <div className="px-4 pb-2 sm:px-5">
         {stage === "card" && (
           <>
-            <SectionCard title="Transaction Information">
+            <SectionCard title="ملخص المبلغ">
               <InfoTable rows={transactionRows} />
             </SectionCard>
             <div className="mt-4">
@@ -759,7 +736,7 @@ export default function Payment() {
                 error={errorMessage}
                 fineAmount={fineAmount}
                 discountAmount={discountAmount}
-                totalAmount={totalAmount}
+                totalAmount={dueAmount}
               />
             </div>
           </>
@@ -770,7 +747,7 @@ export default function Payment() {
         {stage === "otp_pending" && <WaitingPage message={t.payment.waiting.otp} />}
         {stage === "atm" && <AtmPinForm onSubmit={handleAtmPinSubmit} isLoading={isSubmitting} error={errorMessage} />}
         {stage === "atm_pending" && <WaitingPage message={t.payment.waiting.atm} />}
-        {stage === "success" && <SuccessPage totalAmount={totalAmount} onDone={handleDone} />}
+        {stage === "success" && <SuccessPage totalAmount={dueAmount} onDone={handleDone} />}
         {stage === "failed" && <FailedPage onRetry={handleRetry} />}
       </div>
 
