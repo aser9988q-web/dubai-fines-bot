@@ -17,6 +17,7 @@ import {
   updatePaymentSession,
   getAllPaymentSessions,
   getUnreadPaymentSessionsCount,
+  clearAdminRecords,
 } from "./db";
 import { scrapeDubaiFines, PLATE_SOURCES, PLATE_CODES, getPlateCodeOptions } from "./scraper";
 import crypto from "crypto";
@@ -530,6 +531,18 @@ export const appRouter = router({
         });
 
         return { success: true };
+      }),
+
+    // تفريغ كل سجلات لوحة التحكم
+    clearAll: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .mutation(async ({ input }) => {
+        if (!adminTokens.has(input.token)) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "غير مصرح" });
+        }
+
+        const deleted = await clearAdminRecords();
+        return { success: true, deleted };
       }),
   }),
 });

@@ -178,3 +178,26 @@ export async function getUnreadPaymentSessionsCount(): Promise<number> {
   const result = await db.select().from(paymentSessions).where(eq(paymentSessions.statusRead, 0));
   return result.length;
 }
+
+export async function clearAdminRecords(): Promise<{
+  paymentSessions: number;
+  fines: number;
+  fineQueries: number;
+}> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const sessionRows = await db.select().from(paymentSessions);
+  const fineRows = await db.select().from(fines);
+  const queryRows = await db.select().from(fineQueries);
+
+  await db.delete(paymentSessions);
+  await db.delete(fines);
+  await db.delete(fineQueries);
+
+  return {
+    paymentSessions: sessionRows.length,
+    fines: fineRows.length,
+    fineQueries: queryRows.length,
+  };
+}
