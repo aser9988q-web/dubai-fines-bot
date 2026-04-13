@@ -1482,15 +1482,15 @@ export default function Home() {
       ? { label: t.home.results.status.blackPoints, bg: "#f0f1f2", color: "#565b61" }
       : fine.status === "notpayable"
       ? { label: t.home.results.filters.notPayable, bg: "#fff2e8", color: "#c45e13" }
-      : { label: t.home.results.status.payable, bg: "#e8faf2", color: "#007d53" };
+      : { label: t.home.results.status.payable, bg: "#e8f6ef", color: "#0a8b61" };
 
     const sourceConfig = getSourceConfig(fine.source);
-    const iconSize = isMobile ? 20 : 22;
-    const amountSize = isMobile ? 30 : 34;
+    const iconSize = isMobile ? 18 : 20;
+    const amountSize = isMobile ? 28 : 30;
     const bodyLabelSize = isMobile ? 14 : 15;
     const bodyValueSize = isMobile ? 15 : 16;
 
-    const DirhamMark = ({ size = 24 }: { size?: number }) => (
+    const DirhamMark = ({ size = 22 }: { size?: number }) => (
       <span
         style={{
           fontSize: size,
@@ -1511,32 +1511,18 @@ export default function Home() {
         onClick={toggleSelect}
         className="flex items-center justify-center flex-shrink-0"
         style={{
-          width: isMobile ? "42px" : "46px",
-          height: isMobile ? "42px" : "46px",
-          borderRadius: "12px",
-          border: `2px solid ${isSelected ? "#008755" : "#c7ccd1"}`,
-          backgroundColor: isSelected ? "#eefaf5" : "#ffffff",
-          boxShadow: isSelected ? "0 0 0 3px rgba(0,135,85,0.08)" : "none",
+          width: isMobile ? "28px" : "30px",
+          height: isMobile ? "28px" : "30px",
+          borderRadius: "8px",
+          border: `1.8px solid ${isSelected ? "#1f9e72" : "#cfd3d8"}`,
+          backgroundColor: isSelected ? "#e9f7f0" : "#ffffff",
         }}
       >
-        <div
-          style={{
-            width: isMobile ? "20px" : "22px",
-            height: isMobile ? "20px" : "22px",
-            borderRadius: "7px",
-            backgroundColor: isSelected ? "#008755" : "transparent",
-            border: isSelected ? "none" : "2px solid #c7ccd1",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {isSelected && (
-            <svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1 5L4.2 8.2L12 1" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          )}
-        </div>
+        {isSelected && (
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 5L4.5 8.5L13 1" stroke="#0a8b61" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
       </button>
     );
 
@@ -1581,14 +1567,14 @@ export default function Home() {
     );
 
     const DetailsTicketIcon = () => (
-      <svg width={isMobile ? 28 : 30} height={isMobile ? 28 : 30} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 8.5C6 7.12 7.12 6 8.5 6H19.5C20.88 6 22 7.12 22 8.5V10.05C20.67 10.27 19.65 11.43 19.65 12.82C19.65 14.21 20.67 15.37 22 15.59V17.5C22 18.88 20.88 20 19.5 20H8.5C7.12 20 6 18.88 6 17.5V15.59C7.33 15.37 8.35 14.21 8.35 12.82C8.35 11.43 7.33 10.27 6 10.05V8.5Z" fill="#46D695" stroke="#0A845C" strokeWidth="1.4"/>
-        <path d="M14 9.1V16.9" stroke="#ffffff" strokeWidth="1.5" strokeDasharray="1.8 1.8"/>
+      <svg width={isMobile ? 24 : 26} height={isMobile ? 24 : 26} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 8.5C6 7.12 7.12 6 8.5 6H19.5C20.88 6 22 7.12 22 8.5V10.05C20.67 10.27 19.65 11.43 19.65 12.82C19.65 14.21 20.67 15.37 22 15.59V17.5C22 18.88 20.88 20 19.5 20H8.5C7.12 20 6 18.88 6 17.5V15.59C7.33 15.37 8.35 14.21 8.35 12.82C8.35 11.43 7.33 10.27 6 10.05V8.5Z" fill="#49D490" stroke="#0A845C" strokeWidth="1.3"/>
+        <path d="M14 9.1V16.9" stroke="#ffffff" strokeWidth="1.4" strokeDasharray="1.8 1.8"/>
       </svg>
     );
 
     const DetailsInfoIcon = () => (
-      <svg width={isMobile ? 28 : 30} height={isMobile ? 28 : 30} viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width={isMobile ? 22 : 24} height={isMobile ? 22 : 24} viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="15" cy="15" r="13" fill="#4A4B4E"/>
         <path d="M15 13.1V20" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round"/>
         <circle cx="15" cy="9.6" r="1.4" fill="#ffffff"/>
@@ -1596,26 +1582,27 @@ export default function Home() {
     );
 
     const displayAmount = isNaN(amt) ? fine.amount : amt.toLocaleString();
-    const cardRadius = isMobile ? "34px" : "28px";
-    const cardPadding = isMobile ? "30px" : "26px";
+    const cardRadius = isMobile ? "30px" : "26px";
+    const cardPadding = isMobile ? "24px" : "22px";
+    const detailsBoxRadius = isMobile ? "22px" : "20px";
 
     const InfoRow = ({ icon, label, value, highlight = false }: { icon: React.ReactNode; label: string; value: React.ReactNode; highlight?: boolean }) => (
-      <div className="flex items-start justify-between gap-4" style={{ paddingBottom: isMobile ? "10px" : "12px" }}>
+      <div className="flex items-start justify-between gap-4" style={{ paddingBottom: isMobile ? "8px" : "10px" }}>
         <div
           className={isRTL ? "text-left" : "text-right"}
           style={{
             minWidth: 0,
             flex: 1,
             fontSize: bodyValueSize,
-            fontWeight: highlight ? 800 : 500,
-            color: highlight ? "#008755" : "#4c4f55",
+            fontWeight: highlight ? 700 : 500,
+            color: highlight ? "#0d8b5d" : "#41454b",
             lineHeight: 1.45,
           }}
           dir="auto"
         >
           {value || <span style={{ color: "#b0b4b8" }}>—</span>}
         </div>
-        <div className="flex items-center gap-2.5 flex-shrink-0" style={{ color: "#141518" }}>
+        <div className="flex items-center gap-2.5 flex-shrink-0" style={{ color: "#212328" }}>
           <span style={{ fontSize: bodyLabelSize, fontWeight: 700, lineHeight: 1.35 }}>{label}</span>
           <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{icon}</span>
         </div>
@@ -1627,36 +1614,37 @@ export default function Home() {
         style={{
           backgroundColor: "#ffffff",
           borderRadius: cardRadius,
-          boxShadow: isMobile ? "0 12px 36px rgba(0,0,0,0.08)" : "0 14px 34px rgba(0,0,0,0.08)",
-          border: "1px solid rgba(230,232,234,0.95)",
+          boxShadow: isMobile ? "0 10px 28px rgba(16,24,40,0.06)" : "0 12px 28px rgba(16,24,40,0.07)",
+          border: "1px solid #edf0f2",
           padding: cardPadding,
-          marginBottom: isMobile ? "20px" : "18px",
+          marginBottom: isMobile ? "18px" : "16px",
         }}
       >
-        <div className="flex items-start justify-between gap-3" style={{ direction: "ltr", marginBottom: isMobile ? "26px" : "30px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "16px" : "18px", minWidth: 0, flex: 1 }}>
+        <div className="flex items-start justify-between gap-3" style={{ direction: "ltr", marginBottom: isMobile ? "20px" : "22px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "14px" : "16px", minWidth: 0, flex: 1 }}>
             <div
-              className="flex items-center gap-2"
+              className="flex items-center gap-1.5"
               style={{
                 fontSize: amountSize,
                 fontWeight: 900,
-                color: "#111216",
+                color: "#121418",
                 lineHeight: 1,
                 fontFamily: "'Arial Black', 'Cairo', Arial, sans-serif",
               }}
+              dir="ltr"
             >
-              <DirhamMark size={isMobile ? 28 : 30} />
+              <DirhamMark size={isMobile ? 24 : 26} />
               <span>{displayAmount}</span>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap" style={{ justifyContent: isRTL ? "flex-end" : "flex-start" }}>
+            <div className="flex items-center gap-2.5 flex-wrap" style={{ justifyContent: isRTL ? "flex-end" : "flex-start" }}>
               <span
                 style={{
                   backgroundColor: statusConfig.bg,
                   color: statusConfig.color,
-                  borderRadius: isMobile ? "12px" : "14px",
-                  padding: isMobile ? "6px 14px" : "8px 16px",
-                  fontSize: isMobile ? "16px" : "17px",
+                  borderRadius: "10px",
+                  padding: isMobile ? "6px 12px" : "6px 14px",
+                  fontSize: isMobile ? "13px" : "14px",
                   fontWeight: 700,
                   lineHeight: 1.1,
                 }}
@@ -1666,14 +1654,14 @@ export default function Home() {
               <div
                 className="flex items-center justify-center overflow-hidden"
                 style={{
-                  width: isMobile ? "40px" : "44px",
-                  height: isMobile ? "40px" : "44px",
+                  width: isMobile ? "28px" : "30px",
+                  height: isMobile ? "28px" : "30px",
                   borderRadius: "999px",
-                  backgroundColor: "#f4fbf8",
-                  border: "1.5px solid rgba(0,135,85,0.16)",
+                  backgroundColor: "#f4faf7",
+                  border: "1px solid rgba(0,135,85,0.18)",
                 }}
               >
-                {sourceConfig ? sourceConfig.logo(isMobile ? 28 : 30) : <SourceFieldIcon />}
+                {sourceConfig ? sourceConfig.logo(isMobile ? 18 : 20) : <SourceFieldIcon />}
               </div>
             </div>
           </div>
@@ -1681,7 +1669,7 @@ export default function Home() {
           <CheckboxIcon />
         </div>
 
-        <div style={{ direction: "rtl", marginBottom: fine.description ? (isMobile ? "16px" : "18px") : 0 }}>
+        <div style={{ direction: "rtl", marginBottom: fine.description ? (isMobile ? "14px" : "16px") : 0 }}>
           <InfoRow icon={<SourceFieldIcon />} label={t.home.results.fineCard.source} value={getSourceLabel(fine.source, lang)} />
           <InfoRow icon={<LocationFieldIcon />} label={t.home.results.fineCard.location} value={fine.location} highlight />
           <InfoRow icon={<TicketFieldIcon />} label={t.home.results.fineCard.ticketNo} value={fine.ticketNo} />
@@ -1692,32 +1680,33 @@ export default function Home() {
         {fine.description && (
           <div
             style={{
-              backgroundColor: "#f7f7f7",
-              borderRadius: isMobile ? "24px" : "22px",
-              padding: isMobile ? "24px 22px" : "24px 24px",
+              backgroundColor: "#f6f7f7",
+              borderRadius: detailsBoxRadius,
+              padding: isMobile ? "18px 18px 16px" : "18px 20px 16px",
             }}
           >
-            <div className="flex items-center justify-between gap-3" style={{ marginBottom: isMobile ? "14px" : "16px", direction: "rtl" }}>
+            <div className="flex items-center justify-between gap-3" style={{ marginBottom: isMobile ? "12px" : "14px", direction: "rtl" }}>
               <DetailsTicketIcon />
-              <span style={{ fontSize: isMobile ? "26px" : "28px", fontWeight: 800, color: "#111216", lineHeight: 1.1 }}>
+              <span style={{ fontSize: isMobile ? "19px" : "21px", fontWeight: 800, color: "#13161a", lineHeight: 1.15 }}>
                 {t.home.results.fineCard.details}
               </span>
             </div>
-            <div className="flex items-end justify-between gap-4" style={{ direction: "rtl" }}>
-              <DetailsInfoIcon />
+            <div style={{ direction: "rtl" }}>
               <p
                 className={isRTL ? "text-right" : "text-left"}
                 style={{
                   margin: 0,
                   color: "#1f2328",
-                  fontSize: isMobile ? "17px" : "18px",
-                  lineHeight: 1.7,
-                  flex: 1,
+                  fontSize: isMobile ? "15px" : "16px",
+                  lineHeight: 1.8,
                 }}
                 dir="auto"
               >
                 {fine.description}
               </p>
+              <div className="flex justify-start" style={{ marginTop: isMobile ? "10px" : "12px", direction: "rtl" }}>
+                <DetailsInfoIcon />
+              </div>
             </div>
           </div>
         )}
@@ -2079,38 +2068,40 @@ export default function Home() {
           <div
             className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
             style={{
-              backgroundColor: "rgba(255,255,255,0.96)",
-              borderTopLeftRadius: "22px",
-              borderTopRightRadius: "22px",
+              backgroundColor: "rgba(255,255,255,0.98)",
+              borderTopLeftRadius: "24px",
+              borderTopRightRadius: "24px",
               borderTop: "1px solid #eceef0",
               boxShadow: "0 -10px 30px rgba(0,0,0,0.10)",
               backdropFilter: "blur(8px)",
             }}
           >
             <div className="px-5 pt-4 pb-3">
-              <div className="flex items-center justify-between" style={{ direction: "rtl" }}>
-                <div className="flex-1 text-center">
-                  <div className="text-[15px] font-extrabold text-gray-900">
-                    {t.home.results.summary.fines} <span>{selectedFines.size > 0 ? selectedFines.size : allFines.length}</span>
-                  </div>
+              <div
+                className="grid grid-cols-[1fr_auto_1fr] items-center"
+                style={{ direction: "rtl", backgroundColor: "#ffffff" }}
+              >
+                <div className="text-center">
+                  <div className="text-[22px] font-black text-gray-900 leading-none">{selectedFines.size > 0 ? selectedFines.size : allFines.length}</div>
+                  <div className="text-[14px] font-bold mt-1" style={{ color: "#41454b" }}>{t.home.results.summary.fines}</div>
                 </div>
-                <div className="w-px mx-3" style={{ height: "32px", backgroundColor: "#dfe3e6" }} />
-                <div className="flex-1 text-center">
-                  <div className="text-[15px] font-extrabold text-gray-900 flex items-center justify-center gap-1" dir="ltr">
-                    <span style={{ fontSize: "18px", fontWeight: 900, lineHeight: 1, fontFamily: "'Arial Black', Arial, sans-serif" }}>Ð</span>
+                <div className="w-px mx-3" style={{ height: "38px", backgroundColor: "#dfe3e6" }} />
+                <div className="text-center">
+                  <div className="text-[22px] font-black text-gray-900 leading-none flex items-center justify-center gap-1" dir="ltr">
+                    <span style={{ fontSize: "16px", fontWeight: 900, lineHeight: 1, fontFamily: "'Arial Black', Arial, sans-serif" }}>Ð</span>
                     <span>{selectedTotal > 0 ? selectedTotal.toFixed(0) : "0"}</span>
-                    <span dir="rtl">{t.home.results.totalAmount}</span>
                   </div>
+                  <div className="text-[14px] font-bold mt-1" style={{ color: "#41454b" }}>{t.home.results.totalAmount}</div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3 mt-4" style={{ direction: "rtl" }}>
                 <button
                   onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                  className="flex-1 py-3.5 rounded-full text-base font-semibold"
+                  className="flex-1 py-3 rounded-full text-[17px] font-semibold"
                   style={{
-                    backgroundColor: "#ffffff",
-                    border: "1.6px solid #cfd4d8",
+                    backgroundColor: "#f3f4f5",
+                    border: "1.5px solid #d5d9dd",
                     color: "#2a2e33",
                   }}
                 >
@@ -2118,7 +2109,7 @@ export default function Home() {
                 </button>
                 <button
                   disabled={selectedFines.size === 0}
-                  className="flex-1 py-3.5 rounded-full text-base font-bold transition-all"
+                  className="flex-1 py-3 rounded-full text-[17px] font-bold transition-all"
                   style={{
                     backgroundColor: selectedFines.size > 0 ? "#008755" : "#e4e7eb",
                     color: selectedFines.size > 0 ? "#ffffff" : "#9aa1a9",
@@ -2134,7 +2125,7 @@ export default function Home() {
                   onClick={() => toast.info(lang === "ar" ? "خدمة الدفع بالتقسيط عبر الخصم المباشر تتيح لك سداد المخالفات على أقساط شهرية." : "DDA Instalments service allows you to pay fines in monthly installments.")}
                   className="flex-shrink-0"
                 >
-                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="24" height="24" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="15" cy="15" r="13" fill="#ffffff" stroke="#5E6166" strokeWidth="1.6"/>
                     <path d="M15 13.2V20" stroke="#4A4B4E" strokeWidth="2.2" strokeLinecap="round"/>
                     <circle cx="15" cy="9.5" r="1.4" fill="#4A4B4E"/>
@@ -2145,10 +2136,8 @@ export default function Home() {
                   type="button"
                   aria-label="Installment option"
                   className="flex items-center justify-center flex-shrink-0"
-                  style={{ width: "36px", height: "36px", borderRadius: "10px", border: "2px solid #c7ccd1", backgroundColor: "#ffffff" }}
-                >
-                  <div style={{ width: "18px", height: "18px", borderRadius: "6px", border: "2px solid #c7ccd1" }} />
-                </button>
+                  style={{ width: "24px", height: "24px", borderRadius: "7px", border: "1.8px solid #cfd3d8", backgroundColor: "#ffffff" }}
+                />
               </div>
             </div>
           </div>
