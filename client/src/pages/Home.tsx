@@ -17,6 +17,7 @@ import {
   ArrowRight,
   Gauge,
   ChevronLeft,
+  ChevronRight,
   Phone,
   Globe,
   Mail,
@@ -1509,7 +1510,7 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-5 md:px-8 flex flex-row-reverse md:flex-row items-center justify-between transition-all duration-500"
+        className="px-5 md:px-8 flex flex-row md:flex-row items-center justify-between transition-all duration-500"
         style={{
           background: transparent && !headerScrolled
             ? "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.76) 64%, rgba(255,255,255,0.24) 100%)"
@@ -1518,9 +1519,9 @@ export default function Home() {
           paddingBottom: headerScrolled ? "12px" : isMobile ? "22px" : "18px",
         }}
       >
-        {/* Left on mobile: header controls */}
+        {/* Right on mobile: header controls */}
         <div className="flex items-center gap-3 md:flex-row">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 md:flex-row">
             <button
               className="w-14 h-14 md:w-11 md:h-11 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
               style={{ border: "1px solid rgba(233,238,235,0.95)", backgroundColor: "rgba(255,255,255,0.72)", boxShadow: "0 12px 28px rgba(15,23,42,0.08)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
@@ -1596,12 +1597,13 @@ export default function Home() {
 
       {/* Mobile service heading */}
       <div className="md:hidden px-4 pb-3 pt-1">
-        <div className="flex items-center justify-between rounded-[28px] bg-white/55 px-1 py-1 backdrop-blur-sm">
-          <button className="flex h-12 w-12 items-center justify-center rounded-full border border-[#eef2ef] bg-[#f3f5f4] text-[#4b5563] shadow-sm">
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <span className="text-[18px] font-semibold text-[#1f2937]">{isRTL ? "الاستعلام والدفع" : "Inquiry & Payment"}</span>
-          <span className="w-12" />
+        <div className="flex items-center justify-center rounded-[28px] bg-white/55 px-3 py-1.5 backdrop-blur-sm">
+          <div className="flex items-center gap-2.5">
+            <button className="flex h-12 w-12 items-center justify-center rounded-full border border-[#eef2ef] bg-[#f3f5f4] text-[#4b5563] shadow-sm">
+              <ChevronRight className="h-5 w-5" />
+            </button>
+            <span className="text-[18px] font-semibold text-[#1f2937]">{isRTL ? "الاستعلام والدفع" : "Inquiry & Payment"}</span>
+          </div>
         </div>
       </div>
 
