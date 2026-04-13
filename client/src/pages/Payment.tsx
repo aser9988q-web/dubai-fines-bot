@@ -37,7 +37,7 @@ function PaymentGatewayHeader({
   return (
     <div className="overflow-hidden border-b border-[#e6ede9] bg-[linear-gradient(180deg,#ffffff_0%,#f9fcfb_58%,#eef7f3_100%)]">
       <div className="px-4 pb-5 pt-5 sm:px-5">
-        <div className="flex flex-row-reverse items-center justify-between gap-3">
+        <div className="flex flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-3">
               <button

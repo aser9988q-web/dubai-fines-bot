@@ -1509,7 +1509,7 @@ export default function Home() {
 
       {/* Main header */}
       <div
-        className="px-5 md:px-8 flex flex-row-reverse md:flex-row items-center justify-between transition-all duration-500"
+        className="px-5 md:px-8 flex flex-row items-center justify-between transition-all duration-500"
         style={{
           background: transparent && !headerScrolled
             ? "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.76) 64%, rgba(255,255,255,0.24) 100%)"
@@ -1518,7 +1518,7 @@ export default function Home() {
           paddingBottom: headerScrolled ? "12px" : isMobile ? "22px" : "18px",
         }}
       >
-        {/* Right on mobile: header controls */}
+        {/* Left on mobile: header controls */}
         <div className="flex items-center gap-3 md:flex-row">
           <div className="flex items-center gap-3">
             <button
@@ -1566,7 +1566,7 @@ export default function Home() {
           <button className="flex items-center gap-1 text-gray-600 hover:text-green-700 transition-colors">{t.header.nav.contact}</button>
         </nav>
 
-        {/* Left on mobile: Logo + Name */}
+        {/* Right on mobile: Logo + Name */}
         <div className="flex items-center gap-3">
           <img src="/dubai-police-logo.svg" alt="شرطة دبي" className="h-16 w-16 md:h-14 md:w-14 object-contain" style={{ filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.08))" }} />
           <div className="hidden md:block">
