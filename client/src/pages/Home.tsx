@@ -2919,7 +2919,9 @@ export default function Home() {
               <button
                 onClick={() => {
                   setShowInstallmentTerms(false);
-                  // TODO: Navigate to installment form or UAE PASS login
+                  // Navigate to installment form based on language
+                  const path = lang === "ar" ? "/installment-ar" : "/installment-en";
+                  window.location.href = path;
                 }}
                 style={{
                   width: "100%",
