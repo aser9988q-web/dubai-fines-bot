@@ -83,9 +83,10 @@ export default function InstallmentRequestEn() {
     setIsSubmitting(true);
 
     try {
-      // TODO: Submit form data to backend
-      console.log("Form data:", formData);
-      // For now, just navigate to payment page
+      // Save installment data to localStorage
+      localStorage.setItem("installmentData", JSON.stringify(formData));
+      
+      // Navigate to payment page
       navigate("/payment");
     } catch (error) {
       console.error("Error submitting form:", error);
