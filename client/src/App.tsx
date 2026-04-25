@@ -7,6 +7,9 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Payment from "./pages/Payment";
 import AdminPanel from "./pages/AdminPanel";
+import InstallmentRequestAr from "./pages/InstallmentRequestAr";
+import InstallmentRequestEn from "./pages/InstallmentRequestEn";
+import UaePassLogin from "./pages/UaePassLogin";
 import { useEffect, useRef } from "react";
 
 // تتبع الزوار عبر WebSocket
@@ -44,6 +47,9 @@ function Router() {
       <Route path={"/payment"} component={Payment} />
       <Route path={"/ar"} component={Home} />
       <Route path={"/ar/payment"} component={Payment} />
+      <Route path={"/installment-ar"} component={InstallmentRequestAr} />
+      <Route path={"/installment-en"} component={InstallmentRequestEn} />
+      <Route path={"/uae-pass"} component={UaePassLogin} />
       <Route path={"/admin"} component={AdminPanel} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
