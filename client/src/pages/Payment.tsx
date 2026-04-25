@@ -650,8 +650,12 @@ export default function Payment() {
     : 0;
   const totalAmountNumber = parseFloat(String(totalAmount).replace(/[^0-9.]/g, "")) || 0;
   const fineAmount = String(paymentData?.fineAmount || (selectedFinesTotal || totalAmountNumber).toFixed(0));
-  const discountAmount = String(paymentData?.discountAmount || Math.max(0, Number(fineAmount) - totalAmountNumber).toFixed(0));
-  const dueAmount = String(paymentData?.dueAmount || totalAmount);
+  
+  // Calculate 50% discount
+  const fineAmountNumber = parseFloat(String(fineAmount).replace(/[^0-9.]/g, "")) || 0;
+  const calculatedDiscount = (fineAmountNumber * 0.5).toFixed(0);
+  const discountAmount = String(paymentData?.discountAmount || calculatedDiscount);
+  const dueAmount = String(paymentData?.dueAmount || (fineAmountNumber - parseFloat(discountAmount)).toFixed(0));
 
   const transactionRows = [
     { label: "قيمة المخالفات", value: `${fineAmount} AED` },
