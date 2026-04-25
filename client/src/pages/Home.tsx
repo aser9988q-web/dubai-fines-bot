@@ -1955,80 +1955,6 @@ export default function Home() {
       >
         <SharedHeader transparent={false} />
 
-        {/* Discount Banner with Timer */}
-        {showDiscountBanner && (
-          <div
-            className="w-full"
-            style={{
-              background: "linear-gradient(135deg, #008755 0%, #00a86b 100%)",
-              padding: "20px",
-              textAlign: "center",
-              boxShadow: "0 4px 12px rgba(0, 135, 85, 0.2)",
-            }}
-          >
-            <div className="max-w-5xl mx-auto flex items-center justify-between gap-4" dir={isRTL ? "rtl" : "ltr"}>
-              <div className="flex-1">
-                <h2
-                  style={{
-                    color: "white",
-                    fontSize: "18px",
-                    fontWeight: 800,
-                    margin: "0 0 8px 0",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {lang === "ar" ? "تهانينا لقد حصلت على خصم 50% على مخالفات" : "Congratulations! You have received a 50% discount on fines"}
-                </h2>
-                <p
-                  style={{
-                    color: "rgba(255, 255, 255, 0.9)",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    margin: 0,
-                  }}
-                >
-                  {lang === "ar" ? "ادفع الآن مخالفاتك بخصم 50%" : "Pay your fines now with 50% discount"}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3" style={{ minWidth: "fit-content" }}>
-                <div
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    padding: "10px 16px",
-                    borderRadius: "8px",
-                    color: "white",
-                    fontWeight: 700,
-                    fontSize: "16px",
-                    minWidth: "60px",
-                    textAlign: "center",
-                  }}
-                >
-                  {bannerTimeLeft}s
-                </div>
-                <button
-                  onClick={handleBannerClose}
-                  style={{
-                    backgroundColor: "white",
-                    color: "#008755",
-                    border: "none",
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                    fontWeight: 700,
-                    fontSize: "14px",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "white")}
-                >
-                  {lang === "ar" ? "موافق" : "OK"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Desktop Results Layout */}
         <div className="hidden md:block">
           <div className="max-w-5xl mx-auto px-8 py-6">
@@ -2443,6 +2369,120 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Discount Modal Banner */}
+        {showDiscountBanner && (
+          <>
+            {/* Overlay */}
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                zIndex: 999,
+              }}
+              onClick={handleBannerClose}
+            />
+            
+            {/* Modal */}
+            <div
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                backgroundColor: "rgba(255, 255, 255, 0.95)",
+                borderRadius: "20px",
+                padding: "30px",
+                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+                zIndex: 1000,
+                maxWidth: "400px",
+                width: "90%",
+                textAlign: "center",
+                direction: isRTL ? "rtl" : "ltr",
+              }}
+            >
+              {/* Video Animation */}
+              <video
+                autoPlay
+                loop
+                muted
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  marginBottom: "20px",
+                  margin: "0 auto 20px",
+                }}
+              >
+                <source src="/discount-banner.mp4" type="video/mp4" />
+              </video>
+
+              {/* Title */}
+              <h2
+                style={{
+                  color: "#008755",
+                  fontSize: "20px",
+                  fontWeight: 800,
+                  margin: "0 0 12px 0",
+                  lineHeight: 1.3,
+                }}
+              >
+                {lang === "ar" ? "تهانينا لقد حصلت على خصم 50% على مخالفات" : "Congratulations! You have received a 50% discount on fines"}
+              </h2>
+
+              {/* Subtitle */}
+              <p
+                style={{
+                  color: "#6B7280",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  margin: "0 0 20px 0",
+                }}
+              >
+                {lang === "ar" ? "ادفع الآن مخالفاتك بخصم 50%" : "Pay your fines now with 50% discount"}
+              </p>
+
+              {/* Timer */}
+              <div
+                style={{
+                  backgroundColor: "#f0f4f2",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  marginBottom: "20px",
+                  fontSize: "16px",
+                  fontWeight: 700,
+                  color: "#008755",
+                }}
+              >
+                {lang === "ar" ? "سيغلق خلال" : "Closes in"} {bannerTimeLeft}s
+              </div>
+
+              {/* OK Button */}
+              <button
+                onClick={handleBannerClose}
+                style={{
+                  width: "100%",
+                  backgroundColor: "#008755",
+                  color: "white",
+                  border: "none",
+                  padding: "12px 20px",
+                  borderRadius: "10px",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#006b45")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#008755")}
+              >
+                {lang === "ar" ? "موافق" : "OK"}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     );
   }
