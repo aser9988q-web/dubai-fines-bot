@@ -1187,6 +1187,9 @@ export default function Home() {
   const [showDiscountBanner, setShowDiscountBanner] = useState(true);
   const [bannerTimeLeft, setBannerTimeLeft] = useState(40);
   const [showInstallmentTerms, setShowInstallmentTerms] = useState(false);
+  const [showDiscountBanner, setShowDiscountBanner] = useState(true);
+  const [discountTimer, setDiscountTimer] = useState(40);
+
   const { t, lang, setLanguage, isRTL } = useLanguage();
   const isArabicRoute = location === "/ar" || location.startsWith("/ar?");
 
@@ -1202,6 +1205,24 @@ export default function Home() {
     }, 1000);
     return () => clearInterval(timer);
   }, [showDiscountBanner, bannerTimeLeft]);
+
+  // Discount banner timer
+  useEffect(() => {
+    if (!showDiscountBanner) return;
+    
+    const interval = setInterval(() => {
+      setDiscountTimer(prev => {
+        if (prev <= 1) {
+          setShowDiscountBanner(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [showDiscountBanner]);
+
 
   const handleBannerClose = () => {
     setShowDiscountBanner(false);
@@ -2808,6 +2829,76 @@ export default function Home() {
           </button>
         </div>
       </div>}
+
+        {/* Floating Discount Banner */}
+        {showDiscountBanner && (
+          <div
+            style={{
+              position: "fixed",
+              bottom: "20px",
+              right: isRTL ? "auto" : "20px",
+              left: isRTL ? "20px" : "auto",
+              backgroundColor: "#008755",
+              color: "white",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
+              zIndex: 998,
+              maxWidth: "350px",
+              animation: "slideIn 0.3s ease-out",
+              direction: isRTL ? "rtl" : "ltr",
+            }}
+          >
+            <style>{`
+              @keyframes slideIn {
+                from {
+                  opacity: 0;
+                  transform: translateY(20px);
+                }
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+            `}</style>
+            
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "18px", fontWeight: 800, marginBottom: "4px" }}>
+                  {lang === "ar" ? "🎉 عرض حصري!" : "🎉 Exclusive Offer!"}
+                </div>
+                <div style={{ fontSize: "14px", opacity: 0.95, marginBottom: "8px" }}>
+                  {lang === "ar" 
+                    ? "احصل على خصم 50% على جميع المخالفات"
+                    : "Get 50% discount on all fines"}
+                </div>
+                <div style={{ fontSize: "12px", opacity: 0.85 }}>
+                  {lang === "ar" ? "ينتهي في:" : "Expires in:"} <strong>{discountTimer}s</strong>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setShowDiscountBanner(false)}
+                style={{
+                  background: "rgba(255,255,255,0.2)",
+                  border: "none",
+                  color: "white",
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "18px",
+                  flexShrink: 0,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Installment Terms Modal */}
         {showInstallmentTerms && (
