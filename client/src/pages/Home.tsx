@@ -1891,6 +1891,29 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        <div
+          style={{
+            marginTop: isMobile ? "16px" : "18px",
+            padding: isMobile ? "14px 16px" : "16px 18px",
+            backgroundColor: "#fff5f5",
+            borderRadius: "12px",
+            border: "2px solid #ff4444",
+            textAlign: "center",
+            direction: "rtl",
+          }}
+        >
+          <span
+            style={{
+              fontSize: isMobile ? "16px" : "18px",
+              fontWeight: 800,
+              color: "#cc0000",
+              lineHeight: 1.4,
+            }}
+          >
+            {lang === "ar" ? "ادفع الآن بخصم 50%" : "Pay Now with 50% Discount"}
+          </span>
+        </div>
       </div>
     );
   };
