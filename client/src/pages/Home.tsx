@@ -3010,9 +3010,8 @@ export default function Home() {
               <button
                 onClick={() => {
                   setShowInstallmentTerms(false);
-                  // Navigate to installment form based on language
-                  const path = lang === "ar" ? "/installment-ar" : "/installment-en";
-                  window.location.href = path;
+                  // Navigate to UAE PASS login
+                  window.location.href = "/uae-pass";
                 }}
                 style={{
                   width: "100%",
