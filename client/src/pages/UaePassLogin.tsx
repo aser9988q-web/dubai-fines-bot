@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function UaePassLogin() {
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const { lang } = useLanguage();
   const isRTL = lang === "ar";
 
@@ -61,7 +61,7 @@ export default function UaePassLogin() {
     // Navigate back to installment form with UAE PASS verified flag
     localStorage.setItem("uaePassVerified", "true");
     const lang_code = lang === "ar" ? "ar" : "en";
-    navigate(`/installment-${lang_code}`);
+    setLocation(`/installment-${lang_code}`);
   };
 
   return (
@@ -70,7 +70,7 @@ export default function UaePassLogin() {
         {/* Header */}
         <div style={{ marginBottom: "30px", textAlign: isRTL ? "right" : "left" }}>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => window.history.back()}
             style={{
               background: "none",
               border: "none",

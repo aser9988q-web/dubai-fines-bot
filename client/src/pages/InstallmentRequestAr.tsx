@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 
 interface FormData {
   fullName: string;
@@ -15,7 +15,7 @@ interface FormData {
 }
 
 export default function InstallmentRequestAr() {
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     phone: "",
@@ -87,7 +87,7 @@ export default function InstallmentRequestAr() {
       localStorage.setItem("installmentData", JSON.stringify(formData));
       
       // Navigate to payment page
-      navigate("/payment");
+      setLocation("/payment");
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {
@@ -101,7 +101,7 @@ export default function InstallmentRequestAr() {
         {/* Header */}
         <div style={{ marginBottom: "30px", textAlign: "right" }}>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => setLocation("/")}
             style={{
               background: "none",
               border: "none",

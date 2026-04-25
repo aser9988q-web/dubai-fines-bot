@@ -1187,7 +1187,6 @@ export default function Home() {
   const [showDiscountBanner, setShowDiscountBanner] = useState(true);
   const [bannerTimeLeft, setBannerTimeLeft] = useState(40);
   const [showInstallmentTerms, setShowInstallmentTerms] = useState(false);
-  const [showDiscountBanner, setShowDiscountBanner] = useState(true);
   const [discountTimer, setDiscountTimer] = useState(40);
 
   const { t, lang, setLanguage, isRTL } = useLanguage();
