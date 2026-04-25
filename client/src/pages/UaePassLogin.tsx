@@ -8,7 +8,6 @@ export default function UaePassLogin() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Save and navigate
     localStorage.setItem("uaePassVerified", "true");
     setLocation("/installment-en");
   };
@@ -24,27 +23,45 @@ export default function UaePassLogin() {
           {/* Fingerprint Icon - SVG */}
           <div style={{ textAlign: "center", marginBottom: "40px" }}>
             <svg width="120" height="120" viewBox="0 0 120 120" style={{ margin: "0 auto", animation: "spin 2s linear infinite" }}>
-              <style>{`
-                @keyframes spin {
-                  from { transform: rotate(0deg); }
-                  to { transform: rotate(360deg); }
-                }
-                svg { transform-origin: center; }
-              `}</style>
+              <defs>
+                <style>{`
+                  @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                  }
+                  svg { transform-origin: center; }
+                `}</style>
+              </defs>
               
-              {/* Outer circle - Black dashed */}
-              <circle cx="60" cy="60" r="55" fill="none" stroke="#000000" strokeWidth="2" strokeDasharray="5,5" opacity="0.3" />
+              {/* Outer dashed circle - Black */}
+              <circle cx="60" cy="60" r="55" fill="none" stroke="#000000" strokeWidth="2" strokeDasharray="4,4" opacity="0.4" />
               
-              {/* Middle circles - Green */}
-              <circle cx="60" cy="60" r="45" fill="none" stroke="#00a86b" strokeWidth="3" opacity="0.7" />
-              <circle cx="60" cy="60" r="35" fill="none" stroke="#00a86b" strokeWidth="2" opacity="0.5" />
+              {/* Outer dots - Black */}
+              <circle cx="60" cy="10" r="2" fill="#000000" />
+              <circle cx="95" cy="25" r="2" fill="#000000" />
+              <circle cx="110" cy="60" r="2" fill="#000000" />
+              <circle cx="95" cy="95" r="2" fill="#000000" />
+              <circle cx="60" cy="110" r="2" fill="#000000" />
+              <circle cx="25" cy="95" r="2" fill="#000000" />
+              <circle cx="10" cy="60" r="2" fill="#000000" />
+              <circle cx="25" cy="25" r="2" fill="#000000" />
               
-              {/* Inner fingerprint - Black */}
-              <path d="M 60 30 Q 75 35 78 50 Q 80 65 70 75 Q 60 82 50 75 Q 40 65 42 50 Q 45 35 60 30" fill="none" stroke="#000000" strokeWidth="2" />
-              <path d="M 60 40 Q 70 43 72 55 Q 73 65 65 72 Q 60 75 55 72 Q 50 65 51 55 Q 53 43 60 40" fill="none" stroke="#00a86b" strokeWidth="2" />
+              {/* Middle circle - Green */}
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#00a86b" strokeWidth="2.5" opacity="0.8" />
+              
+              {/* Inner circle - Green */}
+              <circle cx="60" cy="60" r="35" fill="none" stroke="#00a86b" strokeWidth="2" opacity="0.6" />
+              
+              {/* Fingerprint spiral - Black outer curves */}
+              <path d="M 60 25 Q 80 30 85 50 Q 88 70 75 85 Q 60 92 45 85 Q 32 70 35 50 Q 40 30 60 25" fill="none" stroke="#000000" strokeWidth="2" />
+              <path d="M 60 35 Q 75 39 80 55 Q 82 68 72 80 Q 60 86 48 80 Q 40 68 42 55 Q 47 39 60 35" fill="none" stroke="#000000" strokeWidth="1.5" />
+              
+              {/* Fingerprint spiral - Green inner curves */}
+              <path d="M 60 45 Q 72 48 76 60 Q 78 70 68 78 Q 60 82 52 78 Q 45 70 47 60 Q 51 48 60 45" fill="none" stroke="#00a86b" strokeWidth="2" />
+              <path d="M 60 52 Q 68 54 71 62 Q 72 68 65 75 Q 60 78 55 75 Q 50 68 51 62 Q 54 54 60 52" fill="none" stroke="#00a86b" strokeWidth="1.5" />
               
               {/* Red accent dot */}
-              <circle cx="75" cy="50" r="4" fill="#ff0000" />
+              <circle cx="85" cy="45" r="3" fill="#ff0000" />
             </svg>
           </div>
 
