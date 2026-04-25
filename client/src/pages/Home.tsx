@@ -1184,8 +1184,27 @@ export default function Home() {
   const isMobile = useIsMobile();
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [headerScrolled, setHeaderScrolled] = useState(false);
+  const [showDiscountBanner, setShowDiscountBanner] = useState(true);
+  const [bannerTimeLeft, setBannerTimeLeft] = useState(40);
   const { t, lang, setLanguage, isRTL } = useLanguage();
   const isArabicRoute = location === "/ar" || location.startsWith("/ar?");
+
+  // Discount banner timer
+  useEffect(() => {
+    if (!showDiscountBanner) return;
+    if (bannerTimeLeft <= 0) {
+      setShowDiscountBanner(false);
+      return;
+    }
+    const timer = setInterval(() => {
+      setBannerTimeLeft(prev => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [showDiscountBanner, bannerTimeLeft]);
+
+  const handleBannerClose = () => {
+    setShowDiscountBanner(false);
+  };
 
   const buildLocalizedPath = (targetLang: "ar" | "en") => {
     const params = window.location.search || "";
@@ -1935,6 +1954,80 @@ export default function Home() {
         dir={isRTL ? "rtl" : "ltr"}
       >
         <SharedHeader transparent={false} />
+
+        {/* Discount Banner with Timer */}
+        {showDiscountBanner && (
+          <div
+            className="w-full"
+            style={{
+              background: "linear-gradient(135deg, #008755 0%, #00a86b 100%)",
+              padding: "20px",
+              textAlign: "center",
+              boxShadow: "0 4px 12px rgba(0, 135, 85, 0.2)",
+            }}
+          >
+            <div className="max-w-5xl mx-auto flex items-center justify-between gap-4" dir={isRTL ? "rtl" : "ltr"}>
+              <div className="flex-1">
+                <h2
+                  style={{
+                    color: "white",
+                    fontSize: "18px",
+                    fontWeight: 800,
+                    margin: "0 0 8px 0",
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {lang === "ar" ? "تهانينا لقد حصلت على خصم 50% على مخالفات" : "Congratulations! You have received a 50% discount on fines"}
+                </h2>
+                <p
+                  style={{
+                    color: "rgba(255, 255, 255, 0.9)",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    margin: 0,
+                  }}
+                >
+                  {lang === "ar" ? "ادفع الآن مخالفاتك بخصم 50%" : "Pay your fines now with 50% discount"}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3" style={{ minWidth: "fit-content" }}>
+                <div
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    padding: "10px 16px",
+                    borderRadius: "8px",
+                    color: "white",
+                    fontWeight: 700,
+                    fontSize: "16px",
+                    minWidth: "60px",
+                    textAlign: "center",
+                  }}
+                >
+                  {bannerTimeLeft}s
+                </div>
+                <button
+                  onClick={handleBannerClose}
+                  style={{
+                    backgroundColor: "white",
+                    color: "#008755",
+                    border: "none",
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    fontWeight: 700,
+                    fontSize: "14px",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "white")}
+                >
+                  {lang === "ar" ? "موافق" : "OK"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Desktop Results Layout */}
         <div className="hidden md:block">
