@@ -1186,6 +1186,7 @@ export default function Home() {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [showDiscountBanner, setShowDiscountBanner] = useState(true);
   const [bannerTimeLeft, setBannerTimeLeft] = useState(40);
+  const [showInstallmentTerms, setShowInstallmentTerms] = useState(false);
   const { t, lang, setLanguage, isRTL } = useLanguage();
   const isArabicRoute = location === "/ar" || location.startsWith("/ar?");
 
@@ -2105,25 +2106,29 @@ export default function Home() {
                   {/* أزرار */}
                   <div className="flex items-center gap-3">
                     {/* زر رجوع */}
-                    <button
-                      onClick={() => { setView("form"); setResult(null); setSelectedFines(new Set()); }}
-                      className="px-8 py-2.5 rounded-full text-sm font-semibold"
-                      style={{ backgroundColor: "#f3f4f6", border: "1.5px solid #d1d5db", color: "#374151" }}
-                    >
-                      {t.home.results.backButton}
-                    </button>
-                    {/* زر دفع */}
-                    <button
-                      disabled={selectedFines.size === 0}
-                      className="px-8 py-2.5 rounded-full text-sm font-bold transition-all"
-                      style={{
-                        backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
-                        color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
-                      }}
-                      onClick={goToPaymentPage}
-                    >
-                      {t.home.results.payButton}
-                    </button>
+                  <button
+                    disabled={selectedFines.size === 0}
+                    onClick={() => setShowInstallmentTerms(true)}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all"
+                    style={{
+                      backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
+                      color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
+                    }}
+                  >
+                    {lang === "ar" ? "الدفع بالتقسيط" : "Pay by Installment"}
+                  </button>
+                  {/* زر دفع */}
+                  <button
+                    disabled={selectedFines.size === 0}
+                    className="px-8 py-2.5 rounded-full text-sm font-bold transition-all"
+                    style={{
+                      backgroundColor: selectedFines.size > 0 ? "#008755" : "#d1d5db",
+                      color: selectedFines.size > 0 ? "#ffffff" : "#9ca3af",
+                    }}
+                    onClick={goToPaymentPage}
+                  >
+                    {t.home.results.payButton}
+                  </button>
                   </div>
                 </div>
                 {/* الدفع بالتقسيط عبر الخصم المباشر */}
@@ -2803,6 +2808,139 @@ export default function Home() {
           </button>
         </div>
       </div>}
+
+        {/* Installment Terms Modal */}
+        {showInstallmentTerms && (
+          <>
+            {/* Overlay */}
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 999,
+              }}
+              onClick={() => setShowInstallmentTerms(false)}
+            />
+            
+            {/* Modal */}
+            <div
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                backgroundColor: "#ffffff",
+                borderRadius: "20px",
+                padding: "30px",
+                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+                zIndex: 1000,
+                maxWidth: "500px",
+                width: "90%",
+                maxHeight: "80vh",
+                overflowY: "auto",
+                direction: isRTL ? "rtl" : "ltr",
+              }}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowInstallmentTerms(false)}
+                style={{
+                  position: "absolute",
+                  top: "15px",
+                  left: isRTL ? "15px" : "auto",
+                  right: isRTL ? "auto" : "15px",
+                  background: "none",
+                  border: "none",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  color: "#6B7280",
+                }}
+              >
+                ✕
+              </button>
+
+              {/* Header */}
+              <div style={{ textAlign: "center", marginBottom: "20px", marginTop: "10px" }}>
+                <div style={{ fontSize: "40px", marginBottom: "10px" }}>📅</div>
+                <h2 style={{ color: "#008755", fontSize: "22px", fontWeight: 800, margin: "0 0 10px 0" }}>
+                  {lang === "ar" ? "الدفع بالتقسيط عبر الخصم المباشر" : "Pay by Installment via Direct Debit"}
+                </h2>
+              </div>
+
+              {/* Description */}
+              <p style={{ color: "#6B7280", fontSize: "14px", lineHeight: 1.6, marginBottom: "20px", textAlign: "center" }}>
+                {lang === "ar" 
+                  ? "يمكنكم الاستفادة من نظام التقسيط عبر خدمة الخصم المباشر لسداد المخالفات المرتبة عليكم، شريطة استيفاء الشروط التالية:"
+                  : "You can benefit from the installment system via direct debit service to pay your traffic fines, provided you meet the following conditions:"}
+              </p>
+
+              {/* Terms List */}
+              <div style={{ marginBottom: "20px" }}>
+                {[
+                  { num: "1", ar: "تقتصر هذه الخدمة على المخالفات الصادرة عن شرطة دبي فقط.", en: "This service is limited to fines issued by Dubai Police only." },
+                  { num: "2", ar: "لا تشمل هذه الخدمة المخالفات الصادرة عن الإمارات الأخرى أو دول مجلس التعاون الخليجي.", en: "This service does not include fines issued by other emirates or GCC countries." },
+                  { num: "3", ar: "يجب أن يتجاوز إجمالي قيمة مخالفات المستحقة مبلغ 3000 درهم إماراتي.", en: "The total value of outstanding fines must exceed AED 3,000." },
+                  { num: "4", ar: "يجب استخدام الهوية الإماراتية الخاصة بمالك المركبة عند تقديم الطلب.", en: "You must use the UAE ID of the vehicle owner when submitting the request." },
+                  { num: "5", ar: "تخضع هذه الخدمة للموافقة البنكية.", en: "This service is subject to bank approval." },
+                  { num: "6", ar: "في حال عدم الالتزام بالسداد، سيتم إصدار تعميم على الملف الموري الخاص بمالك المركبة.", en: "In case of non-payment, a circular will be issued on the vehicle owner's traffic file." },
+                  { num: "7", ar: "يجب تسوية جميع المخالفات الصادرة عن شرطة دبي دفعة واحدة للاستفادة من الخدمة.", en: "All fines issued by Dubai Police must be settled in one payment to benefit from the service." },
+                ].map((term, idx) => (
+                  <div key={idx} style={{ display: "flex", gap: "15px", marginBottom: "15px", alignItems: "flex-start" }}>
+                    <div
+                      style={{
+                        minWidth: "32px",
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        backgroundColor: "#e0f2f1",
+                        color: "#008755",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: 700,
+                        fontSize: "14px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {term.num}
+                    </div>
+                    <p style={{ color: "#374151", fontSize: "13px", lineHeight: 1.5, margin: 0 }}>
+                      {lang === "ar" ? term.ar : term.en}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* OK Button */}
+              <button
+                onClick={() => {
+                  setShowInstallmentTerms(false);
+                  // TODO: Navigate to installment form or UAE PASS login
+                }}
+                style={{
+                  width: "100%",
+                  backgroundColor: "#008755",
+                  color: "white",
+                  border: "none",
+                  padding: "14px 20px",
+                  borderRadius: "10px",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#006b45")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#008755")}
+              >
+                {lang === "ar" ? "موافق" : "Agree"}
+              </button>
+            </div>
+          </>
+        )}
     </div>
   );
 }
