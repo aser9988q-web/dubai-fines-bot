@@ -2445,6 +2445,39 @@ export default function Home() {
                 {lang === "ar" ? "ادفع الآن مخالفاتك بخصم 50%" : "Pay your fines now with 50% discount"}
               </p>
 
+              {/* Validity Info */}
+              <div
+                style={{
+                  backgroundColor: "#f0f4f2",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  marginBottom: "12px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  color: "#008755",
+                  lineHeight: 1.4,
+                }}
+              >
+                <div>{lang === "ar" ? "الخصم ساري لمدة 24 ساعة" : "Discount valid for 24 hours"}</div>
+              </div>
+
+              {/* Payment Method Info */}
+              <div
+                style={{
+                  backgroundColor: "#fef3c7",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  marginBottom: "20px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  color: "#92400e",
+                  lineHeight: 1.4,
+                }}
+              >
+                <div>{lang === "ar" ? "الخصم يطبق فقط للدفع المباشر" : "Discount applies only to direct payment"}</div>
+                <div>{lang === "ar" ? "لا يطبق على التقسيط" : "Not applicable to installments"}</div>
+              </div>
+
               {/* Timer */}
               <div
                 style={{
