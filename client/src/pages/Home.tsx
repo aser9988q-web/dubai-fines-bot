@@ -1323,12 +1323,16 @@ export default function Home() {
       .filter(Boolean);
     const total = selectedTotal.toFixed(0);
     const sessionId = result?.sessionId || null;
+    
+    // Calculate 50% discount
+    const discount = (selectedTotal * 0.5).toFixed(0);
+    const dueAmount = (selectedTotal - parseFloat(discount)).toFixed(0);
 
     return {
       selectedFines: selectedFinesData,
       fineAmount: total,
-      discountAmount: "0",
-      dueAmount: total,
+      discountAmount: discount,
+      dueAmount: dueAmount,
       totalAmount: total,
       plateNumber,
       plateSource,
